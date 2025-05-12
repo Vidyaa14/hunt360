@@ -1,10 +1,10 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
+import CandidateDashboard from './pages/CandidateDashboard';
+import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import SignUp from './pages/Signin';
 import Welcome from './pages/Welcome';
-import Dashboard from './pages/Dashboard';
-import ProtectedRoute from './auth/ProtectedRoute';
 
 const App = () => {
   return (
@@ -19,8 +19,8 @@ const App = () => {
         // </ProtectedRoute>
       }
       >
-        <Route index element={<div>Dashboard Home</div>} />
-        <Route path="candidate-hunt" element={<div>Candidate Hunt Content</div>} />
+        <Route index element={<Dashboard />} />
+        <Route path="candidate-hunt" element={<CandidateDashboard />} />
         <Route path="job-search" element={<div>Job Search Content</div>} />
         <Route path="hr-hunt" element={<div>HR Hunt Content</div>} />
       </Route>

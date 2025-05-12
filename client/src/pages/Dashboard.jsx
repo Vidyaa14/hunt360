@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Menu, User as UserIcon } from 'lucide-react';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../components/common/Sidebar';
 
 export default function Dashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
