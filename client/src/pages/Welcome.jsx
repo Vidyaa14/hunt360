@@ -6,12 +6,11 @@ export default function Welcome() {
     return (
         <div>
             <Navbar />
-            {/* Hero Section */}
             <section
                 id="home"
-                className="min-h-screen flex items-center bg-gradient-to-br from-gray-50 to-blue-50 bg-opacity-90 bg-[url('/assets/subtle-pattern.png')] text-gray-900 pt-20"
+                className="min-h-screen flex items-center relative before:content-[''] before:absolute before:inset-0 before:bg-[url('/assets/world-map.png')] before:bg-cover before:bg-center before:opacity-20 before:[animation:bg-pan_30s_linear_infinite] bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900 pt-20"
             >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in z-10">
                     <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight tracking-tight">
                         Empower Your Insights with Hunt360
                     </h1>
@@ -73,7 +72,7 @@ export default function Welcome() {
                     <div className="flex flex-col md:flex-row items-center gap-16">
                         <div className="md:w-1/2 animate-fade-in">
                             <p className="text-lg text-gray-600 leading-relaxed">
-                                Hunt360 is a cutting-edge platform designed to aggregate, process, and analyze data from online forumsshaft and communities. Our mission is to empower businesses and individuals with actionable insights through innovative data collection and analytics technologies, enabling smarter decision-making.
+                                Hunt360 is a cutting-edge platform designed to aggregate, process, and analyze data from online forums and communities. Our mission is to empower businesses and individuals with actionable insights through innovative data collection and analytics technologies, enabling smarter decision-making.
                             </p>
                         </div>
                         <div className="md:w-1/2 animate-fade-in">
@@ -121,7 +120,7 @@ export default function Welcome() {
                 </div>
             </section>
 
-
+            {/* Footer */}
             <footer className="bg-gray-900 text-gray-200 py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -195,13 +194,11 @@ export default function Welcome() {
                     </div>
                     <div className="mt-12 border-t border-gray-800 pt-8 text-center">
                         <p className="text-gray-400">
-                            &copy; {new Date().getFullYear()} Hunt360. All rights reserved.
+                            © {new Date().getFullYear()} Hunt360. All rights reserved.
                         </p>
                     </div>
                 </div>
-            </footer >
-
+            </footer>
         </div>
-    )
+    );
 }
-
