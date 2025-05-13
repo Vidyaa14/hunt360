@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import CandidateDashboard from './pages/CandidateDashboard';
+import ProtectedRoute from './auth/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import SignUp from './pages/Signin';
@@ -36,7 +37,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
 
-            <Route path="/dashboard" element={<Dashboard />}>
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}>
                 <Route path="candidate-hunt" element={<CandidateDashboard />}>
                     <Route index element={<Dashboard />} />
                     <Route path="franchise" element={<FranchiseeLoginData />} />

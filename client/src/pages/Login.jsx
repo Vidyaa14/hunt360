@@ -1,71 +1,69 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../auth/auth-context';
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 export default function Login() {
+    const { login } = useContext(AuthContext);
+    
+    const navigate = useNavigate();
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const result = await login({ identifier: email, password });
+
+        if (result.success) {
+            navigate('/dashboard');
+        } else {
+            setError(result.error);
+        }
+    };
+
     return (
         <section className="min-h-screen flex items-center justify-center bg-gray-50 py-16">
-            <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-lg fade-in">
-                <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-6">
-                    Login to Hunt360
-                </h2>
-                <div className="space-y-6">
+            <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-lg">
+                <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-6">Login to Hunt360</h2>
+                {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+                <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label
-                            htmlFor="email"
-                            className="block text-sm font-medium text-gray-700"
-                        >
-                            Email
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                            Email or Username
                         </label>
                         <input
                             id="email"
-                            type="email"
-                            placeholder="you@example.com"
-                            className="mt-1 w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            type="text"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="mt-1 w-full p-3 border rounded-md"
+                            required
                         />
                     </div>
                     <div>
-                        <label
-                            htmlFor="password"
-                            className="block text-sm font-medium text-gray-700"
-                        >
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                             Password
                         </label>
                         <input
                             id="password"
                             type="password"
-                            placeholder="••••••••"
-                            className="mt-1 w-full p-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="mt-1 w-full p-3 border rounded-md"
+                            required
                         />
                     </div>
-                    <div className="flex items-center justify-between">
-                        <label className="flex items-center">
-                            <input
-                                type="checkbox"
-                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                            />
-                            <span className="ml-2 text-sm text-gray-600">
-                                Remember me
-                            </span>
-                        </label>
-                        <a
-                            href="#"
-                            className="text-sm text-blue-600 hover:underline"
-                        >
-                            Forgot password?
-                        </a>
-                    </div>
-                    <button className="w-full bg-blue-600 text-white p-3 rounded-md font-semibold hover:bg-blue-700 transition">
+                    <button
+                        type="submit"
+                        className="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition"
+                    >
                         Login
                     </button>
-                </div>
+                </form>
                 <p className="mt-6 text-center text-sm text-gray-600">
-                    Don't have an account?{' '}
-                    <Link
-                        to="/signup"
-                        className="text-blue-600 hover:underline"
-                    >
-                        Sign Up
-                    </Link>
+                    Don't have an account? <Link to="/signup" className="text-blue-600 hover:underline">Sign Up</Link>
                 </p>
             </div>
         </section>

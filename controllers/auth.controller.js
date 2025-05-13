@@ -4,6 +4,19 @@ import jwt from 'jsonwebtoken';
 
 const SECRET = process.env.JWT_SECRET || 'secretkey';
 
+const generateToken = (user) => {
+    return jwt.sign(
+        {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+        },
+        SECRET,
+        { expiresIn: '7d' }
+    );
+};
+
 export const signUp = async (req, res) => {
     const { username, email, password } = req.body;
 
@@ -14,22 +27,28 @@ export const signUp = async (req, res) => {
         );
 
         if (existing.length > 0) {
-            return res
-                .status(409)
-                .json({ error: 'Username or email already in use' });
+            return res.status(409).json({ success: false, error: 'Username or email already in use' });
         }
 
         const hashed = await bcrypt.hash(password, 10);
 
-        await db.execute(
+        const [result] = await db.execute(
             'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
             [username, email, hashed]
         );
 
-        res.status(201).json({ message: 'User created successfully' });
+        const [newUserData] = await db.execute(
+            'SELECT id, username, email, role FROM users WHERE id = ? LIMIT 1',
+            [result.insertId]
+        );
+
+        const user = newUserData[0];
+        const token = generateToken(user);
+
+        res.status(201).json({ success: true, user, token });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Something went wrong' });
+        res.status(500).json({ success: false, error: 'Something went wrong' });
     }
 };
 
@@ -44,29 +63,25 @@ export const login = async (req, res) => {
 
         const user = rows[0];
 
-        if (!user || !user.is_active) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+        if (!user) {
+            return res.status(401).json({ success: false, error: 'Invalid credentials' });
         }
 
         const match = await bcrypt.compare(password, user.password);
         if (!match) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({ success: false, error: 'Invalid credentials' });
         }
 
-        const token = jwt.sign(
-            {
-                id: user.id,
-                username: user.username,
-                email: user.email,
-                role: user.role,
-            },
-            SECRET,
-            { expiresIn: '7d' }
-        );
+        const { id, username, email, role } = user;
+        const token = generateToken({ id, username, email, role });
 
-        res.json({ token });
+        res.json({
+            success: true,
+            user: { id, username, email, role },
+            token,
+        });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Something went wrong' });
+        res.status(500).json({ success: false, error: 'Something went wrong' });
     }
 };

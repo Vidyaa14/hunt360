@@ -1,0 +1,479 @@
+openapi: 3.0.0
+info:
+  title: Candidate API
+  version: 1.0.0
+  description: API for managing candidates and related operations
+servers:
+  - url: /api/candidate
+components:
+  securitySchemes:
+    SessionAuth:
+      type: apiKey
+      in: header
+      name: Cookie
+      description: Session cookie (connect.sid) required for authenticated routes.
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+    FilterCandidates:
+      type: object
+      required: [domain, subDomain]
+      properties:
+        domain:
+          type: string
+          example: IT
+        subDomain:
+          type: string
+          example: Software Development
+    Candidate:
+      type: object
+      properties:
+        Full_Name:
+          type: string
+        Email:
+          type: string
+        Phone_No:
+          type: string
+        Domain:
+          type: string
+        Sub_Domain:
+          type: string
+        Date:
+          type: integer
+        Month:
+          type: integer
+        Year:
+          type: integer
+        email_status:
+          type: integer
+          example: 0
+    SendCandidateEmail:
+      type: object
+      required: [candidateEmail, candidateName, domain, subDomain]
+      properties:
+        candidateEmail:
+          type: string
+          example: candidate@example.com
+        candidateName:
+          type: string
+          example: John Doe
+        domain:
+          type: string
+          example: IT
+        subDomain:
+          type: string
+          example: Software Development
+    OrgEmailCount:
+      type: object
+      properties:
+        orgName:
+          type: string
+        email_sent_count:
+          type: integer
+    DashboardData:
+      type: object
+      properties:
+        totalSignups:
+          type: integer
+        totalEmailsSent:
+          type: integer
+        totalCandidates:
+          type: integer
+        signupDates:
+          type: array
+          items:
+            type: string
+            format: date
+        signupCounts:
+          type: array
+          items:
+            type: integer
+    CandidateByYear:
+      type: object
+      properties:
+        Year:
+          type: integer
+        count:
+          type: integer
+    CandidateByDomain:
+      type: object
+      properties:
+        Domain:
+          type: string
+        count:
+          type: integer
+    CandidateBySubdomain:
+      type: object
+      properties:
+        Sub_Domain:
+          type: string
+        count:
+          type: integer
+    VerifyToken:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+          example: 123456
+    SubmitCandidate:
+      type: object
+      required: [token, Full_Name, Email, Phone_No, Domain, Sub_Domain]
+      properties:
+        token:
+          type: string
+        Full_Name:
+          type: string
+        Email:
+          type: string
+        Phone_No:
+          type: string
+        Domain:
+          type: string
+        Sub_Domain:
+          type: string
+        dob:
+          type: string
+          format: date
+        gender:
+          type: string
+        location:
+          type: string
+        pincode:
+          type: string
+        state:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        emergencyPhone:
+          type: string
+        contactName:
+          type: string
+        contactRelation:
+          type: string
+        highestQualification:
+          type: string
+        degree:
+          type: string
+        courseName:
+          type: string
+        collegeName:
+          type: string
+        universityName:
+          type: string
+        yearOfPassing:
+          type: integer
+        marks:
+          type: string
+        internship_experience:
+          type: string
+        skills:
+          type: string
+        resume_url:
+          type: string
+paths:
+  /filterCandidates:
+    post:
+      summary: Filter candidates by domain and sub-domain
+      description: Retrieves up to 3 candidates matching the specified domain and sub-domain, ordered by rank.
+      security:
+        - SessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterCandidates"
+      responses:
+        "200":
+          description: Successful response or no candidates found
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Candidate"
+                  - $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized (session not found)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /sendCandidateEmail:
+    post:
+      summary: Send email to a candidate
+      description: Sends an opportunity email to a candidate and updates email status.
+      security:
+        - SessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendCandidateEmail"
+      responses:
+        "200":
+          description: Email sent or already sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+        "400":
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /orgEmailCount:
+    get:
+      summary: Get email counts by organization
+      description: Retrieves aggregated email counts for all organizations, sorted by count.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/OrgEmailCount"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /dashboardData:
+    get:
+      summary: Get dashboard data
+      description: Retrieves aggregated data for the dashboard, including signups, emails sent, and candidates.
+      parameters:
+        - in: query
+          name: org
+          schema:
+            type: string
+          required: true
+          description: Organization name
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardData"
+        "400":
+          description: Missing organization name
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /candidate-by-year:
+    get:
+      summary: Get candidates by year
+      description: Retrieves the count of candidates registered per year.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CandidateByYear"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /candidate-by-domain:
+    get:
+      summary: Get candidates by domain
+      description: Retrieves the count of candidates per domain, optionally filtered by year.
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            type: string
+          description: Year to filter by (optional)
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CandidateByDomain"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /candidate-by-subdomain:
+    get:
+      summary: Get candidates by sub-domain
+      description: Retrieves the count of candidates per sub-domain, optionally filtered by year.
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            type: string
+          description: Year to filter by (optional)
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CandidateBySubdomain"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /verifyToken:
+    post:
+      summary: Verify a token
+      description: Verifies if a provided token is valid and unused.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyToken"
+      responses:
+        "200":
+          description: Token verified
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        "400":
+          description: Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /submitCandidate:
+    post:
+      summary: Submit a new candidate
+      description: Submits candidate details with a valid token, including an optional resume file.
+      security:
+        - SessionAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SubmitCandidate"
+      responses:
+        "200":
+          description: Candidate submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        "400":
+          description: Invalid token or missing fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
