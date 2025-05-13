@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import Sidebar from '../../components/sidebar/Sidebar';
 
 const domainData = {
     'Information Technology': [
@@ -239,7 +238,6 @@ const ExperiencedJobBoard = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-100">
-            <Sidebar />
             <div className={`flex-1 p-6 transition-all duration-300`}>
                 <div className="flex items-center gap-4 mb-8">
                     <h1 className="text-2xl font-bold text-[#5b2c91]">
