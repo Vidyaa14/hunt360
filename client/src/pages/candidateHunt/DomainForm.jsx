@@ -1,5 +1,10 @@
-
-import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import React, {
+    useEffect,
+    useState,
+    useRef,
+    useCallback,
+    useMemo,
+} from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,57 +12,125 @@ const BACKEND_URL = 'https://saarthi360-backend.vercel.app/api/candidate';
 
 const domainMap = {
     'Information Technology': [
-        'Software Developer', 'Data Analysis', 'Cyber Security', 'UI/UX Design',
-        'Network Administration', 'Cloud Computing', 'DevOps', 'Database Management',
-        'Web Development', 'Mobile App Development'
+        'Software Developer',
+        'Data Analysis',
+        'Cyber Security',
+        'UI/UX Design',
+        'Network Administration',
+        'Cloud Computing',
+        'DevOps',
+        'Database Management',
+        'Web Development',
+        'Mobile App Development',
     ],
-    'Healthcare': [
-        'Nursing', 'Medical Research', 'Pharmacy', 'Healthcare Administration',
-        'Physical Therapy', 'Occupational Therapy', 'Radiology', 'Public Health',
-        'Health Informatics', 'Clinical Psychology'
+    Healthcare: [
+        'Nursing',
+        'Medical Research',
+        'Pharmacy',
+        'Healthcare Administration',
+        'Physical Therapy',
+        'Occupational Therapy',
+        'Radiology',
+        'Public Health',
+        'Health Informatics',
+        'Clinical Psychology',
     ],
-    'Finance': [
-        'Financial Analysis', 'Investment Banking', 'Accounting', 'Risk Management',
-        'Insurance', 'Tax Consulting', 'Financial Planning', 'Corporate Finance',
-        'Wealth Management', 'Auditing'
+    Finance: [
+        'Financial Analysis',
+        'Investment Banking',
+        'Accounting',
+        'Risk Management',
+        'Insurance',
+        'Tax Consulting',
+        'Financial Planning',
+        'Corporate Finance',
+        'Wealth Management',
+        'Auditing',
     ],
-    'Education': [
-        'Teaching', 'Curriculum Development', 'Educational Administration',
-        'Special Education', 'Instructional Design', 'E-Learning Development',
-        'Educational Technology', 'School Counseling', 'Adult Education', 'Tutoring'
+    Education: [
+        'Teaching',
+        'Curriculum Development',
+        'Educational Administration',
+        'Special Education',
+        'Instructional Design',
+        'E-Learning Development',
+        'Educational Technology',
+        'School Counseling',
+        'Adult Education',
+        'Tutoring',
     ],
-    'Engineering': [
-        'Civil Engineering', 'Mechanical Engineering', 'Electrical Engineering',
-        'Chemical Engineering', 'Aerospace Engineering', 'Industrial Engineering',
-        'Software Engineering', 'Environmental Engineering', 'Structural Engineering',
-        'Robotics Engineering'
+    Engineering: [
+        'Civil Engineering',
+        'Mechanical Engineering',
+        'Electrical Engineering',
+        'Chemical Engineering',
+        'Aerospace Engineering',
+        'Industrial Engineering',
+        'Software Engineering',
+        'Environmental Engineering',
+        'Structural Engineering',
+        'Robotics Engineering',
     ],
-    'Marketing': [
-        'Digital Marketing', 'Content Marketing', 'SEO Specialist', 'Brand Management',
-        'Market Research', 'Social Media Management', 'Email Marketing', 'Product Marketing',
-        'Advertising', 'Public Relations'
+    Marketing: [
+        'Digital Marketing',
+        'Content Marketing',
+        'SEO Specialist',
+        'Brand Management',
+        'Market Research',
+        'Social Media Management',
+        'Email Marketing',
+        'Product Marketing',
+        'Advertising',
+        'Public Relations',
     ],
-    'Sales': [
-        'Sales Management', 'Business Development', 'Account Management', 'Retail Sales',
-        'Inside Sales', 'Outside Sales', 'Sales Operations', 'Lead Generation',
-        'Sales Training', 'Customer Success'
+    Sales: [
+        'Sales Management',
+        'Business Development',
+        'Account Management',
+        'Retail Sales',
+        'Inside Sales',
+        'Outside Sales',
+        'Sales Operations',
+        'Lead Generation',
+        'Sales Training',
+        'Customer Success',
     ],
     'Human Resources': [
-        'Recruitment', 'Employee Relations', 'Training and Development',
-        'Compensation and Benefits', 'HR Consulting', 'Talent Management',
-        'Organizational Development', 'HR Information Systems', 'Labor Relations',
-        'Diversity and Inclusion'
+        'Recruitment',
+        'Employee Relations',
+        'Training and Development',
+        'Compensation and Benefits',
+        'HR Consulting',
+        'Talent Management',
+        'Organizational Development',
+        'HR Information Systems',
+        'Labor Relations',
+        'Diversity and Inclusion',
     ],
-    'Manufacturing': [
-        'Production Management', 'Quality Assurance', 'Supply Chain Management',
-        'Process Engineering', 'Manufacturing Engineering', 'Lean Manufacturing',
-        'Industrial Design', 'Operations Management', 'Logistics', 'Inventory Management'
+    Manufacturing: [
+        'Production Management',
+        'Quality Assurance',
+        'Supply Chain Management',
+        'Process Engineering',
+        'Manufacturing Engineering',
+        'Lean Manufacturing',
+        'Industrial Design',
+        'Operations Management',
+        'Logistics',
+        'Inventory Management',
     ],
-    'Retail': [
-        'Store Management', 'Visual Merchandising', 'Inventory Control', 'Customer Service',
-        'E-commerce Management', 'Retail Marketing', 'Sales Associate', 'Loss Prevention',
-        'Buying and Merchandising', 'Product Management'
-    ]
+    Retail: [
+        'Store Management',
+        'Visual Merchandising',
+        'Inventory Control',
+        'Customer Service',
+        'E-commerce Management',
+        'Retail Marketing',
+        'Sales Associate',
+        'Loss Prevention',
+        'Buying and Merchandising',
+        'Product Management',
+    ],
 };
 
 const questionBank = {
@@ -66,47 +139,63 @@ const questionBank = {
             {
                 question: 'What does HTML stand for?',
                 correct: 'HyperText Markup Language',
-                options: ['HyperText Markup Language', 'HighText Machine Language', 'HyperTool Multi Language', 'HyperText Main Language']
+                options: [
+                    'HyperText Markup Language',
+                    'HighText Machine Language',
+                    'HyperTool Multi Language',
+                    'HyperText Main Language',
+                ],
             },
             {
                 question: 'Which CSS property controls text size?',
                 correct: 'font-size',
-                options: ['font-size', 'text-size', 'font-style', 'text-scale']
+                options: ['font-size', 'text-size', 'font-style', 'text-scale'],
             },
             {
                 question: 'What is the purpose of JavaScript?',
                 correct: 'Add interactivity to web pages',
-                options: ['Add interactivity to web pages', 'Style web pages', 'Define web structure', 'Manage databases']
+                options: [
+                    'Add interactivity to web pages',
+                    'Style web pages',
+                    'Define web structure',
+                    'Manage databases',
+                ],
             },
             {
                 question: 'Which HTML tag is used for a hyperlink?',
                 correct: '<a>',
-                options: ['<a>', '<link>', '<href>', '<url>']
-            }
+                options: ['<a>', '<link>', '<href>', '<url>'],
+            },
         ],
         'Data Analysis': [
             {
-                question: 'What library is commonly used for data analysis in Python?',
+                question:
+                    'What library is commonly used for data analysis in Python?',
                 correct: 'pandas',
-                options: ['pandas', 'numpy', 'matplotlib', 'scikit-learn']
+                options: ['pandas', 'numpy', 'matplotlib', 'scikit-learn'],
             },
             {
                 question: 'Which tool is used for data visualization?',
                 correct: 'Tableau',
-                options: ['Tableau', 'Excel', 'SQL', 'Jupyter']
+                options: ['Tableau', 'Excel', 'SQL', 'Jupyter'],
             },
             {
                 question: 'What does SQL stand for?',
                 correct: 'Structured Query Language',
-                options: ['Structured Query Language', 'Simple Query Language', 'Standard Query Logic', 'Sequential Query Language']
+                options: [
+                    'Structured Query Language',
+                    'Simple Query Language',
+                    'Standard Query Logic',
+                    'Sequential Query Language',
+                ],
             },
             {
                 question: 'Which Python library is used for machine learning?',
                 correct: 'scikit-learn',
-                options: ['scikit-learn', 'pandas', 'numpy', 'matplotlib']
-            }
-        ]
-    }
+                options: ['scikit-learn', 'pandas', 'numpy', 'matplotlib'],
+            },
+        ],
+    },
 };
 
 const shuffleArray = (arr) => [...arr].sort(() => 0.5 - Math.random());
@@ -127,7 +216,7 @@ const DomainForm = () => {
         degree: '',
         domain: '',
         subdomain: '',
-        answers: {}
+        answers: {},
     });
     const [timer, setTimer] = useState(300);
     const [tokenValid, setTokenValid] = useState(null);
@@ -200,76 +289,98 @@ const DomainForm = () => {
     }, []);
 
     const handleDomainChange = useCallback((e) => {
-        setFormData((prev) => ({ ...prev, domain: e.target.value, subdomain: '', answers: {} }));
+        setFormData((prev) => ({
+            ...prev,
+            domain: e.target.value,
+            subdomain: '',
+            answers: {},
+        }));
         setQuestions([]);
         clearInterval(timerRef.current);
         setTimerActive(false);
     }, []);
 
-    const handleSubdomainChange = useCallback((e) => {
-        const sub = e.target.value;
-        setFormData((prev) => ({ ...prev, subdomain: sub, answers: {} }));
-        startTimer();
-    }, [startTimer]);
+    const handleSubdomainChange = useCallback(
+        (e) => {
+            const sub = e.target.value;
+            setFormData((prev) => ({ ...prev, subdomain: sub, answers: {} }));
+            startTimer();
+        },
+        [startTimer]
+    );
 
     const handleAnswerChange = useCallback((idx, val) => {
         setFormData((prev) => ({
             ...prev,
-            answers: { ...prev.answers, [idx]: val }
+            answers: { ...prev.answers, [idx]: val },
         }));
     }, []);
 
-    const formatTime = useMemo(() => (s) => `${Math.floor(s / 60)}:${('0' + (s % 60)).slice(-2)}`, []);
+    const formatTime = useMemo(
+        () => (s) => `${Math.floor(s / 60)}:${('0' + (s % 60)).slice(-2)}`,
+        []
+    );
 
-    const handleSubmit = useCallback(async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
+    const handleSubmit = useCallback(
+        async (e) => {
+            e.preventDefault();
+            setLoading(true);
+            setError(null);
 
-        try {
-            let score = 0;
-            questions.forEach((q, idx) => {
-                const ans = (formData.answers[idx] || '').trim().toLowerCase();
-                if (q.correct && ans === q.correct.toLowerCase()) score++;
-            });
+            try {
+                let score = 0;
+                questions.forEach((q, idx) => {
+                    const ans = (formData.answers[idx] || '')
+                        .trim()
+                        .toLowerCase();
+                    if (q.correct && ans === q.correct.toLowerCase()) score++;
+                });
 
-            const payload = {
-                token,
-                Full_Name: `${formData.firstName} ${formData.middleName} ${formData.lastName}`.trim(),
-                Email: formData.email,
-                Phone_No: formData.phone,
-                college: formData.college,
-                university: formData.university,
-                degree: formData.degree,
-                Domain: formData.domain,
-                Sub_Domain: formData.subdomain,
-                assessment_score: score,
-                answers: JSON.stringify(formData.answers),
-                submittedAt: new Date().toISOString()
-            };
+                const payload = {
+                    token,
+                    Full_Name:
+                        `${formData.firstName} ${formData.middleName} ${formData.lastName}`.trim(),
+                    Email: formData.email,
+                    Phone_No: formData.phone,
+                    college: formData.college,
+                    university: formData.university,
+                    degree: formData.degree,
+                    Domain: formData.domain,
+                    Sub_Domain: formData.subdomain,
+                    assessment_score: score,
+                    answers: JSON.stringify(formData.answers),
+                    submittedAt: new Date().toISOString(),
+                };
 
-            const response = await fetch(`${BACKEND_URL}/submitAssessment`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify(payload),
-            });
+                const response = await fetch(
+                    `${BACKEND_URL}/submitAssessment`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(payload),
+                    }
+                );
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (data.success) {
-                navigate('/form-success');
-            } else {
-                throw new Error(data.error || 'Failed to submit assessment.');
+                if (data.success) {
+                    navigate('/form-success');
+                } else {
+                    throw new Error(
+                        data.error || 'Failed to submit assessment.'
+                    );
+                }
+            } catch (err) {
+                console.error('Submission error:', err);
+                setError('Failed to submit the form. Please try again.');
+                navigate('/form-error');
+            } finally {
+                setLoading(false);
             }
-        } catch (err) {
-            console.error('Submission error:', err);
-            setError('Failed to submit the form. Please try again.');
-            navigate('/form-error');
-        } finally {
-            setLoading(false);
-        }
-    }, [formData, questions, token, navigate]);
+        },
+        [formData, questions, token, navigate]
+    );
 
     const handleClearForm = useCallback(() => {
         setFormData({
@@ -283,7 +394,7 @@ const DomainForm = () => {
             degree: '',
             domain: '',
             subdomain: '',
-            answers: {}
+            answers: {},
         });
         setQuestions([]);
         setTimer(300);
@@ -305,7 +416,10 @@ const DomainForm = () => {
     if (!tokenValid) {
         return (
             <div className="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow-md mt-8 animate-fade-in">
-                <div className="text-center text-red-600 font-bold text-xl" role="alert">
+                <div
+                    className="text-center text-red-600 font-bold text-xl"
+                    role="alert"
+                >
                     ⚠️ {error || 'Invalid or expired token.'}
                 </div>
             </div>
@@ -326,9 +440,12 @@ const DomainForm = () => {
                 </h1>
             </header>
 
-            <h2 className="text-3xl font-bold text-[#6a1b9a] mb-4">Domain Knowledge Assessment</h2>
+            <h2 className="text-3xl font-bold text-[#6a1b9a] mb-4">
+                Domain Knowledge Assessment
+            </h2>
             <p className="text-gray-600 mb-6">
-                Note: This form contains domain-specific questions designed to assess your knowledge and expertise in the chosen field
+                Note: This form contains domain-specific questions designed to
+                assess your knowledge and expertise in the chosen field
             </p>
 
             {error && (
@@ -342,11 +459,17 @@ const DomainForm = () => {
 
             <form onSubmit={handleSubmit} className="space-y-8">
                 <section className="border-b border-gray-200 pb-6">
-                    <h3 className="text-xl font-semibold text-[#6a1b9a] mb-4">Basic Details</h3>
+                    <h3 className="text-xl font-semibold text-[#6a1b9a] mb-4">
+                        Basic Details
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="flex flex-col">
-                            <label htmlFor="firstName" className="text-sm font-medium text-gray-700 mb-1">
-                                First Name <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="firstName"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                First Name{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -361,7 +484,10 @@ const DomainForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="middleName" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="middleName"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Middle Name
                             </label>
                             <input
@@ -375,8 +501,12 @@ const DomainForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="lastName" className="text-sm font-medium text-gray-700 mb-1">
-                                Last Name <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="lastName"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Last Name{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -391,7 +521,10 @@ const DomainForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="email"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Email <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -407,7 +540,10 @@ const DomainForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="phone" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="phone"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Phone <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -426,10 +562,15 @@ const DomainForm = () => {
                 </section>
 
                 <section className="border-b border-gray-200 pb-6">
-                    <h3 className="text-xl font-semibold text-[#6a1b9a] mb-4">Educational Details</h3>
+                    <h3 className="text-xl font-semibold text-[#6a1b9a] mb-4">
+                        Educational Details
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="flex flex-col">
-                            <label htmlFor="college" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="college"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 College <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -445,8 +586,12 @@ const DomainForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="university" className="text-sm font-medium text-gray-700 mb-1">
-                                University <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="university"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                University{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -461,7 +606,10 @@ const DomainForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="degree" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="degree"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Degree <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -480,10 +628,15 @@ const DomainForm = () => {
                 </section>
 
                 <section className="border-b border-gray-200 pb-6">
-                    <h3 className="text-xl font-semibold text-[#6a1b9a] mb-4">Domain Selection</h3>
+                    <h3 className="text-xl font-semibold text-[#6a1b9a] mb-4">
+                        Domain Selection
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="flex flex-col">
-                            <label htmlFor="domain" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="domain"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Domain <span className="text-red-500">*</span>
                             </label>
                             <select
@@ -497,13 +650,19 @@ const DomainForm = () => {
                             >
                                 <option value="">Select Domain</option>
                                 {Object.keys(domainMap).map((dom) => (
-                                    <option key={dom} value={dom}>{dom}</option>
+                                    <option key={dom} value={dom}>
+                                        {dom}
+                                    </option>
                                 ))}
                             </select>
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="subdomain" className="text-sm font-medium text-gray-700 mb-1">
-                                Subdomain <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="subdomain"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Subdomain{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="subdomain"
@@ -515,9 +674,13 @@ const DomainForm = () => {
                                 aria-label="Subdomain"
                             >
                                 <option value="">Select Subdomain</option>
-                                {(domainMap[formData.domain] || []).map((sub) => (
-                                    <option key={sub} value={sub}>{sub}</option>
-                                ))}
+                                {(domainMap[formData.domain] || []).map(
+                                    (sub) => (
+                                        <option key={sub} value={sub}>
+                                            {sub}
+                                        </option>
+                                    )
+                                )}
                             </select>
                         </div>
                     </div>
@@ -530,28 +693,48 @@ const DomainForm = () => {
 
                 {questions.length > 0 && (
                     <section>
-                        <h3 className="text-xl font-semibold text-[#6a1b9a] mb-4">Questions</h3>
+                        <h3 className="text-xl font-semibold text-[#6a1b9a] mb-4">
+                            Questions
+                        </h3>
                         {questions.map((q, idx) => (
-                            <div key={idx} className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+                            <div
+                                key={idx}
+                                className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4"
+                            >
                                 <label className="text-sm font-semibold text-gray-800 mb-2 block">
-                                    {q.question} <span className="text-red-500">*</span>
+                                    {q.question}{' '}
+                                    <span className="text-red-500">*</span>
                                 </label>
-                                {q.options && q.options.map((option, optIdx) => (
-                                    <div key={optIdx} className="flex items-center mb-2">
-                                        <input
-                                            type="radio"
-                                            name={`question-${idx}`}
-                                            value={option}
-                                            checked={formData.answers[idx] === option}
-                                            onChange={() => handleAnswerChange(idx, option)}
-                                            className="mr-2"
-                                            required
-                                            aria-required="true"
-                                            aria-label={`Option ${option} for question ${q.question}`}
-                                        />
-                                        <span className="text-gray-700">{option}</span>
-                                    </div>
-                                ))}
+                                {q.options &&
+                                    q.options.map((option, optIdx) => (
+                                        <div
+                                            key={optIdx}
+                                            className="flex items-center mb-2"
+                                        >
+                                            <input
+                                                type="radio"
+                                                name={`question-${idx}`}
+                                                value={option}
+                                                checked={
+                                                    formData.answers[idx] ===
+                                                    option
+                                                }
+                                                onChange={() =>
+                                                    handleAnswerChange(
+                                                        idx,
+                                                        option
+                                                    )
+                                                }
+                                                className="mr-2"
+                                                required
+                                                aria-required="true"
+                                                aria-label={`Option ${option} for question ${q.question}`}
+                                            />
+                                            <span className="text-gray-700">
+                                                {option}
+                                            </span>
+                                        </div>
+                                    ))}
                             </div>
                         ))}
                     </section>

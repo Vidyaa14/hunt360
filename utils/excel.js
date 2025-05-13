@@ -11,11 +11,22 @@ export async function saveDataToExcel(data, industry, city) {
     let fileIndex = 1;
 
     while (existsSync(filePath)) {
-        filePath = join(config.downloadsFolder, `${baseFileName.replace('.xlsx', '')}(${fileIndex}).xlsx`);
+        filePath = join(
+            config.downloadsFolder,
+            `${baseFileName.replace('.xlsx', '')}(${fileIndex}).xlsx`
+        );
         fileIndex++;
     }
 
-    const headers = ['Job_Title', 'Company_Name', 'Location', 'Address', 'Phone', 'Website', 'GST Number(s)'];
+    const headers = [
+        'Job_Title',
+        'Company_Name',
+        'Location',
+        'Address',
+        'Phone',
+        'Website',
+        'GST Number(s)',
+    ];
     const rows = data.map((d) => [
         d.Job_Title,
         d.Company_Name,

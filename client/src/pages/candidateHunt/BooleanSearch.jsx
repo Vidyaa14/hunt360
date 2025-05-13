@@ -15,15 +15,22 @@ const BooleanSearch = ({ isSidebarCollapsed = false }) => {
     const [loading, setLoading] = useState(false);
     const textareaRef = useRef(null);
 
-    const handleOperatorClick = useCallback((operator) => {
-        const textarea = textareaRef.current;
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const newQuery = query.slice(0, start) + operator + query.slice(end);
-        setQuery(newQuery);
-        textarea.focus();
-        textarea.setSelectionRange(start + operator.length, start + operator.length);
-    }, [query]);
+    const handleOperatorClick = useCallback(
+        (operator) => {
+            const textarea = textareaRef.current;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const newQuery =
+                query.slice(0, start) + operator + query.slice(end);
+            setQuery(newQuery);
+            textarea.focus();
+            textarea.setSelectionRange(
+                start + operator.length,
+                start + operator.length
+            );
+        },
+        [query]
+    );
 
     const parseQuery = (query) => {
         // Simple parsing: assume query is like "(domain) AND (subDomain)"
@@ -34,60 +41,70 @@ const BooleanSearch = ({ isSidebarCollapsed = false }) => {
         return { domain: '', subDomain: '' };
     };
 
-    const handleSearch = useCallback(async (e) => {
-        e.preventDefault();
-        setError('');
-        setCandidates([]);
-        setLoading(true);
+    const handleSearch = useCallback(
+        async (e) => {
+            e.preventDefault();
+            setError('');
+            setCandidates([]);
+            setLoading(true);
 
-        const { domain, subDomain } = parseQuery(query);
+            const { domain, subDomain } = parseQuery(query);
 
-        if (!domain || !subDomain) {
-            setError('Please provide a valid query in the format: (domain) AND (subDomain)');
-            setLoading(false);
-            return;
-        }
-
-        try {
-            const response = await fetch(`${BACKEND_URL}/filterCandidates`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include', // Include session cookie
-                body: JSON.stringify({
-                    domain,
-                    subDomain,
-                    searchType,
-                    location,
-                    experienceLevel,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                setCandidates(data.data || []);
-            } else {
-                setError(data.error || 'No candidates found.');
+            if (!domain || !subDomain) {
+                setError(
+                    'Please provide a valid query in the format: (domain) AND (subDomain)'
+                );
+                setLoading(false);
+                return;
             }
-        } catch (err) {
-            setError('Failed to fetch candidates. Please try again.');
-            console.error('Search error:', err);
-        } finally {
-            setLoading(false);
-        }
-    }, [query, searchType, location, experienceLevel]);
+
+            try {
+                const response = await fetch(
+                    `${BACKEND_URL}/filterCandidates`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include', // Include session cookie
+                        body: JSON.stringify({
+                            domain,
+                            subDomain,
+                            searchType,
+                            location,
+                            experienceLevel,
+                        }),
+                    }
+                );
+
+                const data = await response.json();
+
+                if (data.success) {
+                    setCandidates(data.data || []);
+                } else {
+                    setError(data.error || 'No candidates found.');
+                }
+            } catch (err) {
+                setError('Failed to fetch candidates. Please try again.');
+                console.error('Search error:', err);
+            } finally {
+                setLoading(false);
+            }
+        },
+        [query, searchType, location, experienceLevel]
+    );
 
     const tips = [
         {
             title: 'AND Operator',
-            description: 'Use AND to find results containing all specified terms.',
+            description:
+                'Use AND to find results containing all specified terms.',
             icon: Link,
         },
         {
             title: 'OR Operator',
-            description: 'Use OR to find results containing any of the specified terms.',
+            description:
+                'Use OR to find results containing any of the specified terms.',
             icon: ArrowRight,
         },
         {
@@ -100,7 +117,9 @@ const BooleanSearch = ({ isSidebarCollapsed = false }) => {
     return (
         <div className="flex min-h-screen bg-gray-100">
             <div className={`flex-1 p-8 transition-all duration-300`}>
-                <h1 className="text-3xl font-bold text-[#5e239d] mb-6">Boolean Search</h1>
+                <h1 className="text-3xl font-bold text-[#5e239d] mb-6">
+                    Boolean Search
+                </h1>
 
                 <div className="bg-white p-6 rounded-lg shadow-md mb-8">
                     <textarea
@@ -159,7 +178,9 @@ const BooleanSearch = ({ isSidebarCollapsed = false }) => {
                             <select
                                 className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#7e22ce] focus:border-transparent"
                                 value={experienceLevel}
-                                onChange={(e) => setExperienceLevel(e.target.value)}
+                                onChange={(e) =>
+                                    setExperienceLevel(e.target.value)
+                                }
                                 aria-label="Experience level"
                             >
                                 <option>All Levels</option>
@@ -182,35 +203,66 @@ const BooleanSearch = ({ isSidebarCollapsed = false }) => {
                     </div>
 
                     {error && (
-                        <p className="mt-4 text-red-500 text-sm text-center">{error}</p>
+                        <p className="mt-4 text-red-500 text-sm text-center">
+                            {error}
+                        </p>
                     )}
                 </div>
 
                 {candidates.length > 0 && (
                     <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-                        <h2 className="text-2xl font-bold text-[#5e239d] mb-6">Search Results</h2>
+                        <h2 className="text-2xl font-bold text-[#5e239d] mb-6">
+                            Search Results
+                        </h2>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead className="bg-gray-200">
                                     <tr>
-                                        <th className="p-4 font-semibold">Name</th>
-                                        <th className="p-4 font-semibold">Email</th>
-                                        <th className="p-4 font-semibold">Phone</th>
-                                        <th className="p-4 font-semibold">Domain</th>
-                                        <th className="p-4 font-semibold">Sub-Domain</th>
-                                        <th className="p-4 font-semibold">Email Status</th>
+                                        <th className="p-4 font-semibold">
+                                            Name
+                                        </th>
+                                        <th className="p-4 font-semibold">
+                                            Email
+                                        </th>
+                                        <th className="p-4 font-semibold">
+                                            Phone
+                                        </th>
+                                        <th className="p-4 font-semibold">
+                                            Domain
+                                        </th>
+                                        <th className="p-4 font-semibold">
+                                            Sub-Domain
+                                        </th>
+                                        <th className="p-4 font-semibold">
+                                            Email Status
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {candidates.map((candidate, index) => (
-                                        <tr key={index} className="border-t hover:bg-gray-50">
-                                            <td className="p-4">{candidate.Full_Name}</td>
-                                            <td className="p-4">{candidate.Email}</td>
-                                            <td className="p-4">{candidate.Phone_No}</td>
-                                            <td className="p-4">{candidate.Domain}</td>
-                                            <td className="p-4">{candidate.Sub_Domain}</td>
+                                        <tr
+                                            key={index}
+                                            className="border-t hover:bg-gray-50"
+                                        >
                                             <td className="p-4">
-                                                {candidate.email_status ? 'Sent' : 'Not Sent'}
+                                                {candidate.Full_Name}
+                                            </td>
+                                            <td className="p-4">
+                                                {candidate.Email}
+                                            </td>
+                                            <td className="p-4">
+                                                {candidate.Phone_No}
+                                            </td>
+                                            <td className="p-4">
+                                                {candidate.Domain}
+                                            </td>
+                                            <td className="p-4">
+                                                {candidate.Sub_Domain}
+                                            </td>
+                                            <td className="p-4">
+                                                {candidate.email_status
+                                                    ? 'Sent'
+                                                    : 'Not Sent'}
                                             </td>
                                         </tr>
                                     ))}
@@ -226,14 +278,19 @@ const BooleanSearch = ({ isSidebarCollapsed = false }) => {
                     </h2>
                     <div className="flex flex-wrap gap-6">
                         {tips.map((tip) => (
-                            <div key={tip.title} className="flex-1 min-w-[200px]">
+                            <div
+                                key={tip.title}
+                                className="flex-1 min-w-[200px]"
+                            >
                                 <div className="flex items-center mb-2">
                                     <tip.icon className="w-5 h-5 text-[#5e239d] mr-2" />
                                     <h4 className="text-base font-semibold text-gray-800">
                                         {tip.title}
                                     </h4>
                                 </div>
-                                <p className="text-sm text-gray-600">{tip.description}</p>
+                                <p className="text-sm text-gray-600">
+                                    {tip.description}
+                                </p>
                             </div>
                         ))}
                     </div>

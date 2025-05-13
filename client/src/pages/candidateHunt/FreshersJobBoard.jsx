@@ -1,29 +1,149 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/sidebar/Sidebar';
+import Sidebar from '../../components/sidebar/Sidebar';
 
 const domainData = {
-    'Information Technology': ['Software Developer', 'Data Analyst', 'System Administrator', 'DevOps Engineer', 'Cybersecurity Specialist'],
-    Healthcare: ['Doctor', 'Nurse', 'Pharmacist', 'Medical Technician', 'Therapist'],
-    Education: ['Teacher', 'Professor', 'Academic Counselor', 'Librarian', 'Curriculum Developer'],
-    Finance: ['Accountant', 'Financial Analyst', 'Auditor', 'Investment Banker', 'Tax Consultant'],
-    Marketing: ['Digital Marketer', 'Content Strategist', 'SEO Specialist', 'Brand Manager', 'Market Research Analyst'],
-    'Human Resources': ['HR Manager', 'Recruiter', 'Training Coordinator', 'Compensation Analyst', 'Employee Relations Specialist'],
-    Engineering: ['Mechanical Engineer', 'Civil Engineer', 'Electrical Engineer', 'Chemical Engineer', 'Industrial Engineer'],
-    Legal: ['Lawyer', 'Paralegal', 'Legal Advisor', 'Compliance Officer', 'Judge'],
-    Sales: ['Sales Executive', 'Account Manager', 'Business Development Manager', 'Retail Sales Associate', 'Sales Analyst'],
-    'Customer Service': ['Customer Service Representative', 'Call Center Agent', 'Technical Support Specialist', 'Client Relations Manager', 'Help Desk Technician'],
-    Operations: ['Operations Manager', 'Logistics Coordinator', 'Supply Chain Analyst', 'Production Supervisor', 'Inventory Manager'],
-    Administration: ['Administrative Assistant', 'Office Manager', 'Executive Assistant', 'Receptionist', 'Clerical Staff'],
-    Construction: ['Construction Manager', 'Site Engineer', 'Architect', 'Surveyor', 'Safety Officer'],
-    Hospitality: ['Hotel Manager', 'Chef', 'Housekeeping Supervisor', 'Front Desk Agent', 'Event Coordinator'],
-    Transportation: ['Driver', 'Logistics Manager', 'Fleet Coordinator', 'Dispatcher', 'Transportation Planner'],
-    'Real Estate': ['Real Estate Agent', 'Property Manager', 'Appraiser', 'Leasing Consultant', 'Real Estate Analyst'],
-    Manufacturing: ['Production Worker', 'Quality Control Inspector', 'Manufacturing Engineer', 'Plant Manager', 'Machine Operator'],
-    'Media & Entertainment': ['Journalist', 'Editor', 'Producer', 'Actor', 'Camera Operator'],
-    Agriculture: ['Farmer', 'Agricultural Scientist', 'Horticulturist', 'Agronomist', 'Farm Manager'],
-    'Research & Development': ['Research Scientist', 'Lab Technician', 'Product Developer', 'Clinical Research Associate', 'Innovation Manager'],
+    'Information Technology': [
+        'Software Developer',
+        'Data Analyst',
+        'System Administrator',
+        'DevOps Engineer',
+        'Cybersecurity Specialist',
+    ],
+    Healthcare: [
+        'Doctor',
+        'Nurse',
+        'Pharmacist',
+        'Medical Technician',
+        'Therapist',
+    ],
+    Education: [
+        'Teacher',
+        'Professor',
+        'Academic Counselor',
+        'Librarian',
+        'Curriculum Developer',
+    ],
+    Finance: [
+        'Accountant',
+        'Financial Analyst',
+        'Auditor',
+        'Investment Banker',
+        'Tax Consultant',
+    ],
+    Marketing: [
+        'Digital Marketer',
+        'Content Strategist',
+        'SEO Specialist',
+        'Brand Manager',
+        'Market Research Analyst',
+    ],
+    'Human Resources': [
+        'HR Manager',
+        'Recruiter',
+        'Training Coordinator',
+        'Compensation Analyst',
+        'Employee Relations Specialist',
+    ],
+    Engineering: [
+        'Mechanical Engineer',
+        'Civil Engineer',
+        'Electrical Engineer',
+        'Chemical Engineer',
+        'Industrial Engineer',
+    ],
+    Legal: [
+        'Lawyer',
+        'Paralegal',
+        'Legal Advisor',
+        'Compliance Officer',
+        'Judge',
+    ],
+    Sales: [
+        'Sales Executive',
+        'Account Manager',
+        'Business Development Manager',
+        'Retail Sales Associate',
+        'Sales Analyst',
+    ],
+    'Customer Service': [
+        'Customer Service Representative',
+        'Call Center Agent',
+        'Technical Support Specialist',
+        'Client Relations Manager',
+        'Help Desk Technician',
+    ],
+    Operations: [
+        'Operations Manager',
+        'Logistics Coordinator',
+        'Supply Chain Analyst',
+        'Production Supervisor',
+        'Inventory Manager',
+    ],
+    Administration: [
+        'Administrative Assistant',
+        'Office Manager',
+        'Executive Assistant',
+        'Receptionist',
+        'Clerical Staff',
+    ],
+    Construction: [
+        'Construction Manager',
+        'Site Engineer',
+        'Architect',
+        'Surveyor',
+        'Safety Officer',
+    ],
+    Hospitality: [
+        'Hotel Manager',
+        'Chef',
+        'Housekeeping Supervisor',
+        'Front Desk Agent',
+        'Event Coordinator',
+    ],
+    Transportation: [
+        'Driver',
+        'Logistics Manager',
+        'Fleet Coordinator',
+        'Dispatcher',
+        'Transportation Planner',
+    ],
+    'Real Estate': [
+        'Real Estate Agent',
+        'Property Manager',
+        'Appraiser',
+        'Leasing Consultant',
+        'Real Estate Analyst',
+    ],
+    Manufacturing: [
+        'Production Worker',
+        'Quality Control Inspector',
+        'Manufacturing Engineer',
+        'Plant Manager',
+        'Machine Operator',
+    ],
+    'Media & Entertainment': [
+        'Journalist',
+        'Editor',
+        'Producer',
+        'Actor',
+        'Camera Operator',
+    ],
+    Agriculture: [
+        'Farmer',
+        'Agricultural Scientist',
+        'Horticulturist',
+        'Agronomist',
+        'Farm Manager',
+    ],
+    'Research & Development': [
+        'Research Scientist',
+        'Lab Technician',
+        'Product Developer',
+        'Clinical Research Associate',
+        'Innovation Manager',
+    ],
 };
 
 const stateCityData = {
@@ -52,7 +172,10 @@ const FresherJobBoard = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (formData.desiredJobDomain && domainData[formData.desiredJobDomain]) {
+        if (
+            formData.desiredJobDomain &&
+            domainData[formData.desiredJobDomain]
+        ) {
             setSubDomains(domainData[formData.desiredJobDomain]);
         } else {
             setSubDomains([]);
@@ -85,7 +208,10 @@ const FresherJobBoard = () => {
                 newErrors[field] = 'This field is required';
             }
         });
-        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        if (
+            formData.email &&
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
+        ) {
             newErrors.email = 'Invalid email format';
         }
         if (formData.phone && !/^\d{10}$/.test(formData.phone)) {
@@ -116,7 +242,6 @@ const FresherJobBoard = () => {
                             subDomain: formData.desiredSubDomain,
                         },
                     });
-                    // TODO: Implement API call, e.g., axios.post('/api/job-posts/freshers', formData)
                 }, 2000);
             }
         },
@@ -126,9 +251,7 @@ const FresherJobBoard = () => {
     return (
         <div className="flex min-h-screen bg-gray-100">
             <Sidebar />
-            <div
-                className={`flex-1 p-6 transition-all duration-300`}
-            >
+            <div className={`flex-1 p-6 transition-all duration-300`}>
                 <header className="flex items-center gap-4 mb-8">
                     <h1 className="text-2xl font-bold text-[#55208d]">
                         Freshers Job Board
@@ -172,14 +295,19 @@ const FresherJobBoard = () => {
                                 options: ['', ...cities],
                             },
                             { label: 'Email ID', id: 'email', type: 'email' },
-                            { label: 'Contact Number', id: 'phone', type: 'tel' },
+                            {
+                                label: 'Contact Number',
+                                id: 'phone',
+                                type: 'tel',
+                            },
                         ].map(({ label, id, type, options }) => (
                             <div key={id} className="flex flex-col">
                                 <label
                                     htmlFor={id}
                                     className="text-sm font-semibold text-gray-700 mb-2"
                                 >
-                                    {label} <span className="text-red-500">*</span>
+                                    {label}{' '}
+                                    <span className="text-red-500">*</span>
                                 </label>
                                 {type === 'select' ? (
                                     <select
@@ -208,7 +336,9 @@ const FresherJobBoard = () => {
                                     />
                                 )}
                                 {errors[id] && (
-                                    <span className="text-red-500 text-xs mt-1">{errors[id]}</span>
+                                    <span className="text-red-500 text-xs mt-1">
+                                        {errors[id]}
+                                    </span>
                                 )}
                             </div>
                         ))}
@@ -232,7 +362,10 @@ const FresherJobBoard = () => {
                         type="button"
                         onClick={() =>
                             navigate('/dashboard/candidate-results', {
-                                state: { domain: 'Information Technology', subDomain: 'Software Developer' },
+                                state: {
+                                    domain: 'Information Technology',
+                                    subDomain: 'Software Developer',
+                                },
                             })
                         }
                         className="mt-4 px-6 py-3 bg-[#5b2c91] text-white rounded-lg font-semibold hover:bg-[#4b1e84] focus:ring-2 focus:ring-[#5b2c91] focus:ring-opacity-50 transition-all duration-200"

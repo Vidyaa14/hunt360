@@ -12,39 +12,42 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = useCallback(async (e) => {
-        e.preventDefault();
+    const handleLogin = useCallback(
+        async (e) => {
+            e.preventDefault();
 
-        if (!email || !password) {
-            setError('Email and password are required.');
-            return;
-        }
-
-        setError('');
-        setLoading(true);
-
-        try {
-            const res = await fetch(`${BACKEND_URL}/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({ email, password }),
-            });
-
-            const data = await res.json();
-
-            if (data.success) {
-                window.location.href = '/dashboard';
-            } else {
-                setError(data.error || 'Invalid credentials');
+            if (!email || !password) {
+                setError('Email and password are required.');
+                return;
             }
-        } catch (err) {
-            setError('Something went wrong');
-        } finally {
-            setLoading(false);
-        }
-    }, [email, password]);
+
+            setError('');
+            setLoading(true);
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({ email, password }),
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    window.location.href = '/dashboard';
+                } else {
+                    setError(data.error || 'Invalid credentials');
+                }
+            } catch (err) {
+                setError('Something went wrong');
+            } finally {
+                setLoading(false);
+            }
+        },
+        [email, password]
+    );
 
     return (
         <div className="flex flex-col md:flex-row min-h-screen w-full bg-[#f7f4fb]">
@@ -66,11 +69,14 @@ const Login = () => {
                         aria-hidden="true"
                     />
                     <h2 className="text-3xl font-bold text-[#521c6e] text-center mb-2">
-                        AI Candid<span className="italic text-[#8422c2]">ate Hunt</span>
+                        AI Candid
+                        <span className="italic text-[#8422c2]">ate Hunt</span>
                     </h2>
                     <p className="text-sm text-[#902cce] text-center mb-6">
                         Sign in to Start Your AI-Powered{' '}
-                        <span className="italic text-[#9a33d8]">Talent Search!</span>
+                        <span className="italic text-[#9a33d8]">
+                            Talent Search!
+                        </span>
                     </p>
 
                     {error && (
@@ -107,9 +113,15 @@ const Login = () => {
                         <span
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-600 hover:text-[#7a2494]"
-                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                            aria-label={
+                                showPassword ? 'Hide password' : 'Show password'
+                            }
                         >
-                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                            {showPassword ? (
+                                <EyeOff size={16} />
+                            ) : (
+                                <Eye size={16} />
+                            )}
                         </span>
                     </div>
 
@@ -121,7 +133,10 @@ const Login = () => {
                     >
                         {loading ? 'Signing in...' : 'Sign In'}
                     </button>
-                    <Link to='/franchisee-signin' className='ml-12 text-[#7a2494] text-center'>
+                    <Link
+                        to="/franchisee-signin"
+                        className="ml-12 text-[#7a2494] text-center"
+                    >
                         FranchiseeSignin ?
                     </Link>
                 </form>

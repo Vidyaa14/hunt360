@@ -12,7 +12,9 @@ export default function Navbar() {
                             alt="Hunt360 Logo"
                             className="h-10 w-auto transition-transform duration-300 hover:scale-105"
                         />
-                        <span className="text-2xl font-bold text-gray-900 tracking-tight">Hunt360</span>
+                        <span className="text-2xl font-bold text-gray-900 tracking-tight">
+                            Hunt360
+                        </span>
                     </div>
                     <div className="flex items-center space-x-8">
                         <NavLink

@@ -1,29 +1,29 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
 .fade-in {
-  animation: fadeIn 1s ease-in-out;
+    animation: fadeIn 1s ease-in-out;
 }
 
 @keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes bg-pan {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
 }

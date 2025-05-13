@@ -1,25 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Eye as FaEye, EyeClosed as FaEyeSlash } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Eye as FaEye, EyeClosed as FaEyeSlash } from 'lucide-react';
 
 const BACKEND_URL = `https://saarthi360-backend.vercel.app/api/candidate`;
 
-
 const FranchiseSignin = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [organization, setOrganization] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [organization, setOrganization] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         const setupEnterKeyNavigation = () => {
-            const inputFields = document.querySelectorAll("#email, #password, #organization");
+            const inputFields = document.querySelectorAll(
+                '#email, #password, #organization'
+            );
             inputFields.forEach((field, index) => {
-                field.addEventListener("keydown", function (event) {
-                    if (event.key === "Enter") {
+                field.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter') {
                         event.preventDefault();
                         if (index < inputFields.length - 1) {
                             inputFields[index + 1].focus();
@@ -36,7 +37,7 @@ const FranchiseSignin = () => {
     const validateEmail = () => {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(email)) {
-            displayError("Invalid email format. Please enter a valid email.");
+            displayError('Invalid email format. Please enter a valid email.');
             return false;
         }
         return true;
@@ -44,7 +45,7 @@ const FranchiseSignin = () => {
 
     const displayError = (message) => {
         setErrorMessage(message);
-        setTimeout(() => setErrorMessage(""), 3000);
+        setTimeout(() => setErrorMessage(''), 3000);
     };
 
     const setLoadingState = (isLoading) => {
@@ -53,17 +54,17 @@ const FranchiseSignin = () => {
 
     const signIn = () => {
         if (!email || !password || !organization) {
-            displayError("All fields are required");
+            displayError('All fields are required');
             return;
         }
         if (!validateEmail()) return;
 
-        setErrorMessage("");
+        setErrorMessage('');
         setLoadingState(true);
 
         fetch(`${BACKEND_URL}/signin`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 email: email.trim().toLowerCase(),
                 password,
@@ -86,7 +87,9 @@ const FranchiseSignin = () => {
             .catch((error) => {
                 setTimeout(() => {
                     setLoadingState(false);
-                    displayError("An unexpected error occurred: " + error.message);
+                    displayError(
+                        'An unexpected error occurred: ' + error.message
+                    );
                 }, 2000);
             });
     };
@@ -94,7 +97,11 @@ const FranchiseSignin = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-200">
             <div className="relative bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-                <img src="/logo.png" alt="Talent Corner" className="w-20 mx-auto mb-4 mt-1" />
+                <img
+                    src="/logo.png"
+                    alt="Talent Corner"
+                    className="w-20 mx-auto mb-4 mt-1"
+                />
 
                 {/* Spinner */}
                 {loading && (
@@ -104,10 +111,16 @@ const FranchiseSignin = () => {
                     ></div>
                 )}
 
-                <h1 className="text-2xl font-bold text-purple-800 mb-2 text-center">Sign In</h1>
-                <p className="text-gray-600 mb-4 text-center">Please enter your details to sign in.</p>
+                <h1 className="text-2xl font-bold text-purple-800 mb-2 text-center">
+                    Sign In
+                </h1>
+                <p className="text-gray-600 mb-4 text-center">
+                    Please enter your details to sign in.
+                </p>
                 {errorMessage && (
-                    <div className="text-red-600 bg-red-200 rounded p-2 mb-4 text-center">{errorMessage}</div>
+                    <div className="text-red-600 bg-red-200 rounded p-2 mb-4 text-center">
+                        {errorMessage}
+                    </div>
                 )}
 
                 <form
@@ -130,7 +143,7 @@ const FranchiseSignin = () => {
 
                     <div className="relative mb-4">
                         <input
-                            type={showPassword ? "text" : "password"}
+                            type={showPassword ? 'text' : 'password'}
                             id="password"
                             className="w-full p-3 border border-gray-300 rounded-full text-center focus:outline-none focus:border-purple-600 focus:ring focus:ring-purple-200"
                             placeholder="Enter your Password"
@@ -141,7 +154,11 @@ const FranchiseSignin = () => {
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer text-purple-700 select-none"
                         >
-                            {showPassword ? <FaEyeSlash size={22} /> : <FaEye size={22} />}
+                            {showPassword ? (
+                                <FaEyeSlash size={22} />
+                            ) : (
+                                <FaEye size={22} />
+                            )}
                         </span>
                     </div>
 
@@ -157,17 +174,23 @@ const FranchiseSignin = () => {
                     <input
                         type="submit"
                         value="Sign In"
-                        className={`w-full p-3 rounded-full text-white text-lg font-semibold cursor-pointer ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-purple-700 hover:bg-purple-800"
-                            }`}
+                        className={`w-full p-3 rounded-full text-white text-lg font-semibold cursor-pointer ${
+                            loading
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-purple-700 hover:bg-purple-800'
+                        }`}
                         disabled={loading}
                     />
                 </form>
 
                 <button
                     id="signUpButton"
-                    className={`w-full mt-4 p-3 rounded-full text-white text-lg font-semibold cursor-pointer ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-purple-700 hover:bg-purple-800"
-                        }`}
-                    onClick={() => navigate("/franchisee-signup")}
+                    className={`w-full mt-4 p-3 rounded-full text-white text-lg font-semibold cursor-pointer ${
+                        loading
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-purple-700 hover:bg-purple-800'
+                    }`}
+                    onClick={() => navigate('/franchisee-signup')}
                     disabled={loading}
                 >
                     Don't have an account? Sign Up
@@ -178,7 +201,7 @@ const FranchiseSignin = () => {
                         href="#"
                         onClick={(e) => {
                             e.preventDefault();
-                            navigate("/franchisee-reset-otp");
+                            navigate('/franchisee-reset-otp');
                         }}
                         className="text-purple-700 hover:underline text-sm"
                     >

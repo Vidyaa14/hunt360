@@ -23,7 +23,10 @@ const navLinks = [
     { to: '/dashboard/boolean-search', label: 'Boolean Search', icon: Search },
 ];
 
-const Sidebar = ({ onToggleDataSidebar, isCollapsed: initialCollapsed = false }) => {
+const Sidebar = ({
+    onToggleDataSidebar,
+    isCollapsed: initialCollapsed = false,
+}) => {
     const [isCollapsed, setIsCollapsed] = useState(initialCollapsed);
 
     const handleToggle = useCallback(() => {
@@ -35,8 +38,9 @@ const Sidebar = ({ onToggleDataSidebar, isCollapsed: initialCollapsed = false })
 
     return (
         <div
-            className={`fixed top-0 left-0 h-full bg-[#54397e] text-white flex flex-col transition-all duration-300 ${isCollapsed ? 'w-16 p-2' : 'w-[220px] p-5'
-                }`}
+            className={`fixed top-0 left-0 h-full bg-[#54397e] text-white flex flex-col transition-all duration-300 ${
+                isCollapsed ? 'w-16 p-2' : 'w-[220px] p-5'
+            }`}
             aria-label="Sidebar navigation"
         >
             <button
@@ -49,7 +53,8 @@ const Sidebar = ({ onToggleDataSidebar, isCollapsed: initialCollapsed = false })
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg" zz
+                    xmlns="http://www.w3.org/2000/svg"
+                    zz
                 >
                     <path
                         strokeLinecap="round"
@@ -76,10 +81,17 @@ const Sidebar = ({ onToggleDataSidebar, isCollapsed: initialCollapsed = false })
                 </div>
             )}
 
-            <nav className={`flex flex-col gap-2 mb-6 flex-grow ${isCollapsed ? "mt-16" : "mt-0"}`} aria-label="Main navigation">
+            <nav
+                className={`flex flex-col gap-2 mb-6 flex-grow ${isCollapsed ? 'mt-16' : 'mt-0'}`}
+                aria-label="Main navigation"
+            >
                 {navLinks.map(({ to, label, icon: Icon }) => (
                     <div key={to} className="relative group">
-                        <SidebarLink to={to} isCollapsed={isCollapsed} icon={Icon}>
+                        <SidebarLink
+                            to={to}
+                            isCollapsed={isCollapsed}
+                            icon={Icon}
+                        >
                             {label}
                         </SidebarLink>
                         {isCollapsed && (
@@ -91,7 +103,11 @@ const Sidebar = ({ onToggleDataSidebar, isCollapsed: initialCollapsed = false })
                 ))}
             </nav>
 
-            <SidebarAction to="/login" icon={LogoutIcon} isCollapsed={isCollapsed}>
+            <SidebarAction
+                to="/login"
+                icon={LogoutIcon}
+                isCollapsed={isCollapsed}
+            >
                 Sign Out
             </SidebarAction>
         </div>

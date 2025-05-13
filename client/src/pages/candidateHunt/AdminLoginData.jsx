@@ -33,10 +33,13 @@ const AdminLoginData = ({ isSidebarCollapsed = false }) => {
     return (
         <div className="flex min-h-screen bg-gray-100">
             <div
-                className={`flex-1 p-6 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : ''
-                    }`}
+                className={`flex-1 p-6 transition-all duration-300 ${
+                    isSidebarCollapsed ? 'ml-16' : ''
+                }`}
             >
-                <h1 className="text-3xl font-bold text-[#55208d] mb-6">Admin Login Data</h1>
+                <h1 className="text-3xl font-bold text-[#55208d] mb-6">
+                    Admin Login Data
+                </h1>
                 <div className="bg-white rounded-lg p-6 shadow-md overflow-x-auto">
                     {loading ? (
                         <p className="text-gray-600 text-center" role="status">
@@ -60,10 +63,18 @@ const AdminLoginData = ({ isSidebarCollapsed = false }) => {
                         >
                             <thead>
                                 <tr className="bg-[#55208d] text-white">
-                                    <th className="p-3 text-sm font-semibold">Admin Email</th>
-                                    <th className="p-3 text-sm font-semibold">Login Time</th>
-                                    <th className="p-3 text-sm font-semibold">Logout Time</th>
-                                    <th className="p-3 text-sm font-semibold">Status</th>
+                                    <th className="p-3 text-sm font-semibold">
+                                        Admin Email
+                                    </th>
+                                    <th className="p-3 text-sm font-semibold">
+                                        Login Time
+                                    </th>
+                                    <th className="p-3 text-sm font-semibold">
+                                        Logout Time
+                                    </th>
+                                    <th className="p-3 text-sm font-semibold">
+                                        Status
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -83,10 +94,11 @@ const AdminLoginData = ({ isSidebarCollapsed = false }) => {
                                         </td>
                                         <td className="p-3 text-sm flex items-center">
                                             <span
-                                                className={`inline-block w-2.5 h-2.5 rounded-full mr-2 ${row.status === 'Online'
-                                                    ? 'bg-green-500'
-                                                    : 'bg-red-500'
-                                                    }`}
+                                                className={`inline-block w-2.5 h-2.5 rounded-full mr-2 ${
+                                                    row.status === 'Online'
+                                                        ? 'bg-green-500'
+                                                        : 'bg-red-500'
+                                                }`}
                                                 aria-hidden="true"
                                             ></span>
                                             <span

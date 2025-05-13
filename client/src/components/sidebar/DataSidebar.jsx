@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, BarChart2, FileUp, Database, Users, Award, Lock } from 'lucide-react';
+import {
+    ChevronLeft,
+    ChevronRight,
+    BarChart2,
+    FileUp,
+    Database,
+    Users,
+    Award,
+    Lock,
+} from 'lucide-react';
 
 const DataSidebar = () => {
     const location = useLocation();
@@ -17,44 +26,45 @@ const DataSidebar = () => {
             to: '/dashboard',
             label: 'Data Visualization',
             icon: <BarChart2 className="w-5 h-5" />,
-            ariaLabel: 'Navigate to Data Visualization'
+            ariaLabel: 'Navigate to Data Visualization',
         },
         {
             to: '/import-excel',
             label: 'Import Excel',
             icon: <FileUp className="w-5 h-5" />,
-            ariaLabel: 'Navigate to Import Excel'
+            ariaLabel: 'Navigate to Import Excel',
         },
         {
             to: '/imported-data',
             label: 'Imported Data',
             icon: <Database className="w-5 h-5" />,
-            ariaLabel: 'Navigate to Imported Data'
+            ariaLabel: 'Navigate to Imported Data',
         },
         {
             to: '/dashboard/fd-form-data',
             label: 'Freshers Data',
             icon: <Users className="w-5 h-5" />,
-            ariaLabel: 'Navigate to Freshers Data'
+            ariaLabel: 'Navigate to Freshers Data',
         },
         {
             to: '/dashboard/candidate-ranking',
             label: "Candidate's Ranking",
             icon: <Award className="w-5 h-5" />,
-            ariaLabel: "Navigate to Candidate's Ranking"
+            ariaLabel: "Navigate to Candidate's Ranking",
         },
         {
             to: '/admin-login-data',
             label: 'Admin Login Data',
             icon: <Lock className="w-5 h-5" />,
-            ariaLabel: 'Navigate to Admin Login Data'
-        }
+            ariaLabel: 'Navigate to Admin Login Data',
+        },
     ];
 
     return (
         <div
-            className={`fixed top-0 right-0 ${isCollapsed ? 'w-12' : 'w-64'
-                } bg-[#411f58] text-white h-screen ${isCollapsed ? 'p-2' : 'p-4'} z-50 shadow-lg animate-fade-in transition-all duration-300 overflow-y-auto`}
+            className={`fixed top-0 right-0 ${
+                isCollapsed ? 'w-12' : 'w-64'
+            } bg-[#411f58] text-white h-screen ${isCollapsed ? 'p-2' : 'p-4'} z-50 shadow-lg animate-fade-in transition-all duration-300 overflow-y-auto`}
             role="navigation"
             aria-label="Candidate Data Sidebar"
         >
@@ -64,7 +74,11 @@ const DataSidebar = () => {
                 aria-expanded={!isCollapsed}
                 aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
-                {isCollapsed ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                {isCollapsed ? (
+                    <ChevronLeft className="w-5 h-5" />
+                ) : (
+                    <ChevronRight className="w-5 h-5" />
+                )}
             </button>
 
             {!isCollapsed && (
@@ -88,9 +102,12 @@ const DataSidebar = () => {
                             <Link
                                 key={link.to}
                                 to={link.to}
-                                className={`flex items-center gap-2 text-white p-2 rounded-lg hover:bg-[#622e7a] transition-all duration-200 ${activePath === link.to ? 'bg-[#622e7a]' : ''
-                                    } focus:ring-2 focus:ring-[#622e7a]`}
-                                aria-current={activePath === link.to ? 'page' : undefined}
+                                className={`flex items-center gap-2 text-white p-2 rounded-lg hover:bg-[#622e7a] transition-all duration-200 ${
+                                    activePath === link.to ? 'bg-[#622e7a]' : ''
+                                } focus:ring-2 focus:ring-[#622e7a]`}
+                                aria-current={
+                                    activePath === link.to ? 'page' : undefined
+                                }
                                 aria-label={link.ariaLabel}
                             >
                                 {link.icon}
@@ -107,9 +124,12 @@ const DataSidebar = () => {
                         <Link
                             key={link.to}
                             to={link.to}
-                            className={`flex justify-center text-white p-2 rounded-lg hover:bg-[#622e7a] transition-all duration-200 ${activePath === link.to ? 'bg-[#622e7a]' : ''
-                                } focus:ring-2 focus:ring-[#622e7a]`}
-                            aria-current={activePath === link.to ? 'page' : undefined}
+                            className={`flex justify-center text-white p-2 rounded-lg hover:bg-[#622e7a] transition-all duration-200 ${
+                                activePath === link.to ? 'bg-[#622e7a]' : ''
+                            } focus:ring-2 focus:ring-[#622e7a]`}
+                            aria-current={
+                                activePath === link.to ? 'page' : undefined
+                            }
                             aria-label={link.ariaLabel}
                             title={link.label}
                         >

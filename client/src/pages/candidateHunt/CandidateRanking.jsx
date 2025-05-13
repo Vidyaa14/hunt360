@@ -146,9 +146,14 @@ const CandidateRanking = () => {
 
                 <div className="bg-white p-6 rounded-lg shadow-md max-h-[calc(100vh-200px)] overflow-y-auto">
                     {loading ? (
-                        <p className="text-center text-gray-600">Loading data...</p>
+                        <p className="text-center text-gray-600">
+                            Loading data...
+                        </p>
                     ) : error ? (
-                        <p className="text-center text-red-600 font-bold" role="alert">
+                        <p
+                            className="text-center text-red-600 font-bold"
+                            role="alert"
+                        >
                             {error}
                         </p>
                     ) : (
@@ -206,29 +211,38 @@ const CandidateRanking = () => {
                                             key={row.id}
                                             className="border-b border-gray-200 hover:bg-gray-50"
                                         >
-                                            <td className="p-3 text-sm text-gray-700">{idx + 1}</td>
-                                            <td className="p-3 text-sm text-gray-700">{row.domain}</td>
+                                            <td className="p-3 text-sm text-gray-700">
+                                                {idx + 1}
+                                            </td>
+                                            <td className="p-3 text-sm text-gray-700">
+                                                {row.domain}
+                                            </td>
                                             <td className="p-3 text-sm text-gray-700">
                                                 {row.subdomain}
                                             </td>
                                             <td className="p-3 text-sm text-gray-700">
                                                 {row.full_name}
                                             </td>
-                                            <td className="p-3 text-sm text-gray-700">{row.email}</td>
-                                            <td className="p-3 text-sm text-gray-700">{row.score}</td>
+                                            <td className="p-3 text-sm text-gray-700">
+                                                {row.email}
+                                            </td>
+                                            <td className="p-3 text-sm text-gray-700">
+                                                {row.score}
+                                            </td>
                                             <td
-                                                className={`p-3 text-sm font-bold ${row.status === 1
-                                                    ? 'text-green-600'
-                                                    : row.status === 2
-                                                        ? 'text-red-600'
-                                                        : 'text-orange-600'
-                                                    }`}
+                                                className={`p-3 text-sm font-bold ${
+                                                    row.status === 1
+                                                        ? 'text-green-600'
+                                                        : row.status === 2
+                                                          ? 'text-red-600'
+                                                          : 'text-orange-600'
+                                                }`}
                                             >
                                                 {row.status === 1
                                                     ? 'Qualified'
                                                     : row.status === 2
-                                                        ? 'Rejected'
-                                                        : 'Pending'}
+                                                      ? 'Rejected'
+                                                      : 'Pending'}
                                             </td>
                                         </tr>
                                     ))}

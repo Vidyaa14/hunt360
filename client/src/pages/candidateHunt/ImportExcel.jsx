@@ -1,6 +1,11 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 
 const BACKEND_URL = 'https://saarthi360-backend.vercel.app/api/candidate';
 
@@ -48,34 +53,42 @@ const ImportExcel = () => {
         setShowModal(true);
     }, [file]);
 
-    const processUpload = useCallback(async (append) => {
-        try {
-            setLoading(true);
-            const formData = new FormData();
-            formData.append('csvFile', file);
+    const processUpload = useCallback(
+        async (append) => {
+            try {
+                setLoading(true);
+                const formData = new FormData();
+                formData.append('csvFile', file);
 
-            const response = await fetch(`${BACKEND_URL}/import?append=${append}`, {
-                method: 'POST',
-                body: formData,
-                credentials: 'include'
-            });
+                const response = await fetch(
+                    `${BACKEND_URL}/import?append=${append}`,
+                    {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include',
+                    }
+                );
 
-            const result = await response.json();
-            if (response.ok && result.success) {
-                setSuccessMsg(result.message);
-                setFile(null);
-                setFileName('No file chosen');
-                setCsvContent('');
-            } else {
-                throw new Error(result.error || 'Upload failed.');
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    setSuccessMsg(result.message);
+                    setFile(null);
+                    setFileName('No file chosen');
+                    setCsvContent('');
+                } else {
+                    throw new Error(result.error || 'Upload failed.');
+                }
+            } catch (err) {
+                setErrorMsg(
+                    err.message || 'An error occurred. Please try again.'
+                );
+            } finally {
+                setShowModal(false);
+                setLoading(false);
             }
-        } catch (err) {
-            setErrorMsg(err.message || 'An error occurred. Please try again.');
-        } finally {
-            setShowModal(false);
-            setLoading(false);
-        }
-    }, [file]);
+        },
+        [file]
+    );
 
     const handleCloseModal = useCallback(() => {
         setShowModal(false);
@@ -95,11 +108,15 @@ const ImportExcel = () => {
                     'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
                 );
                 const firstElement = focusableElements[0];
-                const lastElement = focusableElements[focusableElements.length - 1];
+                const lastElement =
+                    focusableElements[focusableElements.length - 1];
                 if (e.shiftKey && document.activeElement === firstElement) {
                     e.preventDefault();
                     lastElement.focus();
-                } else if (!e.shiftKey && document.activeElement === lastElement) {
+                } else if (
+                    !e.shiftKey &&
+                    document.activeElement === lastElement
+                ) {
                     e.preventDefault();
                     firstElement.focus();
                 }
@@ -136,8 +153,8 @@ const ImportExcel = () => {
                 {(errorMsg || successMsg) && (
                     <div
                         className={`p-4 rounded-lg mb-4 ${errorMsg
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-green-100 text-green-700'
+                                ? 'bg-red-100 text-red-700'
+                                : 'bg-green-100 text-green-700'
                             }`}
                         role="alert"
                         aria-live="polite"
@@ -158,14 +175,18 @@ const ImportExcel = () => {
 
                     <button
                         className="w-full px-6 py-3 bg-[#54397e] text-white rounded-full font-semibold hover:bg-[#412d64] focus:ring-2 focus:ring-[#54397e] disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200"
-                        onClick={() => document.getElementById('csvFile').click()}
+                        onClick={() =>
+                            document.getElementById('csvFile').click()
+                        }
                         disabled={loading}
                         aria-label="Select CSV file"
                     >
                         Select Excel File
                     </button>
 
-                    <div className="text-gray-600 text-center">{displayedFileName}</div>
+                    <div className="text-gray-600 text-center">
+                        {displayedFileName}
+                    </div>
 
                     <button
                         className="w-full px-6 py-3 bg-[#58096b] text-white rounded-full font-semibold hover:bg-[#862799] focus:ring-2 focus:ring-[#58096b] disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200"
@@ -196,7 +217,8 @@ const ImportExcel = () => {
                             className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full"
                         >
                             <p className="text-gray-800 mb-6 text-center">
-                                Do you want to append data to existing records or replace them?
+                                Do you want to append data to existing records
+                                or replace them?
                             </p>
                             <div className="flex justify-center gap-4">
                                 <button

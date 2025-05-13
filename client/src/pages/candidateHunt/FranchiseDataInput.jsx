@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
-import FranchiseSidebar from "../components/sidebar/FranchiseSidebar";
+import React, { useEffect, useState } from 'react';
+import FranchiseSidebar from '../../components/sidebar/FranchiseSidebar';
 
 const FranchiseDataInput = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
-            const org = encodeURIComponent(localStorage.getItem("orgName"));
+            const org = encodeURIComponent(localStorage.getItem('orgName'));
             try {
                 const res = await fetch(`/candidate-data?org=${org}`);
                 const json = await res.json();
                 setData(json);
             } catch (error) {
-                console.error("Error fetching candidate data:", error);
+                console.error('Error fetching candidate data:', error);
             }
         };
         fetchData();
@@ -40,19 +40,27 @@ const FranchiseDataInput = () => {
                         <tbody>
                             {data.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="p-4 text-center text-gray-500">
+                                    <td
+                                        colSpan="6"
+                                        className="p-4 text-center text-gray-500"
+                                    >
                                         No data available
                                     </td>
                                 </tr>
                             ) : (
                                 data.map((item, index) => (
-                                    <tr key={item.id || index} className="border-t hover:bg-gray-50">
+                                    <tr
+                                        key={item.id || index}
+                                        className="border-t hover:bg-gray-50"
+                                    >
                                         <td className="p-4">{index + 1}</td>
                                         <td className="p-4">{item.name}</td>
                                         <td className="p-4">{item.email}</td>
                                         <td className="p-4">{item.phone}</td>
                                         <td className="p-4">{item.domain}</td>
-                                        <td className="p-4">{item.subdomain}</td>
+                                        <td className="p-4">
+                                            {item.subdomain}
+                                        </td>
                                     </tr>
                                 ))
                             )}

@@ -1,18 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
 import { XCircle } from 'lucide-react';
-import Sidebar from '../components/sidebar/Sidebar';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const FormError = ({ isSidebarCollapsed = false }) => {
+const FormError = () => {
     const navigate = useNavigate();
 
     return (
         <div className="flex min-h-screen bg-gray-100">
-            <Sidebar />
+
             <div
-                className={`flex-1 flex items-center justify-center p-6 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-[220px]'
-                    }`}
+                className={`flex-1 flex items-center justify-center p-6 transition-all duration-300`}
             >
                 <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
                     <img
@@ -22,7 +20,10 @@ const FormError = ({ isSidebarCollapsed = false }) => {
                         aria-hidden="true"
                     />
                     <div className="flex items-center justify-center mb-4">
-                        <XCircle className="w-8 h-8 text-red-600 mr-2" aria-hidden="true" />
+                        <XCircle
+                            className="w-8 h-8 text-red-600 mr-2"
+                            aria-hidden="true"
+                        />
                         <h1 className="text-2xl font-bold text-[#5e239d]">
                             Something Went Wrong
                         </h1>

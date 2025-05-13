@@ -9,7 +9,7 @@ const db = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     ssl: {
-        ca: process.env.CA_CERT
+        ca: process.env.CA_CERT,
     },
     waitForConnections: true,
     queueLimit: 0,

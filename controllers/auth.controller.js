@@ -8,14 +8,15 @@ export const signUp = async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
-
         const [existing] = await db.execute(
             'SELECT * FROM users WHERE username = ? OR email = ? LIMIT 1',
             [username, email]
         );
 
         if (existing.length > 0) {
-            return res.status(409).json({ error: 'Username or email already in use' });
+            return res
+                .status(409)
+                .json({ error: 'Username or email already in use' });
         }
 
         const hashed = await bcrypt.hash(password, 10);
@@ -53,7 +54,12 @@ export const login = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: user.id, username: user.username, email: user.email, role: user.role },
+            {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+            },
             SECRET,
             { expiresIn: '7d' }
         );

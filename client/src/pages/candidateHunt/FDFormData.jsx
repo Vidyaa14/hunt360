@@ -3,7 +3,18 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 const sampleData = {
-    headers: ['id', 'name', 'email', 'phone', 'gender', 'city', 'college', 'created_at', 'token_url', 'email_sent'],
+    headers: [
+        'id',
+        'name',
+        'email',
+        'phone',
+        'gender',
+        'city',
+        'college',
+        'created_at',
+        'token_url',
+        'email_sent',
+    ],
     rows: [
         {
             id: 1,
@@ -186,14 +197,17 @@ function FDFormData() {
         );
     }, []);
 
-    const handleSelectAll = useCallback((checked) => {
-        if (checked) {
-            const allIds = currentData?.rows.map((row) => row.id) || [];
-            setSelectedRecords(allIds);
-        } else {
-            setSelectedRecords([]);
-        }
-    }, [currentData]);
+    const handleSelectAll = useCallback(
+        (checked) => {
+            if (checked) {
+                const allIds = currentData?.rows.map((row) => row.id) || [];
+                setSelectedRecords(allIds);
+            } else {
+                setSelectedRecords([]);
+            }
+        },
+        [currentData]
+    );
 
     const openModifyModal = useCallback((row) => {
         setModifyData(row);
@@ -205,7 +219,15 @@ function FDFormData() {
         setProcessing(true);
         setTimeout(() => {
             const updatedRows = currentData.rows.map((row) =>
-                row.id === modifyData.id ? { ...modifyData, email_sent: modifyData.email !== originalEmail ? 0 : row.email_sent } : row
+                row.id === modifyData.id
+                    ? {
+                          ...modifyData,
+                          email_sent:
+                              modifyData.email !== originalEmail
+                                  ? 0
+                                  : row.email_sent,
+                      }
+                    : row
             );
             setCurrentData({ ...currentData, rows: updatedRows });
             setProcessing(false);
@@ -217,7 +239,10 @@ function FDFormData() {
     const triggerSendEmail = useCallback(() => {
         setProcessing(true);
         setTimeout(() => {
-            const updatedRows = currentData.rows.map((row) => ({ ...row, email_sent: 1 }));
+            const updatedRows = currentData.rows.map((row) => ({
+                ...row,
+                email_sent: 1,
+            }));
             setCurrentData({ ...currentData, rows: updatedRows });
             setProcessing(false);
             showMessage('Emails sent successfully', 'success');
@@ -235,7 +260,9 @@ function FDFormData() {
     const confirmDeleteSelected = useCallback(() => {
         setProcessing(true);
         setTimeout(() => {
-            const updatedRows = currentData.rows.filter((row) => !selectedRecords.includes(row.id));
+            const updatedRows = currentData.rows.filter(
+                (row) => !selectedRecords.includes(row.id)
+            );
             setCurrentData({ ...currentData, rows: updatedRows });
             setProcessing(false);
             setConfirmDeleteModalOpen(false);
@@ -260,10 +287,12 @@ function FDFormData() {
     }, [currentData, showMessage]);
 
     const paginatedRows = useMemo(() => {
-        return currentData?.rows?.slice(
-            (currentPage - 1) * ROWS_PER_PAGE,
-            currentPage * ROWS_PER_PAGE
-        ) || [];
+        return (
+            currentData?.rows?.slice(
+                (currentPage - 1) * ROWS_PER_PAGE,
+                currentPage * ROWS_PER_PAGE
+            ) || []
+        );
     }, [currentData, currentPage]);
 
     return (
@@ -284,8 +313,11 @@ function FDFormData() {
                 {/* Messages */}
                 {message && (
                     <div
-                        className={`p-4 rounded-lg text-center font-bold ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                            }`}
+                        className={`p-4 rounded-lg text-center font-bold ${
+                            message.type === 'success'
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-red-100 text-red-700'
+                        }`}
                         role="alert"
                     >
                         {message.text}
@@ -295,7 +327,9 @@ function FDFormData() {
                 {processing && (
                     <div className="flex justify-center items-center my-4">
                         <div className="w-5 h-5 border-4 border-t-[#54397e] border-gray-200 rounded-full animate-spin mr-2"></div>
-                        <span className="text-gray-600">Processing, please wait...</span>
+                        <span className="text-gray-600">
+                            Processing, please wait...
+                        </span>
                     </div>
                 )}
 
@@ -306,8 +340,12 @@ function FDFormData() {
                                 👤
                             </div>
                             <div>
-                                <div className="text-sm text-gray-600">Total Users</div>
-                                <div className="text-xl font-bold text-[#54397e]">{currentData?.rows?.length || 0}</div>
+                                <div className="text-sm text-gray-600">
+                                    Total Users
+                                </div>
+                                <div className="text-xl font-bold text-[#54397e]">
+                                    {currentData?.rows?.length || 0}
+                                </div>
                             </div>
                         </div>
                         <div className="flex items-center bg-white border-l-4 border-[#54397e] p-4 rounded-lg shadow-md">
@@ -315,9 +353,13 @@ function FDFormData() {
                                 ✉️
                             </div>
                             <div>
-                                <div className="text-sm text-gray-600">Email Sent</div>
+                                <div className="text-sm text-gray-600">
+                                    Email Sent
+                                </div>
                                 <div className="text-xl font-bold text-[#54397e]">
-                                    {currentData?.rows?.filter((r) => r.email_sent === 1)?.length || 0}
+                                    {currentData?.rows?.filter(
+                                        (r) => r.email_sent === 1
+                                    )?.length || 0}
                                 </div>
                             </div>
                         </div>
@@ -332,20 +374,32 @@ function FDFormData() {
                                     <th className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#54397e] to-[#432c65]">
                                         <input
                                             type="checkbox"
-                                            onChange={(e) => handleSelectAll(e.target.checked)}
-                                            checked={selectedRecords.length === currentData.rows.length}
+                                            onChange={(e) =>
+                                                handleSelectAll(
+                                                    e.target.checked
+                                                )
+                                            }
+                                            checked={
+                                                selectedRecords.length ===
+                                                currentData.rows.length
+                                            }
                                             aria-label="Select all records"
                                         />
                                     </th>
                                     {currentData.headers
-                                        .filter((h) => h.toLowerCase() !== 'email_sent')
+                                        .filter(
+                                            (h) =>
+                                                h.toLowerCase() !== 'email_sent'
+                                        )
                                         .map((header) => (
                                             <th
                                                 key={header}
                                                 className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#54397e] to-[#432c65]"
                                                 scope="col"
                                             >
-                                                {headerMapping[header.toLowerCase()] || formatHeader(header)}
+                                                {headerMapping[
+                                                    header.toLowerCase()
+                                                ] || formatHeader(header)}
                                             </th>
                                         ))}
                                     <th className="p-3 text-left text-sm font-bold sticky top-0 right-0 bg-gradient-to-r from-[#54397e] to-[#432c65]">
@@ -358,33 +412,59 @@ function FDFormData() {
                             </thead>
                             <tbody>
                                 {paginatedRows.map((row) => (
-                                    <tr key={row.id} className="border-b border-gray-200 hover:bg-gray-50">
+                                    <tr
+                                        key={row.id}
+                                        className="border-b border-gray-200 hover:bg-gray-50"
+                                    >
                                         <td className="p-3">
                                             <input
                                                 type="checkbox"
-                                                checked={selectedRecords.includes(row.id)}
-                                                onChange={() => toggleRecordSelection(row.id)}
+                                                checked={selectedRecords.includes(
+                                                    row.id
+                                                )}
+                                                onChange={() =>
+                                                    toggleRecordSelection(
+                                                        row.id
+                                                    )
+                                                }
                                                 aria-label={`Select record for ${row.name}`}
                                             />
                                         </td>
                                         {currentData.headers
-                                            .filter((h) => h.toLowerCase() !== 'email_sent')
+                                            .filter(
+                                                (h) =>
+                                                    h.toLowerCase() !==
+                                                    'email_sent'
+                                            )
                                             .map((header) => (
-                                                <td key={header} className="p-3 text-sm text-gray-700">
-                                                    {row[header.toLowerCase()] || ''}
+                                                <td
+                                                    key={header}
+                                                    className="p-3 text-sm text-gray-700"
+                                                >
+                                                    {row[
+                                                        header.toLowerCase()
+                                                    ] || ''}
                                                 </td>
                                             ))}
                                         <td className="p-3 text-sm sticky right-0 bg-white">
                                             <span
-                                                className={row.email_sent ? 'text-green-600 font-bold' : 'text-orange-600'}
+                                                className={
+                                                    row.email_sent
+                                                        ? 'text-green-600 font-bold'
+                                                        : 'text-orange-600'
+                                                }
                                             >
-                                                {row.email_sent ? 'Sent' : 'Pending'}
+                                                {row.email_sent
+                                                    ? 'Sent'
+                                                    : 'Pending'}
                                             </span>
                                         </td>
                                         <td className="p-3 text-sm sticky right-0 bg-white shadow-md">
                                             <button
                                                 className="px-3 py-1 bg-[#54397e] text-white rounded-full text-sm font-semibold hover:bg-[#432c65] focus:ring-2 focus:ring-[#54397e] transition-all duration-200"
-                                                onClick={() => openModifyModal(row)}
+                                                onClick={() =>
+                                                    openModifyModal(row)
+                                                }
                                                 aria-label={`Modify record for ${row.name}`}
                                             >
                                                 Modify
@@ -395,7 +475,9 @@ function FDFormData() {
                             </tbody>
                         </table>
                     ) : (
-                        <div className="text-center text-gray-600 font-bold py-4">No data available.</div>
+                        <div className="text-center text-gray-600 font-bold py-4">
+                            No data available.
+                        </div>
                     )}
                 </div>
 
@@ -410,10 +492,16 @@ function FDFormData() {
                             Previous
                         </button>
                         <span className="text-gray-600">
-                            Page {currentPage} of {Math.ceil(currentData.rows.length / ROWS_PER_PAGE)}
+                            Page {currentPage} of{' '}
+                            {Math.ceil(currentData.rows.length / ROWS_PER_PAGE)}
                         </span>
                         <button
-                            disabled={currentPage >= Math.ceil(currentData.rows.length / ROWS_PER_PAGE)}
+                            disabled={
+                                currentPage >=
+                                Math.ceil(
+                                    currentData.rows.length / ROWS_PER_PAGE
+                                )
+                            }
                             onClick={() => setCurrentPage((p) => p + 1)}
                             className="px-4 py-2 bg-[#54397e] text-white rounded-lg font-semibold hover:bg-[#432c65] disabled:bg-gray-400 disabled:cursor-not-allowed"
                             aria-label="Next page"
@@ -461,11 +549,18 @@ function FDFormData() {
                             >
                                 ×
                             </button>
-                            <h3 className="text-lg font-bold text-[#54397e] mb-4">Modify Record</h3>
+                            <h3 className="text-lg font-bold text-[#54397e] mb-4">
+                                Modify Record
+                            </h3>
                             <input
                                 type="text"
                                 value={modifyData.name || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, name: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        name: e.target.value,
+                                    })
+                                }
                                 placeholder="Name"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#54397e]"
                                 aria-label="Name"
@@ -473,7 +568,12 @@ function FDFormData() {
                             <input
                                 type="text"
                                 value={modifyData.email || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, email: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        email: e.target.value,
+                                    })
+                                }
                                 placeholder="Email"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#54397e]"
                                 aria-label="Email"
@@ -481,7 +581,12 @@ function FDFormData() {
                             <input
                                 type="text"
                                 value={modifyData.phone || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, phone: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        phone: e.target.value,
+                                    })
+                                }
                                 placeholder="Phone"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#54397e]"
                                 aria-label="Phone"
@@ -489,7 +594,12 @@ function FDFormData() {
                             <input
                                 type="text"
                                 value={modifyData.gender || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, gender: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        gender: e.target.value,
+                                    })
+                                }
                                 placeholder="Gender"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#54397e]"
                                 aria-label="Gender"
@@ -497,7 +607,12 @@ function FDFormData() {
                             <input
                                 type="text"
                                 value={modifyData.city || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, city: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        city: e.target.value,
+                                    })
+                                }
                                 placeholder="City"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#54397e]"
                                 aria-label="City"
@@ -505,7 +620,12 @@ function FDFormData() {
                             <input
                                 type="text"
                                 value={modifyData.college || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, college: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        college: e.target.value,
+                                    })
+                                }
                                 placeholder="College"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#54397e]"
                                 aria-label="College"
@@ -513,7 +633,12 @@ function FDFormData() {
                             <input
                                 type="text"
                                 value={modifyData.token_url || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, token_url: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        token_url: e.target.value,
+                                    })
+                                }
                                 placeholder="Token URL"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#54397e]"
                                 aria-label="Token URL"
@@ -540,8 +665,12 @@ function FDFormData() {
                             >
                                 ×
                             </button>
-                            <h3 className="text-lg font-bold text-[#54397e] mb-4">Confirm Deletion</h3>
-                            <p className="text-gray-600 mb-4">Do you want to delete the selected records?</p>
+                            <h3 className="text-lg font-bold text-[#54397e] mb-4">
+                                Confirm Deletion
+                            </h3>
+                            <p className="text-gray-600 mb-4">
+                                Do you want to delete the selected records?
+                            </p>
                             <div className="flex justify-end gap-2">
                                 <button
                                     className="px-4 py-2 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 focus:ring-2 focus:ring-red-600"
@@ -552,7 +681,9 @@ function FDFormData() {
                                 </button>
                                 <button
                                     className="px-4 py-2 bg-gray-300 text-gray-700 rounded-full font-semibold hover:bg-gray-400 focus:ring-2 focus:ring-gray-300"
-                                    onClick={() => setConfirmDeleteModalOpen(false)}
+                                    onClick={() =>
+                                        setConfirmDeleteModalOpen(false)
+                                    }
                                     aria-label="Cancel deletion"
                                 >
                                     Cancel
@@ -573,8 +704,12 @@ function FDFormData() {
                             >
                                 ×
                             </button>
-                            <h3 className="text-lg font-bold text-[#54397e] mb-4">Confirm Delete All</h3>
-                            <p className="text-gray-600 mb-4">Are you sure you want to delete all data?</p>
+                            <h3 className="text-lg font-bold text-[#54397e] mb-4">
+                                Confirm Delete All
+                            </h3>
+                            <p className="text-gray-600 mb-4">
+                                Are you sure you want to delete all data?
+                            </p>
                             <div className="flex justify-end gap-2">
                                 <button
                                     className="px-4 py-2 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 focus:ring-2 focus:ring-red-600"

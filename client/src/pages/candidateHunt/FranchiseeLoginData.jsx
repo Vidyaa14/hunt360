@@ -113,7 +113,9 @@ const FranchiseLoginData = () => {
 
     const handleCheckboxChange = useCallback((id) => {
         setSelectedIds((prev) =>
-            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+            prev.includes(id)
+                ? prev.filter((item) => item !== id)
+                : [...prev, id]
         );
     }, []);
 
@@ -136,16 +138,28 @@ const FranchiseLoginData = () => {
 
     const handleDeleteSelected = useCallback(() => {
         if (selectedIds.length === 0) return;
-        if (!window.confirm(`Are you sure you want to delete ${selectedIds.length} selected users?`)) return;
+        if (
+            !window.confirm(
+                `Are you sure you want to delete ${selectedIds.length} selected users?`
+            )
+        )
+            return;
         setTimeout(() => {
-            setData((prev) => prev.filter((row) => !selectedIds.includes(row.id)));
+            setData((prev) =>
+                prev.filter((row) => !selectedIds.includes(row.id))
+            );
             setSelectedIds([]);
             alert('Selected users deleted successfully!');
         }, 500);
     }, [selectedIds]);
 
     const handleDeleteAll = useCallback(() => {
-        if (!window.confirm('Are you sure you want to delete ALL franchise users?')) return;
+        if (
+            !window.confirm(
+                'Are you sure you want to delete ALL franchise users?'
+            )
+        )
+            return;
         setTimeout(() => {
             setData([]);
             setSelectedIds([]);
@@ -188,7 +202,10 @@ const FranchiseLoginData = () => {
         }, 500);
     }, [modifyData]);
 
-    const paginate = useCallback((pageNumber) => setCurrentPage(pageNumber), []);
+    const paginate = useCallback(
+        (pageNumber) => setCurrentPage(pageNumber),
+        []
+    );
 
     return (
         <div className="flex flex-col w-full min-h-screen bg-gray-100">
@@ -220,8 +237,12 @@ const FranchiseLoginData = () => {
                             👤
                         </div>
                         <div>
-                            <div className="text-sm text-gray-600">Total Users</div>
-                            <div className="text-xl font-bold text-[#5e239d]">{data.length}</div>
+                            <div className="text-sm text-gray-600">
+                                Total Users
+                            </div>
+                            <div className="text-xl font-bold text-[#5e239d]">
+                                {data.length}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -234,29 +255,54 @@ const FranchiseLoginData = () => {
                                     <input
                                         type="checkbox"
                                         onChange={handleSelectAll}
-                                        checked={selectedIds.length === currentRows.length && currentRows.length > 0}
+                                        checked={
+                                            selectedIds.length ===
+                                                currentRows.length &&
+                                            currentRows.length > 0
+                                        }
                                         aria-label="Select all users"
                                     />
                                 </th>
-                                <th className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]" scope="col">
+                                <th
+                                    className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]"
+                                    scope="col"
+                                >
                                     ID
                                 </th>
-                                <th className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]" scope="col">
+                                <th
+                                    className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]"
+                                    scope="col"
+                                >
                                     Email
                                 </th>
-                                <th className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]" scope="col">
+                                <th
+                                    className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]"
+                                    scope="col"
+                                >
                                     Password
                                 </th>
-                                <th className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]" scope="col">
+                                <th
+                                    className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]"
+                                    scope="col"
+                                >
                                     Organization
                                 </th>
-                                <th className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]" scope="col">
+                                <th
+                                    className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]"
+                                    scope="col"
+                                >
                                     Timestamp
                                 </th>
-                                <th className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]" scope="col">
+                                <th
+                                    className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]"
+                                    scope="col"
+                                >
                                     OTP
                                 </th>
-                                <th className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]" scope="col">
+                                <th
+                                    className="p-3 text-left text-sm font-bold sticky top-0 bg-gradient-to-r from-[#5e239d] to-[#6b21a8]"
+                                    scope="col"
+                                >
                                     Actions
                                 </th>
                             </tr>
@@ -264,31 +310,55 @@ const FranchiseLoginData = () => {
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="8" className="p-4 text-center text-gray-600 font-bold">
+                                    <td
+                                        colSpan="8"
+                                        className="p-4 text-center text-gray-600 font-bold"
+                                    >
                                         Loading...
                                     </td>
                                 </tr>
                             ) : currentRows.length > 0 ? (
                                 currentRows.map((row) => (
-                                    <tr key={row.id} className="border-b border-gray-200 hover:bg-gray-50">
+                                    <tr
+                                        key={row.id}
+                                        className="border-b border-gray-200 hover:bg-gray-50"
+                                    >
                                         <td className="p-3">
                                             <input
                                                 type="checkbox"
-                                                checked={selectedIds.includes(row.id)}
-                                                onChange={() => handleCheckboxChange(row.id)}
+                                                checked={selectedIds.includes(
+                                                    row.id
+                                                )}
+                                                onChange={() =>
+                                                    handleCheckboxChange(row.id)
+                                                }
                                                 aria-label={`Select user ${row.Email}`}
                                             />
                                         </td>
-                                        <td className="p-3 text-sm text-gray-700">{row.id}</td>
-                                        <td className="p-3 text-sm text-gray-700">{row.Email}</td>
-                                        <td className="p-3 text-sm text-gray-700">{row.Password ? '*****' : ''}</td>
-                                        <td className="p-3 text-sm text-gray-700">{row['Organization name']}</td>
-                                        <td className="p-3 text-sm text-gray-700">{row.Timestamp}</td>
-                                        <td className="p-3 text-sm text-gray-700">{row.Otp}</td>
+                                        <td className="p-3 text-sm text-gray-700">
+                                            {row.id}
+                                        </td>
+                                        <td className="p-3 text-sm text-gray-700">
+                                            {row.Email}
+                                        </td>
+                                        <td className="p-3 text-sm text-gray-700">
+                                            {row.Password ? '*****' : ''}
+                                        </td>
+                                        <td className="p-3 text-sm text-gray-700">
+                                            {row['Organization name']}
+                                        </td>
+                                        <td className="p-3 text-sm text-gray-700">
+                                            {row.Timestamp}
+                                        </td>
+                                        <td className="p-3 text-sm text-gray-700">
+                                            {row.Otp}
+                                        </td>
                                         <td className="p-3 text-sm">
                                             <button
                                                 className="px-3 py-1 bg-[#5e239d] text-white rounded-full text-sm font-semibold hover:bg-[#6b21a8] focus:ring-2 focus:ring-[#5e239d] transition-all duration-200"
-                                                onClick={() => openModifyModal(row)}
+                                                onClick={() =>
+                                                    openModifyModal(row)
+                                                }
                                                 aria-label={`Modify user ${row.Email}`}
                                             >
                                                 Modify
@@ -298,7 +368,10 @@ const FranchiseLoginData = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="8" className="p-4 text-center text-gray-600 font-bold">
+                                    <td
+                                        colSpan="8"
+                                        className="p-4 text-center text-gray-600 font-bold"
+                                    >
                                         No records found.
                                     </td>
                                 </tr>
@@ -317,11 +390,14 @@ const FranchiseLoginData = () => {
                         Previous
                     </button>
                     <span className="text-gray-600">
-                        Page {currentPage} of {Math.max(1, Math.ceil(data.length / rowsPerPage))}
+                        Page {currentPage} of{' '}
+                        {Math.max(1, Math.ceil(data.length / rowsPerPage))}
                     </span>
                     <button
                         onClick={() => paginate(currentPage + 1)}
-                        disabled={currentPage >= Math.ceil(data.length / rowsPerPage)}
+                        disabled={
+                            currentPage >= Math.ceil(data.length / rowsPerPage)
+                        }
                         className="px-4 py-2 bg-[#5e239d] text-white rounded-lg font-semibold hover:bg-[#6b21a8] disabled:bg-gray-400 disabled:cursor-not-allowed"
                         aria-label="Next page"
                     >
@@ -365,11 +441,18 @@ const FranchiseLoginData = () => {
                             >
                                 ×
                             </button>
-                            <h3 className="text-lg font-bold text-[#5e239d] mb-4">Modify User</h3>
+                            <h3 className="text-lg font-bold text-[#5e239d] mb-4">
+                                Modify User
+                            </h3>
                             <input
                                 type="text"
                                 value={modifyData.Email || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, Email: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        Email: e.target.value,
+                                    })
+                                }
                                 placeholder="Email"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5e239d]"
                                 aria-label="Email"
@@ -377,7 +460,12 @@ const FranchiseLoginData = () => {
                             <input
                                 type="text"
                                 value={modifyData.Password || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, Password: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        Password: e.target.value,
+                                    })
+                                }
                                 placeholder="Password"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5e239d]"
                                 aria-label="Password"
@@ -385,7 +473,12 @@ const FranchiseLoginData = () => {
                             <input
                                 type="text"
                                 value={modifyData['Organization name'] || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, 'Organization name': e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        'Organization name': e.target.value,
+                                    })
+                                }
                                 placeholder="Organization Name"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5e239d]"
                                 aria-label="Organization Name"
@@ -393,7 +486,12 @@ const FranchiseLoginData = () => {
                             <input
                                 type="text"
                                 value={modifyData.Timestamp || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, Timestamp: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        Timestamp: e.target.value,
+                                    })
+                                }
                                 placeholder="Timestamp"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5e239d]"
                                 aria-label="Timestamp"
@@ -401,7 +499,12 @@ const FranchiseLoginData = () => {
                             <input
                                 type="text"
                                 value={modifyData.Otp || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, Otp: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        Otp: e.target.value,
+                                    })
+                                }
                                 placeholder="OTP"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5e239d]"
                                 aria-label="OTP"
@@ -428,11 +531,18 @@ const FranchiseLoginData = () => {
                             >
                                 ×
                             </button>
-                            <h3 className="text-lg font-bold text-[#5e239d] mb-4">Add User</h3>
+                            <h3 className="text-lg font-bold text-[#5e239d] mb-4">
+                                Add User
+                            </h3>
                             <input
                                 type="text"
                                 value={modifyData.Email || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, Email: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        Email: e.target.value,
+                                    })
+                                }
                                 placeholder="Email"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5e239d]"
                                 aria-label="Email"
@@ -440,7 +550,12 @@ const FranchiseLoginData = () => {
                             <input
                                 type="text"
                                 value={modifyData.Password || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, Password: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        Password: e.target.value,
+                                    })
+                                }
                                 placeholder="Password"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5e239d]"
                                 aria-label="Password"
@@ -448,7 +563,12 @@ const FranchiseLoginData = () => {
                             <input
                                 type="text"
                                 value={modifyData['Organization name'] || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, 'Organization name': e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        'Organization name': e.target.value,
+                                    })
+                                }
                                 placeholder="Organization Name"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5e239d]"
                                 aria-label="Organization Name"
@@ -456,7 +576,12 @@ const FranchiseLoginData = () => {
                             <input
                                 type="text"
                                 value={modifyData.Timestamp || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, Timestamp: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        Timestamp: e.target.value,
+                                    })
+                                }
                                 placeholder="Timestamp"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5e239d]"
                                 aria-label="Timestamp"
@@ -464,7 +589,12 @@ const FranchiseLoginData = () => {
                             <input
                                 type="text"
                                 value={modifyData.Otp || ''}
-                                onChange={(e) => setModifyData({ ...modifyData, Otp: e.target.value })}
+                                onChange={(e) =>
+                                    setModifyData({
+                                        ...modifyData,
+                                        Otp: e.target.value,
+                                    })
+                                }
                                 placeholder="OTP"
                                 className="w-full p-2 mb-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#5e239d]"
                                 aria-label="OTP"

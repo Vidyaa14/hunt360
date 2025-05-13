@@ -42,9 +42,7 @@ const Reports = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-100">
-            <div
-                className={`flex-1 p-10 transition-all duration-300`}
-            >
+            <div className={`flex-1 p-10 transition-all duration-300`}>
                 <h1 className="text-3xl font-bold text-[#55208d] mb-10 text-center">
                     Reports
                 </h1>
@@ -59,7 +57,10 @@ const Reports = () => {
                             className={`w-60 p-8 ${bgColor} text-white font-semibold text-base rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 focus:ring-2 focus:ring-[#55208d] focus:ring-opacity-50 transition-all duration-300 flex flex-col items-center cursor-pointer outline-none`}
                             aria-label={`View ${label} report`}
                         >
-                            <Icon className="w-10 h-10 mb-4" aria-hidden="true" />
+                            <Icon
+                                className="w-10 h-10 mb-4"
+                                aria-hidden="true"
+                            />
                             <span>{label}</span>
                         </div>
                     ))}

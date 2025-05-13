@@ -3,6 +3,8 @@ import axios from 'axios';
 import { FileText, Lock, Upload, UserCheck, Users } from 'lucide-react';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+
 import CandidatesByDomainChart from '../components/charts/CandidatesByDomainChart';
 import GenderDistributionChart from '../components/charts/GenderDistributionChart';
 import MonthlyRegistrationsChart from '../components/charts/MonthlyRegistrationsChart';
@@ -20,15 +22,9 @@ const CandidateDashboard = ({ isSidebarCollapsed = false }) => {
     const [subdomainData, setSubdomainData] = useState([]);
     const [yearlyData, setYearlyData] = useState([]);
     const [monthlyData, setMonthlyData] = useState([]);
-    const [isDataSidebarOpen, setDataSidebarOpen] = useState(false);
 
-    const toggleDataSidebar = useCallback(() => {
-        setDataSidebarOpen((prev) => !prev);
-    }, []);
-
-    const closeDataSidebar = useCallback(() => {
-        setDataSidebarOpen(false);
-    }, []);
+    const location = useLocation();
+    const isRootDashboard = location.pathname === '/dashboard/candidate-hunt';
 
     useEffect(() => {
         const fetchData = async () => {
@@ -77,7 +73,11 @@ const CandidateDashboard = ({ isSidebarCollapsed = false }) => {
 
     const cards = [
         { title: 'Total Admins', count: userCount, icon: Users },
-        { title: 'Candidates (Filtered)', count: candidateCount, icon: UserCheck },
+        {
+            title: 'Candidates (Filtered)',
+            count: candidateCount,
+            icon: UserCheck,
+        },
         { title: 'Fresher Entries', count: form1Total, icon: FileText },
         { title: 'Franchise Logins', count: franchiseCount, icon: Lock },
         { title: 'Imported Data', count: importedCount, icon: Upload },
@@ -86,32 +86,38 @@ const CandidateDashboard = ({ isSidebarCollapsed = false }) => {
     return (
         <div className="flex min-h-screen bg-gray-100">
             <div
-                className={`flex-1 p-6 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : ''
+                className={`flex-1 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : ''
                     }`}
             >
-                <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-                    Talent Corner Dashboard
-                </h1>
-
-                <div className="flex flex-wrap gap-4 mb-8">
-                    {cards.map(({ title, count, icon: Icon }) => (
-                        <div
-                            key={title}
-                            className="flex-1 min-w-[140px] max-w-[220px] bg-white p-4 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center"
-                        >
-                            <Icon className="w-8 h-8 text-[#6a4fb4] mx-auto mb-2" />
-                            <p className="text-sm text-gray-600">{title}</p>
-                            <h3 className="text-lg font-bold text-gray-800 mt-1">{count}</h3>
+                {isRootDashboard && (
+                    <>
+                        <div className="flex flex-wrap gap-4 mb-8">
+                            {cards.map(({ title, count, icon: Icon }) => (
+                                <div
+                                    key={title}
+                                    className="flex-1 min-w-[140px] max-w-[220px] bg-white p-4 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300 text-center"
+                                >
+                                    <Icon className="w-8 h-8 text-[#6a4fb4] mx-auto mb-2" />
+                                    <p className="text-sm text-gray-600">{title}</p>
+                                    <h3 className="text-lg font-bold text-gray-800 mt-1">
+                                        {count}
+                                    </h3>
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <CandidatesByDomainChart data={domainData} />
-                    <GenderDistributionChart data={genderData} />
-                    <MonthlyRegistrationsChart data={monthlyData} />
-                    <RegistrationsByYearChart data={yearlyData} />
-                    <SubdomainDistributionChart data={subdomainData} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <CandidatesByDomainChart data={domainData} />
+                            <GenderDistributionChart data={genderData} />
+                            <MonthlyRegistrationsChart data={monthlyData} />
+                            <RegistrationsByYearChart data={yearlyData} />
+                            <SubdomainDistributionChart data={subdomainData} />
+                        </div>
+                    </>
+                )}
+
+                <div className="w-auto">
+                    <Outlet />
                 </div>
             </div>
         </div>

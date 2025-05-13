@@ -1,18 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';
-import Sidebar from '../components/sidebar/Sidebar';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const FormSuccess = ({ isSidebarCollapsed = false }) => {
+const FormSuccess = () => {
     const navigate = useNavigate();
 
     return (
         <div className="flex min-h-screen bg-gray-100">
-            <Sidebar />
             <div
-                className={`flex-1 flex items-center justify-center p-6 transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-[220px]'
-                    }`}
+                className={`flex-1 flex items-center justify-center p-6 transition-all duration-300`}
             >
                 <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
                     <img
@@ -22,8 +19,13 @@ const FormSuccess = ({ isSidebarCollapsed = false }) => {
                         aria-hidden="true"
                     />
                     <div className="flex items-center justify-center mb-4">
-                        <CheckCircle className="w-8 h-8 text-green-600 mr-2" aria-hidden="true" />
-                        <h1 className="text-2xl font-bold text-[#5e239d]">Thank You!</h1>
+                        <CheckCircle
+                            className="w-8 h-8 text-green-600 mr-2"
+                            aria-hidden="true"
+                        />
+                        <h1 className="text-2xl font-bold text-[#5e239d]">
+                            Thank You!
+                        </h1>
                     </div>
                     <p
                         className="text-gray-600 mb-6"

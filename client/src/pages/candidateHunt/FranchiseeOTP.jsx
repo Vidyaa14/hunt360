@@ -1,22 +1,22 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 const FranchiseOTP = () => {
-    const [otp, setOtp] = useState("");
-    const [error, setError] = useState("");
+    const [otp, setOtp] = useState('');
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setError("");
+        setError('');
         if (otp.length !== 6) {
-            setError("OTP must be 6 digits.");
+            setError('OTP must be 6 digits.');
             return;
         }
         setLoading(true);
 
         setTimeout(() => {
             setLoading(false);
-            alert("OTP verified successfully");
+            alert('OTP verified successfully');
             // Proceed to dashboard or next step
         }, 1500);
     };
@@ -34,14 +34,19 @@ const FranchiseOTP = () => {
                         maxLength={6}
                         className="w-full p-3 text-lg mb-5 border border-gray-300 rounded-md"
                     />
-                    {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
+                    {error && (
+                        <p className="text-red-600 text-sm mb-2">{error}</p>
+                    )}
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full p-3 text-white font-bold rounded-md ${loading ? "bg-gray-400" : "bg-indigo-800 hover:bg-indigo-700"
-                            }`}
+                        className={`w-full p-3 text-white font-bold rounded-md ${
+                            loading
+                                ? 'bg-gray-400'
+                                : 'bg-indigo-800 hover:bg-indigo-700'
+                        }`}
                     >
-                        {loading ? "Verifying..." : "Verify OTP"}
+                        {loading ? 'Verifying...' : 'Verify OTP'}
                     </button>
                 </form>
             </div>

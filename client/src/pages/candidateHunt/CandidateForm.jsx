@@ -13,57 +13,125 @@ const stateCityMap = {
 
 const jobDomainMap = {
     'Information Technology': [
-        'Software Development', 'Data Analysis', 'Cyber Security', 'UI/UX Design',
-        'Network Administration', 'Cloud Computing', 'DevOps', 'Database Management',
-        'Web Development', 'Mobile App Development'
+        'Software Development',
+        'Data Analysis',
+        'Cyber Security',
+        'UI/UX Design',
+        'Network Administration',
+        'Cloud Computing',
+        'DevOps',
+        'Database Management',
+        'Web Development',
+        'Mobile App Development',
     ],
-    'Healthcare': [
-        'Nursing', 'Medical Research', 'Pharmacy', 'Healthcare Administration',
-        'Physical Therapy', 'Occupational Therapy', 'Radiology', 'Public Health',
-        'Health Informatics', 'Clinical Psychology'
+    Healthcare: [
+        'Nursing',
+        'Medical Research',
+        'Pharmacy',
+        'Healthcare Administration',
+        'Physical Therapy',
+        'Occupational Therapy',
+        'Radiology',
+        'Public Health',
+        'Health Informatics',
+        'Clinical Psychology',
     ],
-    'Finance': [
-        'Financial Analysis', 'Investment Banking', 'Accounting', 'Risk Management',
-        'Insurance', 'Tax Consulting', 'Financial Planning', 'Corporate Finance',
-        'Wealth Management', 'Auditing'
+    Finance: [
+        'Financial Analysis',
+        'Investment Banking',
+        'Accounting',
+        'Risk Management',
+        'Insurance',
+        'Tax Consulting',
+        'Financial Planning',
+        'Corporate Finance',
+        'Wealth Management',
+        'Auditing',
     ],
-    'Education': [
-        'Teaching', 'Curriculum Development', 'Educational Administration',
-        'Special Education', 'Instructional Design', 'E-Learning Development',
-        'Educational Technology', 'School Counseling', 'Adult Education', 'Tutoring'
+    Education: [
+        'Teaching',
+        'Curriculum Development',
+        'Educational Administration',
+        'Special Education',
+        'Instructional Design',
+        'E-Learning Development',
+        'Educational Technology',
+        'School Counseling',
+        'Adult Education',
+        'Tutoring',
     ],
-    'Engineering': [
-        'Civil Engineering', 'Mechanical Engineering', 'Electrical Engineering',
-        'Chemical Engineering', 'Aerospace Engineering', 'Industrial Engineering',
-        'Software Engineering', 'Environmental Engineering', 'Structural Engineering',
-        'Robotics Engineering'
+    Engineering: [
+        'Civil Engineering',
+        'Mechanical Engineering',
+        'Electrical Engineering',
+        'Chemical Engineering',
+        'Aerospace Engineering',
+        'Industrial Engineering',
+        'Software Engineering',
+        'Environmental Engineering',
+        'Structural Engineering',
+        'Robotics Engineering',
     ],
-    'Marketing': [
-        'Digital Marketing', 'Content Marketing', 'SEO Specialist', 'Brand Management',
-        'Market Research', 'Social Media Management', 'Email Marketing', 'Product Marketing',
-        'Advertising', 'Public Relations'
+    Marketing: [
+        'Digital Marketing',
+        'Content Marketing',
+        'SEO Specialist',
+        'Brand Management',
+        'Market Research',
+        'Social Media Management',
+        'Email Marketing',
+        'Product Marketing',
+        'Advertising',
+        'Public Relations',
     ],
-    'Sales': [
-        'Sales Management', 'Business Development', 'Account Management', 'Retail Sales',
-        'Inside Sales', 'Outside Sales', 'Sales Operations', 'Lead Generation',
-        'Sales Training', 'Customer Success'
+    Sales: [
+        'Sales Management',
+        'Business Development',
+        'Account Management',
+        'Retail Sales',
+        'Inside Sales',
+        'Outside Sales',
+        'Sales Operations',
+        'Lead Generation',
+        'Sales Training',
+        'Customer Success',
     ],
     'Human Resources': [
-        'Recruitment', 'Employee Relations', 'Training and Development',
-        'Compensation and Benefits', 'HR Consulting', 'Talent Management',
-        'Organizational Development', 'HR Information Systems', 'Labor Relations',
-        'Diversity and Inclusion'
+        'Recruitment',
+        'Employee Relations',
+        'Training and Development',
+        'Compensation and Benefits',
+        'HR Consulting',
+        'Talent Management',
+        'Organizational Development',
+        'HR Information Systems',
+        'Labor Relations',
+        'Diversity and Inclusion',
     ],
-    'Manufacturing': [
-        'Production Management', 'Quality Assurance', 'Supply Chain Management',
-        'Process Engineering', 'Manufacturing Engineering', 'Lean Manufacturing',
-        'Industrial Design', 'Operations Management', 'Logistics', 'Inventory Management'
+    Manufacturing: [
+        'Production Management',
+        'Quality Assurance',
+        'Supply Chain Management',
+        'Process Engineering',
+        'Manufacturing Engineering',
+        'Lean Manufacturing',
+        'Industrial Design',
+        'Operations Management',
+        'Logistics',
+        'Inventory Management',
     ],
-    'Retail': [
-        'Store Management', 'Visual Merchandising', 'Inventory Control', 'Customer Service',
-        'E-commerce Management', 'Retail Marketing', 'Sales Associate', 'Loss Prevention',
-        'Buying and Merchandising', 'Product Management'
-    ]
+    Retail: [
+        'Store Management',
+        'Visual Merchandising',
+        'Inventory Control',
+        'Customer Service',
+        'E-commerce Management',
+        'Retail Marketing',
+        'Sales Associate',
+        'Loss Prevention',
+        'Buying and Merchandising',
+        'Product Management',
+    ],
 };
 
 const CandidateForm = () => {
@@ -109,7 +177,11 @@ const CandidateForm = () => {
         resumeLink: '',
     });
 
-    const years = useMemo(() => Array.from({ length: 2090 - 2000 + 1 }, (_, index) => 2000 + index), []);
+    const years = useMemo(
+        () =>
+            Array.from({ length: 2090 - 2000 + 1 }, (_, index) => 2000 + index),
+        []
+    );
 
     useEffect(() => {
         setStates(Object.keys(stateCityMap));
@@ -205,71 +277,97 @@ const CandidateForm = () => {
         setSubDomains([]);
     }, []);
 
-    const handleSubmit = useCallback(async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
+    const handleSubmit = useCallback(
+        async (e) => {
+            e.preventDefault();
+            setLoading(true);
+            setError(null);
 
-        try {
-            const formPayload = new FormData();
-            formPayload.append('token', token);
-            formPayload.append('Full_Name', `${formData.firstName} ${formData.middleName} ${formData.lastName}`.trim());
-            formPayload.append('Email', formData.email);
-            formPayload.append('Phone_No', formData.contactNumber);
-            formPayload.append('Domain', formData.desiredJobDomain);
-            formPayload.append('Sub_Domain', formData.desiredJobSubdomain);
-            formPayload.append('dob', formData.dob);
-            formPayload.append('gender', formData.gender);
-            formPayload.append('location', formData.currentLocation);
-            formPayload.append('pincode', formData.pincode);
-            formPayload.append('state', formData.state);
-            formPayload.append('city', formData.city);
-            formPayload.append('country', formData.country);
-            formPayload.append('emergencyPhone', formData.emergencyContactNumber);
-            formPayload.append('contactName', formData.emergencyContactName);
-            formPayload.append('contactRelation', formData.emergencyContactRelation);
-            formPayload.append('highestQualification', formData.highestQualification);
-            formPayload.append('degree', formData.degree);
-            formPayload.append('courseName', formData.courseName);
-            formPayload.append('collegeName', formData.college);
-            formPayload.append('universityName', formData.university);
-            formPayload.append('yearOfPassing', formData.yearOfPassing);
-            formPayload.append('marks', formData.marks);
-            formPayload.append('internship_experience', formData.internshipExperience);
-            formPayload.append('skills', formData.skills);
+            try {
+                const formPayload = new FormData();
+                formPayload.append('token', token);
+                formPayload.append(
+                    'Full_Name',
+                    `${formData.firstName} ${formData.middleName} ${formData.lastName}`.trim()
+                );
+                formPayload.append('Email', formData.email);
+                formPayload.append('Phone_No', formData.contactNumber);
+                formPayload.append('Domain', formData.desiredJobDomain);
+                formPayload.append('Sub_Domain', formData.desiredJobSubdomain);
+                formPayload.append('dob', formData.dob);
+                formPayload.append('gender', formData.gender);
+                formPayload.append('location', formData.currentLocation);
+                formPayload.append('pincode', formData.pincode);
+                formPayload.append('state', formData.state);
+                formPayload.append('city', formData.city);
+                formPayload.append('country', formData.country);
+                formPayload.append(
+                    'emergencyPhone',
+                    formData.emergencyContactNumber
+                );
+                formPayload.append(
+                    'contactName',
+                    formData.emergencyContactName
+                );
+                formPayload.append(
+                    'contactRelation',
+                    formData.emergencyContactRelation
+                );
+                formPayload.append(
+                    'highestQualification',
+                    formData.highestQualification
+                );
+                formPayload.append('degree', formData.degree);
+                formPayload.append('courseName', formData.courseName);
+                formPayload.append('collegeName', formData.college);
+                formPayload.append('universityName', formData.university);
+                formPayload.append('yearOfPassing', formData.yearOfPassing);
+                formPayload.append('marks', formData.marks);
+                formPayload.append(
+                    'internship_experience',
+                    formData.internshipExperience
+                );
+                formPayload.append('skills', formData.skills);
 
-            if (resumeFile) {
-                formPayload.append('resume', resumeFile);
-            } else {
-                formPayload.append('resume_url', formData.resumeLink);
+                if (resumeFile) {
+                    formPayload.append('resume', resumeFile);
+                } else {
+                    formPayload.append('resume_url', formData.resumeLink);
+                }
+
+                const response = await fetch(`${BACKEND_URL}/submitCandidate`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formPayload,
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    navigate('/form-success');
+                } else {
+                    throw new Error(
+                        data.error || 'Failed to submit candidate data.'
+                    );
+                }
+            } catch (err) {
+                console.error('Submission error:', err);
+                setError('Failed to submit the form. Please try again.');
+                navigate('/form-error');
+            } finally {
+                setLoading(false);
             }
-
-            const response = await fetch(`${BACKEND_URL}/submitCandidate`, {
-                method: 'POST',
-                credentials: 'include',
-                body: formPayload,
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                navigate('/form-success');
-            } else {
-                throw new Error(data.error || 'Failed to submit candidate data.');
-            }
-        } catch (err) {
-            console.error('Submission error:', err);
-            setError('Failed to submit the form. Please try again.');
-            navigate('/form-error');
-        } finally {
-            setLoading(false);
-        }
-    }, [formData, resumeFile, token, navigate]);
+        },
+        [formData, resumeFile, token, navigate]
+    );
 
     if (tokenValid === null) {
         return (
             <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md animate-fade-in">
-                <div className="text-center text-gray-600 font-bold" role="alert">
+                <div
+                    className="text-center text-gray-600 font-bold"
+                    role="alert"
+                >
                     Validating token...
                 </div>
             </div>
@@ -279,8 +377,12 @@ const CandidateForm = () => {
     if (!tokenValid) {
         return (
             <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md animate-fade-in">
-                <div className="text-center text-red-600 font-bold" role="alert">
-                    ⚠️ Access Denied: {error || 'No access token provided or token already used.'}
+                <div
+                    className="text-center text-red-600 font-bold"
+                    role="alert"
+                >
+                    ⚠️ Access Denied:{' '}
+                    {error || 'No access token provided or token already used.'}
                 </div>
             </div>
         );
@@ -310,14 +412,22 @@ const CandidateForm = () => {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-8">
-                <h2 className="text-3xl font-bold text-[#680f91]">Candidate Form</h2>
+                <h2 className="text-3xl font-bold text-[#680f91]">
+                    Candidate Form
+                </h2>
 
                 <section className="border-b border-gray-200 pb-6">
-                    <h3 className="text-xl font-semibold text-[#680f91] mb-4">Basic Details</h3>
+                    <h3 className="text-xl font-semibold text-[#680f91] mb-4">
+                        Basic Details
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="flex flex-col">
-                            <label htmlFor="firstName" className="text-sm font-medium text-gray-700 mb-1">
-                                First Name <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="firstName"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                First Name{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -331,7 +441,10 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="middleName" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="middleName"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Middle Name
                             </label>
                             <input
@@ -344,8 +457,12 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="lastName" className="text-sm font-medium text-gray-700 mb-1">
-                                Last Name <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="lastName"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Last Name{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -359,7 +476,10 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="email"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Email ID <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -375,8 +495,12 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="contactNumber" className="text-sm font-medium text-gray-700 mb-1">
-                                Contact Number <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="contactNumber"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Contact Number{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="tel"
@@ -390,8 +514,12 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="dob" className="text-sm font-medium text-gray-700 mb-1">
-                                Date of Birth <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="dob"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Date of Birth{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="date"
@@ -405,7 +533,10 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="gender" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="gender"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Gender <span className="text-red-500">*</span>
                             </label>
                             <select
@@ -424,8 +555,12 @@ const CandidateForm = () => {
                             </select>
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="currentLocation" className="text-sm font-medium text-gray-700 mb-1">
-                                Current Location <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="currentLocation"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Current Location{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -439,7 +574,10 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="pincode" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="pincode"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Pin Code <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -455,7 +593,10 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="state" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="state"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 State <span className="text-red-500">*</span>
                             </label>
                             <select
@@ -476,13 +617,21 @@ const CandidateForm = () => {
                             </select>
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="city" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="city"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 City <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="city"
                                 value={formData.city}
-                                onChange={(e) => setFormData((prev) => ({ ...prev, city: e.target.value }))}
+                                onChange={(e) =>
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        city: e.target.value,
+                                    }))
+                                }
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#680f91] bg-[#f5f3fa]"
                                 required
                                 aria-required="true"
@@ -497,7 +646,10 @@ const CandidateForm = () => {
                             </select>
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="country" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="country"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Country <span className="text-red-500">*</span>
                             </label>
                             <select
@@ -514,8 +666,12 @@ const CandidateForm = () => {
                             </select>
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="emergencyContactNumber" className="text-sm font-medium text-gray-700 mb-1">
-                                Emergency Contact Number <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="emergencyContactNumber"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Emergency Contact Number{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="tel"
@@ -529,8 +685,12 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="emergencyContactName" className="text-sm font-medium text-gray-700 mb-1">
-                                Contact Name <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="emergencyContactName"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Contact Name{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -544,8 +704,12 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="emergencyContactRelation" className="text-sm font-medium text-gray-700 mb-1">
-                                Contact Relation <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="emergencyContactRelation"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Contact Relation{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -562,11 +726,17 @@ const CandidateForm = () => {
                 </section>
 
                 <section className="border-b border-gray-200 pb-6">
-                    <h3 className="text-xl font-semibold text-[#680f91] mb-4">Educational Background</h3>
+                    <h3 className="text-xl font-semibold text-[#680f91] mb-4">
+                        Educational Background
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="flex flex-col">
-                            <label htmlFor="highestQualification" className="text-sm font-medium text-gray-700 mb-1">
-                                Highest Qualification <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="highestQualification"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Highest Qualification{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -580,7 +750,10 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="degree" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="degree"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Degree <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -595,8 +768,12 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="courseName" className="text-sm font-medium text-gray-700 mb-1">
-                                Course Name <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="courseName"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Course Name{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -610,8 +787,12 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="college" className="text-sm font-medium text-gray-700 mb-1">
-                                College Name <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="college"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                College Name{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -625,8 +806,12 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="university" className="text-sm font-medium text-gray-700 mb-1">
-                                University Name <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="university"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                University Name{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
@@ -640,8 +825,12 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="yearOfPassing" className="text-sm font-medium text-gray-700 mb-1">
-                                Year of Passing <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="yearOfPassing"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Year of Passing{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="yearOfPassing"
@@ -661,7 +850,10 @@ const CandidateForm = () => {
                             </select>
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="marks" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="marks"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Marks <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -677,8 +869,12 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="desiredJobDomain" className="text-sm font-medium text-gray-700 mb-1">
-                                Desired Job Domain <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="desiredJobDomain"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Desired Job Domain{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="desiredJobDomain"
@@ -698,13 +894,22 @@ const CandidateForm = () => {
                             </select>
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="desiredJobSubdomain" className="text-sm font-medium text-gray-700 mb-1">
-                                Desired Job Subdomain <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="desiredJobSubdomain"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Desired Job Subdomain{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="desiredJobSubdomain"
                                 value={formData.desiredJobSubdomain}
-                                onChange={(e) => setFormData((prev) => ({ ...prev, desiredJobSubdomain: e.target.value }))}
+                                onChange={(e) =>
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        desiredJobSubdomain: e.target.value,
+                                    }))
+                                }
                                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#680f91] bg-[#f5f3fa]"
                                 required
                                 aria-required="true"
@@ -722,10 +927,15 @@ const CandidateForm = () => {
                 </section>
 
                 <section className="border-b border-gray-200 pb-6">
-                    <h3 className="text-xl font-semibold text-[#680f91] mb-4">Professional Details</h3>
+                    <h3 className="text-xl font-semibold text-[#680f91] mb-4">
+                        Professional Details
+                    </h3>
                     <div className="grid grid-cols-1 gap-6">
                         <div className="flex flex-col">
-                            <label htmlFor="internshipExperience" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="internshipExperience"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Internship Experience
                             </label>
                             <textarea
@@ -737,7 +947,10 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="skills" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="skills"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Skills <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -755,10 +968,15 @@ const CandidateForm = () => {
                 </section>
 
                 <section>
-                    <h3 className="text-xl font-semibold text-[#680f91] mb-4">Resume</h3>
+                    <h3 className="text-xl font-semibold text-[#680f91] mb-4">
+                        Resume
+                    </h3>
                     <div className="grid grid-cols-1 gap-6">
                         <div className="flex flex-col">
-                            <label htmlFor="resumeLink" className="text-sm font-medium text-gray-700 mb-1">
+                            <label
+                                htmlFor="resumeLink"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
                                 Resume Link
                             </label>
                             <input
@@ -772,8 +990,12 @@ const CandidateForm = () => {
                             />
                         </div>
                         <div className="flex flex-col">
-                            <label htmlFor="resumeFile" className="text-sm font-medium text-gray-700 mb-1">
-                                Upload Resume <span className="text-red-500">*</span>
+                            <label
+                                htmlFor="resumeFile"
+                                className="text-sm font-medium text-gray-700 mb-1"
+                            >
+                                Upload Resume{' '}
+                                <span className="text-red-500">*</span>
                             </label>
                             <input
                                 type="file"
@@ -786,7 +1008,9 @@ const CandidateForm = () => {
                                 aria-label="Upload Resume"
                             />
                             {resumeFileName && (
-                                <span className="text-sm text-green-600 mt-2">{resumeFileName}</span>
+                                <span className="text-sm text-green-600 mt-2">
+                                    {resumeFileName}
+                                </span>
                             )}
                         </div>
                     </div>

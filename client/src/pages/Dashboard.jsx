@@ -47,8 +47,13 @@ export default function Dashboard() {
                                     </svg>
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <UserIcon size={24} className="text-gray-600" />
-                                    <span className="text-sm font-medium text-gray-900">User Name</span>
+                                    <UserIcon
+                                        size={24}
+                                        className="text-gray-600"
+                                    />
+                                    <span className="text-sm font-medium text-gray-900">
+                                        User Name
+                                    </span>
                                 </div>
                             </div>
                         </div>

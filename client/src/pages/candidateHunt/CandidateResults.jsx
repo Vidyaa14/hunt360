@@ -15,12 +15,15 @@ const CandidateResults = () => {
         if (domain && subDomain) {
             const fetchCandidates = async () => {
                 try {
-                    const response = await fetch(`${BACKEND_URL}/filterCandidates`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({ domain, subDomain }),
-                    });
+                    const response = await fetch(
+                        `${BACKEND_URL}/filterCandidates`,
+                        {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ domain, subDomain }),
+                        }
+                    );
 
                     const data = await response.json();
 
@@ -102,7 +105,9 @@ const CandidateResults = () => {
                     </h2>
                 </div>
                 {candidates.length === 0 ? (
-                    <p className="text-center text-gray-600">No matching candidates found.</p>
+                    <p className="text-center text-gray-600">
+                        No matching candidates found.
+                    </p>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
@@ -152,12 +157,22 @@ const CandidateResults = () => {
                                         key={idx}
                                         className="border-b border-gray-200 hover:bg-gray-50"
                                     >
-                                        <td className="p-3 text-sm text-gray-700">{cand.Full_Name}</td>
-                                        <td className="p-3 text-sm text-gray-700">{cand.Sub_Domain || 'N/A'}</td>
-                                        <td className="p-3 text-sm text-gray-700">{cand.Email}</td>
-                                        <td className="p-3 text-sm text-gray-700">{cand.Phone_No}</td>
                                         <td className="p-3 text-sm text-gray-700">
-                                            {cand.email_status ? 'Sent' : 'Not Sent'}
+                                            {cand.Full_Name}
+                                        </td>
+                                        <td className="p-3 text-sm text-gray-700">
+                                            {cand.Sub_Domain || 'N/A'}
+                                        </td>
+                                        <td className="p-3 text-sm text-gray-700">
+                                            {cand.Email}
+                                        </td>
+                                        <td className="p-3 text-sm text-gray-700">
+                                            {cand.Phone_No}
+                                        </td>
+                                        <td className="p-3 text-sm text-gray-700">
+                                            {cand.email_status
+                                                ? 'Sent'
+                                                : 'Not Sent'}
                                         </td>
                                         <td className="p-3 text-sm">
                                             <button

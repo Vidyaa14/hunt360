@@ -10,12 +10,12 @@ const industry = process.argv[2];
 let city = process.argv[3];
 
 if (!industry || !city) {
-    console.log("Usage: node script.js <industry> <city>");
+    console.log('Usage: node script.js <industry> <city>');
     process.exit(1);
 }
 
 const searchTerm = `${industry}`;
-const downloadsFolder = path.join(require('os').homedir(), "/Downloads");
+const downloadsFolder = path.join(require('os').homedir(), '/Downloads');
 
 // Unique Excel file creation
 function getUniqueFilename(baseName) {
@@ -31,20 +31,30 @@ function getUniqueFilename(baseName) {
     return path.join(downloadsFolder, filename);
 }
 
-const filename = getUniqueFilename(`Internshala_${industry.replace(/ /g, '_')}_${city.replace(/ /g, '_')}_Internships`);
+const filename = getUniqueFilename(
+    `Internshala_${industry.replace(/ /g, '_')}_${city.replace(/ /g, '_')}_Internships`
+);
 
 // const headers = ['Company Name', 'Address', 'Phone', 'Website', 'Job Title', 'GST Number(s)'];
-const headers = ['Job_Title', 'Company_Name', 'Location', 'Address', 'Phone', 'Website', 'GST Number(s)'];
+const headers = [
+    'Job_Title',
+    'Company_Name',
+    'Location',
+    'Address',
+    'Phone',
+    'Website',
+    'GST Number(s)',
+];
 const rows = [];
 
-const ca = fs.readFileSync(join(__dirname, "certs", "isrgrootx1.pem"));
+const ca = fs.readFileSync(join(__dirname, 'certs', 'isrgrootx1.pem'));
 
 // Database connection configuration
 const dbConfig = {
-    host: process.env.DB_HOST || "localhost",
-    user: process.env.DB_USER || "root", // Replace with your MySQL username2
-    password: process.env.DB_PASS || "VD12@cstl", // Replace with your MySQL password
-    database: process.env.DB_NAME || "mydatabase",
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root', // Replace with your MySQL username2
+    password: process.env.DB_PASS || 'VD12@cstl', // Replace with your MySQL password
+    database: process.env.DB_NAME || 'mydatabase',
     ssl: {
         ca: ca,
     },
@@ -70,7 +80,7 @@ async function saveDataToDatabase() {
                 row[3], // Address
                 row[4], // Phone
                 row[5], // Website
-                row[6]  // GST Number(s)
+                row[6], // GST Number(s)
             ]);
         }
         console.log(`Saved ${rows.length} records to database.`);
@@ -84,15 +94,23 @@ async function saveDataToDatabase() {
 // Utility: Close ads
 async function closeAds(driver) {
     try {
-        const closeBtn = await driver.wait(until.elementLocated(By.xpath("//span[contains(@class, 'ns-') and text()='Close']")), 5000);
+        const closeBtn = await driver.wait(
+            until.elementLocated(
+                By.xpath("//span[contains(@class, 'ns-') and text()='Close']")
+            ),
+            5000
+        );
         await closeBtn.click();
         await driver.sleep(1000);
-    } catch (e) { }
+    } catch (e) {}
     try {
-        const dismissBtn = await driver.wait(until.elementLocated(By.xpath("//div[@id='dismiss-button']")), 5000);
+        const dismissBtn = await driver.wait(
+            until.elementLocated(By.xpath("//div[@id='dismiss-button']")),
+            5000
+        );
         await dismissBtn.click();
         await driver.sleep(1000);
-    } catch (e) { }
+    } catch (e) {}
 }
 
 // GST Scraper
@@ -102,25 +120,36 @@ async function getGST(driver, companyName, location) {
         await driver.executeScript("window.open('');");
         let tabs = await driver.getAllWindowHandles();
         await driver.switchTo().window(tabs[1]);
-        await driver.get("https://findgst.in/gstin-by-name");
+        await driver.get('https://findgst.in/gstin-by-name');
 
         await driver.sleep(2000);
         await closeAds(driver);
 
-        const input = await driver.wait(until.elementLocated(By.id('gstnumber')), 10000);
+        const input = await driver.wait(
+            until.elementLocated(By.id('gstnumber')),
+            10000
+        );
         await input.clear();
         await input.sendKeys(companyName);
 
-        const btn = await driver.findElement(By.xpath("//input[@value='Find GST number']"));
+        const btn = await driver.findElement(
+            By.xpath("//input[@value='Find GST number']")
+        );
         await btn.click();
 
         await driver.sleep(5000);
-        await driver.executeScript("window.scrollBy(0, 800);");
+        await driver.executeScript('window.scrollBy(0, 800);');
 
-        const resultBlocks = await driver.findElements(By.xpath("//p[contains(@class, 'yellow') and contains(@class, 'lighten-5')]"));
+        const resultBlocks = await driver.findElements(
+            By.xpath(
+                "//p[contains(@class, 'yellow') and contains(@class, 'lighten-5')]"
+            )
+        );
         for (let block of resultBlocks) {
             let text = await block.getText();
-            let matches = text.match(/\b\d{2}[A-Z0-9]{10}[1-9A-Z]{1}Z[0-9A-Z]{1}\b/g);
+            let matches = text.match(
+                /\b\d{2}[A-Z0-9]{10}[1-9A-Z]{1}Z[0-9A-Z]{1}\b/g
+            );
             if (matches) gstNumbers.push(...matches);
         }
     } catch (e) {
@@ -139,36 +168,62 @@ async function getGST(driver, companyName, location) {
 async function getMapData(driver, company, location) {
     let data = {
         company: company,
-        address: "N/A",
-        phone: "N/A",
-        website: "N/A"
+        address: 'N/A',
+        phone: 'N/A',
+        website: 'N/A',
     };
     try {
         await driver.executeScript("window.open('');");
         let tabs = await driver.getAllWindowHandles();
         await driver.switchTo().window(tabs[1]);
-        await driver.get(`https://www.google.com/maps/search/${company} ${location}`);
+        await driver.get(
+            `https://www.google.com/maps/search/${company} ${location}`
+        );
         await driver.sleep(3000);
 
         try {
-            await driver.wait(until.elementLocated(By.xpath("//h1[@class='DUwDvf lfPIob']")), 10000);
+            await driver.wait(
+                until.elementLocated(By.xpath("//h1[@class='DUwDvf lfPIob']")),
+                10000
+            );
         } catch {
-            const firstResult = await driver.findElement(By.xpath("(//a[contains(@href, '/place/')])[1]"));
+            const firstResult = await driver.findElement(
+                By.xpath("(//a[contains(@href, '/place/')])[1]")
+            );
             await firstResult.click();
-            await driver.wait(until.elementLocated(By.xpath("//h1[@class='DUwDvf lfPIob']")), 10000);
+            await driver.wait(
+                until.elementLocated(By.xpath("//h1[@class='DUwDvf lfPIob']")),
+                10000
+            );
         }
 
-        data.company = await driver.findElement(By.xpath("//h1[@class='DUwDvf lfPIob']")).getText();
+        data.company = await driver
+            .findElement(By.xpath("//h1[@class='DUwDvf lfPIob']"))
+            .getText();
 
         try {
-            data.address = await driver.findElement(By.xpath("//div[contains(@class,'Io6YTe') and contains(@class, 'fontBodyMedium')]")).getText();
-        } catch { }
+            data.address = await driver
+                .findElement(
+                    By.xpath(
+                        "//div[contains(@class,'Io6YTe') and contains(@class, 'fontBodyMedium')]"
+                    )
+                )
+                .getText();
+        } catch {}
         try {
-            data.website = await driver.findElement(By.xpath("//a[contains(@aria-label, 'Website')]")).getAttribute("href");
-        } catch { }
+            data.website = await driver
+                .findElement(By.xpath("//a[contains(@aria-label, 'Website')]"))
+                .getAttribute('href');
+        } catch {}
         try {
-            data.phone = await driver.findElement(By.xpath("//div[starts-with(text(), '0') and contains(@class, 'Io6YTe')]")).getText();
-        } catch { }
+            data.phone = await driver
+                .findElement(
+                    By.xpath(
+                        "//div[starts-with(text(), '0') and contains(@class, 'Io6YTe')]"
+                    )
+                )
+                .getText();
+        } catch {}
     } catch (e) {
         console.log(`[Maps] Error: ${company} | ${e}`);
     } finally {
@@ -188,28 +243,44 @@ async function getMapData(driver, company, location) {
 
     try {
         await driver.manage().window().maximize();
-        await driver.get("https://internshala.com/");
-        await driver.wait(until.elementLocated(By.xpath("//button[@class='search-cta']")), 10000).click();
+        await driver.get('https://internshala.com/');
+        await driver
+            .wait(
+                until.elementLocated(By.xpath("//button[@class='search-cta']")),
+                10000
+            )
+            .click();
         await driver.sleep(2000);
 
-        const searchInput = await driver.wait(until.elementLocated(By.xpath("//input[@type='text' and @placeholder='Search here...']")), 10000);
+        const searchInput = await driver.wait(
+            until.elementLocated(
+                By.xpath(
+                    "//input[@type='text' and @placeholder='Search here...']"
+                )
+            ),
+            10000
+        );
         await searchInput.sendKeys(searchTerm, Key.RETURN);
         await driver.sleep(5000);
 
         try {
-            const closePopup = await driver.findElement(By.id("close_popup"));
+            const closePopup = await driver.findElement(By.id('close_popup'));
             await closePopup.click();
             await driver.sleep(2000);
-        } catch { }
+        } catch {}
 
         try {
-            const internshipsTab = await driver.findElement(By.xpath("//a[contains(text(),'Internships')]"));
+            const internshipsTab = await driver.findElement(
+                By.xpath("//a[contains(text(),'Internships')]")
+            );
             await internshipsTab.click();
             await driver.sleep(2000);
-        } catch { }
+        } catch {}
 
         // ❗ Auto-suggest city by matching partial input
-        const locationSuggestions = await driver.findElements(By.xpath("//a[contains(@class, 'location-link')]"));
+        const locationSuggestions = await driver.findElements(
+            By.xpath("//a[contains(@class, 'location-link')]")
+        );
         let matchedCity = null;
         for (let suggestion of locationSuggestions) {
             const suggestionText = await suggestion.getText();
@@ -221,46 +292,77 @@ async function getMapData(driver, company, location) {
 
         if (matchedCity) {
             console.log(`City suggestion found: ${matchedCity}`);
-            city = matchedCity;  // Automatically update the city to the matched suggestion
+            city = matchedCity; // Automatically update the city to the matched suggestion
         } else {
-            console.log(`No exact city match found. Continuing with the search for: ${city}`);
+            console.log(
+                `No exact city match found. Continuing with the search for: ${city}`
+            );
         }
 
         // Update the location input waiting logic and XPath
-        const locationDropdown = await driver.wait(until.elementLocated(By.xpath('//*[@id="city_sidebar_chosen"]')), 10000); // Wait for the dropdown element
+        const locationDropdown = await driver.wait(
+            until.elementLocated(By.xpath('//*[@id="city_sidebar_chosen"]')),
+            10000
+        ); // Wait for the dropdown element
         await locationDropdown.click(); // Click to open the location filter
 
         await driver.sleep(1000); // Wait for dropdown to appear
         // Locate the input field for the city filter
-        const locationInput = await driver.wait(until.elementLocated(By.xpath('//*[@id="city_sidebar_chosen"]//input')), 10000);
+        const locationInput = await driver.wait(
+            until.elementLocated(
+                By.xpath('//*[@id="city_sidebar_chosen"]//input')
+            ),
+            10000
+        );
         await locationInput.clear();
-        await locationInput.sendKeys(city);  // Type the city
+        await locationInput.sendKeys(city); // Type the city
 
-        await locationInput.sendKeys(Key.RETURN);  // Apply filter
-        await driver.sleep(2000);  // Wait for page load
+        await locationInput.sendKeys(Key.RETURN); // Apply filter
+        await driver.sleep(2000); // Wait for page load
 
         let page = 1;
         while (true) {
-            const cards = await driver.findElements(By.css('.individual_internship'));
+            const cards = await driver.findElements(
+                By.css('.individual_internship')
+            );
             console.log(`Scraping page ${page} with ${cards.length} cards`);
 
             let foundAtLeastOne = false;
 
             for (let card of cards) {
                 try {
-                    const title = await card.findElement(By.css("h3.job-internship-name a.job-title-href")).getText();
-                    const company = await card.findElement(By.css("p.company-name")).getText();
-                    const locationText = await card.findElement(By.css("div.row-1-item.locations span a")).getText();
+                    const title = await card
+                        .findElement(
+                            By.css('h3.job-internship-name a.job-title-href')
+                        )
+                        .getText();
+                    const company = await card
+                        .findElement(By.css('p.company-name'))
+                        .getText();
+                    const locationText = await card
+                        .findElement(By.css('div.row-1-item.locations span a'))
+                        .getText();
 
                     // ❗ Filter by city manually, continue if city doesn't match
-                    if (!locationText.toLowerCase().includes(city.toLowerCase())) continue;
+                    if (
+                        !locationText.toLowerCase().includes(city.toLowerCase())
+                    )
+                        continue;
 
                     foundAtLeastOne = true;
                     const selectedLocation = locationText.split(',')[0].trim();
 
-                    const enriched = await getMapData(driver, company, selectedLocation);
-                    const gstNumbers = await getGST(driver, company, selectedLocation);
-                    let gstToSave = "N/A";
+                    const enriched = await getMapData(
+                        driver,
+                        company,
+                        selectedLocation
+                    );
+                    const gstNumbers = await getGST(
+                        driver,
+                        company,
+                        selectedLocation
+                    );
+                    let gstToSave = 'N/A';
 
                     if (gstNumbers.length) {
                         gstTracker[company] = gstTracker[company] || new Set();
@@ -280,17 +382,21 @@ async function getMapData(driver, company, location) {
                         enriched.address,
                         enriched.phone,
                         enriched.website,
-                        gstToSave
+                        gstToSave,
                     ]);
 
-                    console.log(`${title} | ${company} | ${selectedLocation} | GST: ${gstToSave}`);
+                    console.log(
+                        `${title} | ${company} | ${selectedLocation} | GST: ${gstToSave}`
+                    );
                 } catch (e) {
-                    console.log("Card parsing failed:", e);
+                    console.log('Card parsing failed:', e);
                 }
             }
 
             if (!foundAtLeastOne) {
-                console.log(` No internships found matching the city "${city}".`);
+                console.log(
+                    ` No internships found matching the city "${city}".`
+                );
             }
 
             await saveDataToDatabase(); // Save to database
@@ -302,18 +408,24 @@ async function getMapData(driver, company, location) {
             console.log(`Data saved to: ${filename}`);
 
             try {
-                const nextBtn = await driver.wait(until.elementLocated(By.id("navigation-forward")), 5000);
-                await driver.executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", nextBtn);
+                const nextBtn = await driver.wait(
+                    until.elementLocated(By.id('navigation-forward')),
+                    5000
+                );
+                await driver.executeScript(
+                    "arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});",
+                    nextBtn
+                );
                 await nextBtn.click();
                 page++;
                 await driver.sleep(5000);
             } catch {
-                console.log("No more pages.");
+                console.log('No more pages.');
                 break;
             }
         }
     } catch (e) {
-        console.error("Fatal Error:", e);
+        console.error('Fatal Error:', e);
     } finally {
         await driver.quit();
     }
