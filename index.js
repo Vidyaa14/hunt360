@@ -12,11 +12,18 @@ dotenv.config();
 
 const app = express();
 const upload = multer({ dest: 'uploads/resumes/' });
+const allowedOrigins = ['http://localhost:5173', 'https://hunt360.vercel.app', 'https://hunt360.onrender.com'];
 
 app.use(cors({
-    origin: '*'
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, origin);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
 }));
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
