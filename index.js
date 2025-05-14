@@ -25,11 +25,6 @@ app.use(cors({
     credentials: true
 }));
 
-app.options('*', cors({
-    origin: allowedOrigins,
-    credentials: true
-}));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -37,6 +32,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
+
 app.use(upload.any());
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(YAML.load('./docs/endpoints.yaml')));
 app.use('/api/auth', authRoutes);
