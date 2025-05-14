@@ -27,3 +27,15 @@ html {
         background-position: 100% 50%;
     }
 }
+
+.bg-worldmap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/worldmap.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+    animation: bg-pan 30s linear infinite;
+    z-index: 0;
+}

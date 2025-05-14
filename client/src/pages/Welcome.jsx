@@ -8,8 +8,10 @@ export default function Welcome() {
             <Navbar />
             <section
                 id="home"
-                className="min-h-screen flex items-center relative before:content-[''] before:absolute before:inset-0 before:bg-[url('/assets/worldmap.png')] before:bg-cover before:bg-center before:opacity-20 before:[animation:bg-pan_30s_linear_infinite] bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900 pt-20"
+                className="bg-worldmap min-h-screen flex items-center relative bg-gradient-to-br from-gray-50 to-blue-50 text-gray-900 pt-20"
             >
+
+
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in z-10">
                     <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight tracking-tight">
                         Empower Your Insights with Hunt360
