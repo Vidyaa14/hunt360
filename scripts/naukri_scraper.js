@@ -690,7 +690,7 @@ function getUniquexlsxPath(baseName) {
 // Load the certificate (adjusted path to go up one directory)
 let ca;
 try {
-    ca = fs.readFileSync(path.join(__dirname, "..", "certs", "isrgrootx1.pem"));
+    ca = fs.readFileSync(path.join(__dirname, "..", "certs", "ca.pem"));
 } catch (err) {
     console.error("Error loading certificate:", err.message);
     process.exit(1);

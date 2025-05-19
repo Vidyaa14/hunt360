@@ -269,7 +269,7 @@ async function getGoogleMapsData(companyName, location, driver) {
 // Database connection configuration
 let ca;
 try {
-    ca = fs.readFileSync(path.join(__dirname, "..", "certs", "isrgrootx1.pem"));
+    ca = fs.readFileSync(path.join(__dirname, "..", "certs", "ca.pem"));
 } catch (err) {
     console.error("Error loading certificate:", err.message);
     process.exit(1);
