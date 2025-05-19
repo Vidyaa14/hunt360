@@ -4,12 +4,17 @@ import fs from 'fs-extra';
 import path from 'path';
 import xlsx from 'xlsx';
 import mysql from 'mysql2/promise'; // Use mysql2/promise for async/await
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // === Configuration ===
 const industry = process.argv[2] || 'Data Science';
 const city = process.argv[3] || 'Mumbai';
-const downloadsFolder = path.join(require('os').homedir(), 'Downloads');
+const downloadsFolder = path.join(__dirname, "exports");
+if (!fs.existsSync(downloadsFolder)) fs.mkdirSync(downloadsFolder);
+
 const baseName = `${industry}_${city}_Shine_Data`;
 
 // === Generate Unique Excel Filename ===

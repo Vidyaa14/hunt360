@@ -272,7 +272,10 @@ import path from 'path';
 import { Builder, By, until } from 'selenium-webdriver';
 import xlsx from 'xlsx';
 import mysql from 'mysql2/promise';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // --- Args ---
 if (process.argv.length !== 4) {
@@ -284,8 +287,8 @@ const industry = process.argv[2];
 const city = process.argv[3];
 
 // --- Paths ---
-const downloadsFolder = path.join(require("os").homedir(), "/Downloads");
-if (!fs.existsSync(downloadsFolder)) fs.mkdirSync(downloadsFolder, { recursive: true });
+const downloadsFolder = path.join(__dirname, "exports");
+if (!fs.existsSync(downloadsFolder)) fs.mkdirSync(downloadsFolder);
 
 function getUniqueExcelFileName(baseName) {
     const base = path.join(downloadsFolder, baseName + ".xlsx");

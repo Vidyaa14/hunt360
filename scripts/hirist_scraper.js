@@ -14,7 +14,9 @@ let gstTracker = {};
 const industry = process.argv[2] || "Software Development";
 const city = process.argv[3] || "Bangalore";
 
-const downloadsFolder = path.join(require('os').homedir(), 'Downloads');
+const downloadsFolder = path.join(__dirname, "exports");
+if (!fs.existsSync(downloadsFolder)) fs.mkdirSync(downloadsFolder);
+
 const baseFileName = `${industry}_${city}_Hirist_Enriched.xlsx`;
 
 function getNextAvailableFilename(basePath, fileName) {

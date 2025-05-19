@@ -268,7 +268,9 @@ if (!industry || !city) {
   process.exit(1);
 }
 
-const downloadsFolder = path.join(os.homedir(), 'Downloads');
+const downloadsFolder = path.join(__dirname, "exports");
+if (!fs.existsSync(downloadsFolder)) fs.mkdirSync(downloadsFolder);
+
 let baseName = `${industry}_${city}_Glassdoor.xlsx`;
 let filePath = path.join(downloadsFolder, baseName);
 let fileCount = 1;

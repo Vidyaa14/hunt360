@@ -4,7 +4,10 @@ import path from 'path';
 import XLSX from 'xlsx';
 import os from 'os';
 import mysql from 'mysql2/promise';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // ----------------------------- CLI & Global Setup ----------------------------- //
 if (process.argv.length !== 4) {
   console.log("Usage: node script.js <industry> <city>");
@@ -17,7 +20,8 @@ const data = [];
 const gstTracker = {};
 
 // Get the system's Downloads folder path (for Windows, macOS, Linux)
-const downloadsFolder = path.join(os.homedir(), 'Downloads');
+const downloadsFolder = path.join(__dirname, "exports");
+if (!fs.existsSync(downloadsFolder)) fs.mkdirSync(downloadsFolder);
 
 // Ensure the Downloads directory exists
 if (!fs.existsSync(downloadsFolder)) {

@@ -547,6 +547,10 @@ import xlsx from 'xlsx';
 import mysql from 'mysql2/promise'; // Use mysql2/promise for async/await
 
 const { join } = path; // destructuring join from path
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 let interrupted = false;
 let data = [];
@@ -666,7 +670,9 @@ async function getGoogleMapsData(driver, companyName, location) {
 }
 
 function getUniquexlsxPath(baseName) {
-    const downloads = path.join(require("os").homedir(), "Downloads");
+    const downloadsFolder = path.join(__dirname, "exports");
+    if (!fs.existsSync(downloadsFolder)) fs.mkdirSync(downloadsFolder);
+
     const base = path.join(downloads, baseName + ".xlsx");
     if (!fs.existsSync(base)) return base;
 
