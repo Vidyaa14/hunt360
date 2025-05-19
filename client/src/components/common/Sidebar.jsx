@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
 import {
-    Home,
     BarChart2,
-    FileText,
-    Search,
     Briefcase,
-    User,
-    Settings,
+    ChevronDown,
     ChevronLeft,
     ChevronRight,
-    ChevronDown,
     ChevronUp,
     Circle,
+    FileText,
+    Home,
     Save,
+    Search,
+    Settings,
+    Database,
+    User,
+    Wand,
+    Edit,
+    Megaphone,
 } from 'lucide-react';
+import { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 
 export default function Sidebar({ isOpen, toggleSidebar }) {
     const [openDropdowns, setOpenDropdowns] = useState({});
@@ -48,10 +52,20 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
             ]
         },
         { to: '/hrhunt', icon: Briefcase, label: 'HR Hunt' },
-        { to: '/profile', icon: User, label: 'Profile' },
+        {
+            to: '/corporate',
+            icon: User,
+            label: 'Corporate Hunt',
+            children: [
+                { to: "/dashboard/corporate/dashboard", icon: Home, label: "Dashboard" },
+                { to: "/dashboard/corporate/data-scraping", icon: Database, label: "Data Scraping" },
+                { to: "/dashboard/corporate/bulk-data-cleaning", icon: Wand, label: "Bulk Data Cleaning" },
+                { to: "/dashboard/corporate/single-data-edit", icon: Edit, label: "Single Data Edit" },
+                { to: "/dashboard/corporate/marketing-data", icon: Megaphone, label: "Marketing Data" },
+            ]
+        },
         { to: '/settings', icon: Settings, label: 'Settings' },
     ];
-
     return (
         <aside
             className={`

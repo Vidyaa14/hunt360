@@ -1,15 +1,27 @@
-FROM node:23.9.0-alpine3.21 AS build
+FROM node:20-alpine
 
-WORKDIR /usr/src/app
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    udev \
+    ttf-freefont \
+    bash \
+    curl \
+    unzip \
+    chromium-chromedriver
+
+ENV CHROME_BIN=/usr/bin/chromium-browser \
+    CHROMEDRIVER_BIN=/usr/bin/chromedriver \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    NODE_ENV=production
+
+WORKDIR /app
+
 COPY package*.json ./
-RUN npm ci
+
+RUN npm ci --omit=dev
+
 COPY . .
-
-FROM node:23.9.0-alpine3.21
-
-WORKDIR /usr/src/app
-COPY --from=build /usr/src/app /usr/src/app
-RUN npm ci --only=production
 
 EXPOSE 3000
 

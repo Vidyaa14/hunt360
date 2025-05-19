@@ -1,10 +1,10 @@
-// PICTURE PERFECT
-const { Builder, By, until } = require('selenium-webdriver');
-const chrome = require('selenium-webdriver/chrome');
-const fs = require('fs-extra');
-const path = require('path');
-const xlsx = require('xlsx');
-const mysql = require('mysql2/promise'); // Use mysql2/promise for async/await
+import { Builder, By, until } from 'selenium-webdriver';
+import chrome from 'selenium-webdriver/chrome';
+import fs from 'fs-extra';
+import path from 'path';
+import xlsx from 'xlsx';
+import mysql from 'mysql2/promise'; // Use mysql2/promise for async/await
+
 
 // === Configuration ===
 const industry = process.argv[2] || 'Data Science';
@@ -52,30 +52,10 @@ async function getGoogleMapsData(driver, companyName, location) {
             await driver.sleep(5000); // Wait for the detail panel to load
         }
 
-        const name = await driver
-            .findElement(By.xpath("//h1[@class='DUwDvf lfPIob']"))
-            .getText()
-            .catch(() => companyName);
-        const address = await driver
-            .findElement(
-                By.xpath(
-                    "//div[contains(@class, 'Io6YTe') and contains(text(), ',')]"
-                )
-            )
-            .getText()
-            .catch(() => 'N/A');
-        const phone = await driver
-            .findElement(
-                By.xpath(
-                    "//div[contains(@class, 'Io6YTe') and starts-with(text(), '0')]"
-                )
-            )
-            .getText()
-            .catch(() => 'N/A');
-        const website = await driver
-            .findElement(By.xpath("//a[contains(@aria-label, 'Website')]"))
-            .getAttribute('href')
-            .catch(() => 'N/A');
+        const name = await driver.findElement(By.xpath("//h1[@class='DUwDvf lfPIob']")).getText().catch(() => companyName);
+        const address = await driver.findElement(By.xpath("//div[contains(@class, 'Io6YTe') and contains(text(), ',')]")).getText().catch(() => 'N/A');
+        const phone = await driver.findElement(By.xpath("//div[contains(@class, 'Io6YTe') and starts-with(text(), '0')]")).getText().catch(() => 'N/A');
+        const website = await driver.findElement(By.xpath("//a[contains(@aria-label, 'Website')]")).getAttribute('href').catch(() => 'N/A');
 
         await driver.close();
         await driver.switchTo().window(tabs[0]);
@@ -87,13 +67,8 @@ async function getGoogleMapsData(driver, companyName, location) {
             await driver.close();
             const tabs = await driver.getAllWindowHandles();
             await driver.switchTo().window(tabs[0]);
-        } catch {}
-        return {
-            name: companyName,
-            address: 'N/A',
-            phone: 'N/A',
-            website: 'N/A',
-        };
+        } catch { }
+        return { name: companyName, address: 'N/A', phone: 'N/A', website: 'N/A' };
     }
 }
 
@@ -111,22 +86,14 @@ async function getGSTNumber(driver, companyName) {
         await input.clear();
         await input.sendKeys(companyName);
 
-        const button = await driver.findElement(
-            By.xpath("//input[@value='Find GST number']")
-        );
+        const button = await driver.findElement(By.xpath("//input[@value='Find GST number']"));
         await button.click();
         await driver.sleep(4000);
 
-        const elements = await driver.findElements(
-            By.xpath(
-                "//p[contains(@class, 'yellow') and contains(@class, 'lighten-5')]"
-            )
-        );
+        const elements = await driver.findElements(By.xpath("//p[contains(@class, 'yellow') and contains(@class, 'lighten-5')]"));
         for (const el of elements) {
             const text = await el.getText();
-            const match = text.match(
-                /\b\d{2}[A-Z0-9]{10}[1-9A-Z]{1}Z[0-9A-Z]{1}\b/
-            );
+            const match = text.match(/\b\d{2}[A-Z0-9]{10}[1-9A-Z]{1}Z[0-9A-Z]{1}\b/);
             if (match) {
                 await driver.close();
                 await driver.switchTo().window(tabs[0]);
@@ -147,12 +114,7 @@ async function getGSTNumber(driver, companyName) {
 (async function main() {
     const driver = await new Builder()
         .forBrowser('chrome')
-        .setChromeOptions(
-            new chrome.Options().addArguments(
-                '--incognito',
-                '--start-maximized'
-            )
-        )
+        .setChromeOptions(new chrome.Options().addArguments('--incognito', '--start-maximized'))
         .build();
 
     let collectedData = [];
@@ -161,9 +123,7 @@ async function getGSTNumber(driver, companyName) {
         await driver.get('https://www.shine.com/');
         await driver.sleep(5000);
 
-        const jobInputBox = await driver.findElement(
-            By.xpath("//input[@placeholder='Job title, skills']")
-        );
+        const jobInputBox = await driver.findElement(By.xpath("//input[@placeholder='Job title, skills']"));
         await jobInputBox.click();
         await driver.sleep(1000);
 
@@ -175,75 +135,52 @@ async function getGSTNumber(driver, companyName) {
         await locationInput.clear();
         await locationInput.sendKeys(city);
 
-        const searchBtn = await driver.findElement(
-            By.xpath("//button[text()='Search jobs']")
-        );
+        const searchBtn = await driver.findElement(By.xpath("//button[text()='Search jobs']"));
         await searchBtn.click();
         await driver.sleep(5000);
 
         let nextExists = true;
 
         while (nextExists) {
-            await driver.executeScript(
-                'window.scrollTo(0, document.body.scrollHeight)'
-            );
+            await driver.executeScript("window.scrollTo(0, document.body.scrollHeight)");
             await driver.sleep(3000);
 
-            const jobCards = await driver.findElements(
-                By.css('.jobCardNova_bigCard__W2xn3.jdbigCard')
-            );
+            const jobCards = await driver.findElements(By.css('.jobCardNova_bigCard__W2xn3.jdbigCard'));
 
             for (const card of jobCards) {
                 try {
-                    const title = await card
-                        .findElement(By.css("a[href*='/jobs/']"))
-                        .getText();
-                    const company = await card
-                        .findElement(
-                            By.xpath(
-                                ".//span[contains(@class, 'jobCardNova_bigCardTopTitleName')]"
-                            )
-                        )
-                        .getText();
-                    const locElem = await card.findElement(
-                        By.xpath(".//div[contains(@class, 'Location')]/span")
-                    );
+                    const title = await card.findElement(By.css("a[href*='/jobs/']")).getText();
+                    const company = await card.findElement(By.xpath(".//span[contains(@class, 'jobCardNova_bigCardTopTitleName')]")).getText();
+                    const locElem = await card.findElement(By.xpath(".//div[contains(@class, 'Location')]/span"));
                     const location = await locElem.getText();
                     const cityParsed = location.split(',')[0];
 
-                    console.log(
-                        `[INFO] Processing: ${company} @ ${cityParsed}`
-                    );
+                    console.log(`[INFO] Processing: ${company} @ ${cityParsed}`);
 
                     // Use the company name to fetch additional info from Google Maps
-                    const mapsInfo = await getGoogleMapsData(
-                        driver,
-                        company,
-                        cityParsed
-                    );
+                    const mapsInfo = await getGoogleMapsData(driver, company, cityParsed);
 
                     // Get GST number (if available) from findgst.in
                     const gstNumber = await getGSTNumber(driver, company);
 
                     // Push the collected data into the array
                     collectedData.push({
-                        Job_Title: title,
-                        Company_Name: company, // Save the company name scraped from Shine
-                        Location: cityParsed,
-                        Address: mapsInfo.address,
-                        Phone: mapsInfo.phone,
-                        Website: mapsInfo.website,
-                        'GST Number(s)': gstNumber,
+                        'Job_Title': title,
+                        'Company_Name': company,  // Save the company name scraped from Shine
+                        'Location': cityParsed,
+                        'Address': mapsInfo.address,
+                        'Phone': mapsInfo.phone,
+                        'Website': mapsInfo.website,
+                        'GST Number(s)': gstNumber
                     });
+
                 } catch (e) {
                     console.error(`[Card Error]`, e);
                 }
             }
 
             try {
-                const nextBtn = await driver.findElement(
-                    By.xpath("//img[@class='paginationNova_rs__MYIE_']")
-                );
+                const nextBtn = await driver.findElement(By.xpath("//img[@class='paginationNova_rs__MYIE_']"));
                 await nextBtn.click();
                 await driver.sleep(4000);
             } catch {
@@ -260,21 +197,30 @@ async function getGSTNumber(driver, companyName) {
     }
 })();
 
-const ca = fs.readFileSync(join(__dirname, 'certs', 'isrgrootx1.pem'));
-
 // Database connection configuration
+
+let ca;
+try {
+    ca = fs.readFileSync(path.join(__dirname, "..", "certs", "isrgrootx1.pem"));
+} catch (err) {
+    console.error("Error loading certificate:", err.message);
+    process.exit(1);
+}
+
+// Database configuration
 const dbConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root', // Replace with your MySQL username2
-    password: process.env.DB_PASS || 'VD12@cstl', // Replace with your MySQL password
-    database: process.env.DB_NAME || 'mydatabase',
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
     ssl: {
         ca: ca,
     },
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0, // Replace with your database name
+    queueLimit: 0,
 };
+
 
 async function saveDataToDatabase(data) {
     if (data.length === 0) return;
@@ -288,13 +234,13 @@ async function saveDataToDatabase(data) {
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             `;
             await connection.execute(query, [
-                record['Company_Name'],
-                record['Location'],
-                record['Job_Title'],
-                record['Address'],
-                record['Phone'],
-                record['Website'],
-                record['GST Number(s)'],
+                record["Company_Name"],
+                record["Location"],
+                record["Job_Title"],
+                record["Address"],
+                record["Phone"],
+                record["Website"],
+                record["GST Number(s)"]
             ]);
         }
         console.log(`Saved ${data.length} records to database.`);
