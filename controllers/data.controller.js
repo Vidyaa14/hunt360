@@ -7,128 +7,120 @@ const upload = multer({ storage: storage });
 
 export const uploadFile = [
     upload.single("file"),
-    (req, res) => {
-        if (!req.file) {
-            return res.status(400).json({ error: "No file uploaded" });
-        }
+    async (req, res) => {
+        if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
         try {
             const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
-            const sheetName = workbook.SheetNames[0];
-            const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+            const sheet = workbook.SheetNames[0];
+            const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet]);
 
-            if (sheetData.length === 0) {
+            if (data.length === 0)
                 return res.status(400).json({ error: "Empty file uploaded" });
-            }
 
-            const insertQuery =
-                "INSERT INTO scraped_data (company_name, location, address, phone_number, website_link, job_title, gst_number) VALUES ?";
-            const values = sheetData.map((row) => [
+            const insertQuery = `
+        INSERT INTO scraped_data 
+        (company_name, location, address, phone_number, website_link, job_title, gst_number)
+        VALUES ?
+      `;
+
+            const values = data.map(row => [
                 row["Company_Name"] || "",
                 row.Location ? row.Location.split(",")[0].trim() : "",
                 row["Address"] || "",
                 row["Phone"] || "",
                 row["Website"] || "",
                 row["Job_Title"] || "",
-                row["GST Number(s)"] ? row["GST Number(s)"].split(",")[0].trim() : "",
+                row["GST Number(s)"] ? row["GST Number(s)"].split(",")[0].trim() : ""
             ]);
 
-            db.query(insertQuery, [values], (err, result) => {
-                if (err) {
-                    console.error("MySQL Insert Error:", err);
-                    return res.status(500).json({ error: "Database insert failed" });
-                }
-                res.json({ message: `Uploaded ${result.affectedRows} records successfully` });
-            });
+            const [result] = await db.query(insertQuery, [values]);
+            res.json({ message: `Uploaded ${result.affectedRows} records successfully` });
         } catch (error) {
-            console.error("Error processing file:", error);
-            return res.status(500).json({ error: "Failed to process the uploaded file" });
+            console.error("Upload error:", error);
+            res.status(500).json({ error: "Failed to process uploaded file" });
         }
-    },
+    }
 ];
 
-export const cleanDuplicates = (req, res) => {
-    const deleteQuery = `
+export const cleanDuplicates = async (req, res) => {
+    try {
+        const deleteQuery = `
       DELETE t1 FROM scraped_data t1
       INNER JOIN scraped_data t2 
       ON t1.company_name = t2.company_name 
       AND t1.location = t2.location
-      WHERE t1.id > t2.id;
+      WHERE t1.id > t2.id
     `;
-
-    db.query(deleteQuery, (err, result) => {
-        if (err) {
-            console.error("MySQL Delete Error:", err);
-            return res.status(500).json({ error: "Failed to remove duplicates" });
-        }
+        const [result] = await db.query(deleteQuery);
         res.json({ message: `Removed ${result.affectedRows} duplicate records successfully` });
-    });
+    } catch (err) {
+        console.error("Deduplication error:", err);
+        res.status(500).json({ error: "Failed to remove duplicates" });
+    }
 };
 
-export const getDataStats = (req, res) => {
-    const stats = {};
+export const getDataStats = async (req, res) => {
+    try {
+        const [totalResult] = await db.query("SELECT COUNT(*) AS total FROM scraped_data");
+        const stats = { total: totalResult[0].total };
 
-    db.query("SELECT COUNT(*) AS total FROM scraped_data", (err, totalResult) => {
-        if (err) return res.status(500).json({ error: "Failed to get total count" });
+        const [missingResult] = await db.query(`
+      SELECT 
+        COUNT(*) AS total,
+        SUM(company_name IS NULL OR company_name = '' OR company_name IN ('N/A','-')) AS company_name,
+        SUM(location IS NULL OR location = '' OR location IN ('N/A','-')) AS location,
+        SUM(job_title IS NULL OR job_title = '' OR job_title IN ('N/A','-')) AS job_title,
+        SUM(address IS NULL OR address = '' OR address IN ('N/A','-')) AS address,
+        SUM(phone_number IS NULL OR phone_number = '' OR phone_number IN ('N/A','-')) AS phone_number,
+        SUM(website_link IS NULL OR website_link = '' OR website_link IN ('N/A','-')) AS website_link
+      FROM scraped_data
+    `);
 
-        stats.total = totalResult[0].total;
+        stats.missing = {
+            company_name: missingResult[0].company_name,
+            location: missingResult[0].location,
+            job_title: missingResult[0].job_title,
+            address: missingResult[0].address,
+            phone_number: missingResult[0].phone_number,
+            website_link: missingResult[0].website_link
+        };
 
-        db.query(
-            `SELECT 
-          COUNT(*) AS total,
-          SUM(CASE WHEN company_name IS NULL OR company_name = '' OR company_name = 'N/A' OR company_name = '-' THEN 1 ELSE 0 END) AS company_name,
-          SUM(CASE WHEN location IS NULL OR location = '' OR location = 'N/A' OR location = '-' THEN 1 ELSE 0 END) AS location,
-          SUM(CASE WHEN job_title IS NULL OR job_title = '' OR job_title = 'N/A' OR job_title = '-' THEN 1 ELSE 0 END) AS job_title,
-          SUM(CASE WHEN address IS NULL OR address = '' OR address = 'N/A' OR address = '-' THEN 1 ELSE 0 END) AS address,
-          SUM(CASE WHEN phone_number IS NULL OR phone_number = '' OR phone_number = 'N/A' OR phone_number = '-' THEN 1 ELSE 0 END) AS phone_number,
-          SUM(CASE WHEN website_link IS NULL OR website_link = '' OR website_link = 'N/A' OR website_link = '-' THEN 1 ELSE 0 END) AS website_link
-        FROM scraped_data`,
-            (err, result) => {
-                if (err) return res.status(500).json({ error: "Failed to get missing count" });
+        const [dupResult] = await db.query(`
+      SELECT SUM(dupe_count - 1) AS duplicates FROM (
+        SELECT COUNT(*) AS dupe_count
+        FROM scraped_data
+        GROUP BY TRIM(LOWER(company_name)), TRIM(LOWER(location))
+        HAVING COUNT(*) > 1
+      ) AS dup
+    `);
 
-                stats.missing = {
-                    company_name: result[0].company_name,
-                    location: result[0].location,
-                    job_title: result[0].job_title,
-                    address: result[0].address,
-                    phone_number: result[0].phone_number,
-                    website_link: result[0].website_link,
-                };
-                stats.total = result[0].total;
-
-                db.query(
-                    `SELECT SUM(dupe_count - 1) AS duplicates FROM (
-              SELECT COUNT(*) AS dupe_count
-              FROM scraped_data
-              GROUP BY TRIM(LOWER(company_name)), TRIM(LOWER(location))
-              HAVING COUNT(*) > 1
-            ) AS dup;`,
-                    (err, dupResult) => {
-                        if (err) return res.status(500).json({ error: "Failed to get duplicate count" });
-
-                        stats.duplicates = dupResult[0].duplicates;
-                        res.json(stats);
-                    }
-                );
-            }
-        );
-    });
+        stats.duplicates = dupResult[0].duplicates;
+        res.json(stats);
+    } catch (err) {
+        console.error("Stats error:", err);
+        res.status(500).json({ error: "Failed to fetch statistics" });
+    }
 };
 
-export const getPreviousScrapes = (req, res) => {
-    const query = "SELECT job_title, company_name, location FROM scraped_data ORDER BY id DESC LIMIT 10";
-
-    db.query(query, (err, results) => {
-        if (err) {
-            console.error("MySQL Fetch Error:", err);
-            return res.status(500).json({ error: "Failed to fetch previous scraped data" });
-        }
+export const getPreviousScrapes = async (req, res) => {
+    try {
+        const [results] = await db.query(`
+      SELECT job_title, company_name, location 
+      FROM scraped_data 
+      ORDER BY id DESC 
+      LIMIT 10
+    `);
         res.json(results);
-    });
+    } catch (err) {
+        console.error("Fetch error:", err);
+        res.status(500).json({ error: "Failed to fetch previous scraped data" });
+    }
 };
 
-export const searchCompanies = (req, res) => {
+export const searchCompanies = async (req, res) => {
     const { name = "", city = "", updated = "", page = 1, limit = 10 } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
 
     let baseQuery = "FROM scraped_data WHERE 1=1";
     const values = [];
@@ -149,39 +141,26 @@ export const searchCompanies = (req, res) => {
         baseQuery += " AND (updated = 'no' OR updated IS NULL)";
     }
 
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    const dataQuery = `SELECT *, updated_at ${baseQuery} LIMIT ? OFFSET ?`;
-    const countQuery = `SELECT COUNT(*) AS total ${baseQuery}`;
-    const dataParams = [...values, parseInt(limit), offset];
-
-    db.query(dataQuery, dataParams, (err, results) => {
-        if (err) {
-            console.error("Data query failed:", err);
-            return res.status(500).json({ error: "Search failed" });
-        }
-
-        db.query(countQuery, values, (err, countResult) => {
-            if (err) {
-                console.error("Count query failed:", err);
-                return res.status(500).json({ error: "Count failed" });
-            }
-
-            const total = countResult[0].total;
-            const totalPages = Math.ceil(total / limit);
-
-            res.json({
-                data: results,
-                total,
-                totalPages,
-                currentPage: parseInt(page),
-                limit: parseInt(limit),
-            });
+    try {
+        const [data] = await db.query(`SELECT *, updated_at ${baseQuery} LIMIT ? OFFSET ?`, [...values, parseInt(limit), offset]);
+        const [count] = await db.query(`SELECT COUNT(*) AS total ${baseQuery}`, values);
+        const total = count[0].total;
+        res.json({
+            data,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: parseInt(page),
+            limit: parseInt(limit),
         });
-    });
+    } catch (err) {
+        console.error("Search error:", err);
+        res.status(500).json({ error: "Search failed" });
+    }
 };
 
-export const searchMarketingData = (req, res) => {
+export const searchMarketingData = async (req, res) => {
     const { name = "", city = "", communication_status = "", lead_status = "", page = 1, limit = 10 } = req.query;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
 
     let baseQuery = "FROM scraped_data WHERE updated = 'yes'";
     const values = [];
@@ -206,38 +185,25 @@ export const searchMarketingData = (req, res) => {
         values.push(lead_status);
     }
 
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    const dataQuery = `SELECT * ${baseQuery} LIMIT ? OFFSET ?`;
-    const countQuery = `SELECT COUNT(*) AS total ${baseQuery}`;
-    const dataParams = [...values, parseInt(limit), offset];
+    try {
+        const [data] = await db.query(`SELECT * ${baseQuery} LIMIT ? OFFSET ?`, [...values, parseInt(limit), offset]);
+        const [count] = await db.query(`SELECT COUNT(*) AS total ${baseQuery}`, values);
+        const total = count[0].total;
 
-    db.query(dataQuery, dataParams, (err, results) => {
-        if (err) {
-            console.error("Marketing data query failed:", err);
-            return res.status(500).json({ error: "Search failed" });
-        }
-
-        db.query(countQuery, values, (err, countResult) => {
-            if (err) {
-                console.error("Marketing count query failed:", err);
-                return res.status(500).json({ error: "Count failed" });
-            }
-
-            const total = countResult[0].total;
-            const totalPages = Math.ceil(total / limit);
-
-            res.json({
-                data: results,
-                total,
-                totalPages,
-                currentPage: parseInt(page),
-                limit: parseInt(limit),
-            });
+        res.json({
+            data,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: parseInt(page),
+            limit: parseInt(limit),
         });
-    });
+    } catch (err) {
+        console.error("Marketing search error:", err);
+        res.status(500).json({ error: "Search failed" });
+    }
 };
 
-export const saveForm = (req, res) => {
+export const saveForm = async (req, res) => {
     const {
         id,
         company_name,
@@ -262,40 +228,20 @@ export const saveForm = (req, res) => {
         address,
     } = req.body;
 
-    if (!id) {
-        return res.status(400).json({ error: "Missing company ID" });
-    }
+    if (!id) return res.status(400).json({ error: "Missing company ID" });
 
-    let formattedMeetingDate = meeting_date;
-    if (meeting_date) {
-        formattedMeetingDate = new Date(meeting_date).toISOString().split("T")[0];
-    }
+    const formattedMeetingDate = meeting_date
+        ? new Date(meeting_date).toISOString().split("T")[0]
+        : null;
 
     const updateQuery = `
-      UPDATE scraped_data SET
-        company_name = ?,
-        contact_person_name = ?,
-        mobile = ?,
-        email = ?,
-        location = ?,
-        state = ?,
-        country = ?,
-        pincode = ?,
-        gst_number = ?,
-        bd_name = ?,
-        phone_number = ?,
-        industry = ?,
-        sub_industry = ?,
-        website_link = ?,
-        updated = ?,
-        communication_status = ?,
-        notes = ?,
-        meeting_date = ?,
-        lead_status = ?,
-        address = ?,
-        updated_at = NOW()
-      WHERE id = ?
-    `;
+    UPDATE scraped_data SET
+      company_name = ?, contact_person_name = ?, mobile = ?, email = ?, location = ?,
+      state = ?, country = ?, pincode = ?, gst_number = ?, bd_name = ?, phone_number = ?,
+      industry = ?, sub_industry = ?, website_link = ?, updated = ?, communication_status = ?,
+      notes = ?, meeting_date = ?, lead_status = ?, address = ?, updated_at = NOW()
+    WHERE id = ?
+  `;
 
     const values = [
         company_name,
@@ -321,30 +267,26 @@ export const saveForm = (req, res) => {
         id,
     ];
 
-    db.query(updateQuery, values, (err, result) => {
-        if (err) {
-            console.error("Update form error:", err);
-            return res.status(500).json({ error: "Failed to update form data" });
-        }
-
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: "No matching record found to update" });
-        }
+    try {
+        const [result] = await db.query(updateQuery, values);
+        if (result.affectedRows === 0)
+            return res.status(404).json({ error: "No matching record found" });
 
         res.json({ message: "Form data updated successfully!" });
-    });
+    } catch (err) {
+        console.error("Update form error:", err);
+        res.status(500).json({ error: "Failed to update form data" });
+    }
 };
 
-export const deleteRecord = (req, res) => {
+export const deleteRecord = async (req, res) => {
     const { id } = req.params;
 
-    const query = "DELETE FROM scraped_data WHERE id = ?";
-    db.query(query, [id], (err, result) => {
-        if (err) {
-            console.error("Error deleting record:", err);
-            return res.status(500).json({ error: "Failed to delete the record" });
-        }
-
+    try {
+        const [result] = await db.query("DELETE FROM scraped_data WHERE id = ?", [id]);
         res.status(200).json({ message: "Record deleted successfully" });
-    });
+    } catch (err) {
+        console.error("Delete error:", err);
+        res.status(500).json({ error: "Failed to delete the record" });
+    }
 };
