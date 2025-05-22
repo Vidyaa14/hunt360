@@ -1,50 +1,53 @@
-import fs from 'fs';
-import mysql from 'mysql2/promise';
-import os from 'os';
-import path from 'path';
 import { Builder, By, Key, until } from 'selenium-webdriver';
-import chrome from 'selenium-webdriver/chrome.js';
+import fs from 'fs';
+import path from 'path';
 import XLSX from 'xlsx';
+import mysql from 'mysql2/promise';
 import { fileURLToPath } from 'url';
+import chrome from 'selenium-webdriver/chrome.js';
+import chromedriver from 'chromedriver';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const chromedriverPath = process.env.CHROMEDRIVER_BIN || '/usr/bin/chromedriver';
-const serviceBuilder = new chrome.ServiceBuilder(chromedriverPath);
+const downloadsFolder = path.join(__dirname, 'exports');
+if (!fs.existsSync(downloadsFolder)) fs.mkdirSync(downloadsFolder, { recursive: true });
 
 const industry = process.argv[2];
-let locationInput = process.argv[3];
+let city = process.argv[3];
 
-if (!industry || !locationInput) {
-    console.log("Usage: node script.js <industry> <location>");
+if (!industry || !city) {
+    console.log('Usage: node script.js <industry> <city>');
     process.exit(1);
 }
 
 const searchTerm = `${industry}`;
-const downloadsFolder = path.join(__dirname, "exports");
-if (!fs.existsSync(downloadsFolder)) fs.mkdirSync(downloadsFolder);
 
+// Unique Excel file creation
 function getUniqueFilename(baseName) {
     const ext = '.xlsx';
     let filename = baseName + ext;
     let counter = 1;
+
     while (fs.existsSync(path.join(downloadsFolder, filename))) {
         filename = `${baseName}(${counter})${ext}`;
         counter++;
     }
+
     return path.join(downloadsFolder, filename);
 }
 
-const filename = getUniqueFilename(`Internshala_${industry.replace(/ /g, '_')}_${locationInput.replace(/ /g, '_')}_Internships`);
+const filename = getUniqueFilename(`Internshala_${industry.replace(/ /g, '_')}_${city.replace(/ /g, '_')}_Internships`);
+
 const headers = ['Job_Title', 'Company_Name', 'Location', 'Address', 'Phone', 'Website', 'GST Number(s)'];
 const rows = [];
 
+// Database connection configuration
 let ca;
 try {
-    ca = fs.readFileSync(path.join(__dirname, "..", "certs", "ca.pem"));
+    ca = fs.readFileSync(path.join(__dirname, '..', 'certs', 'ca.pem'));
 } catch (err) {
-    console.error("Error loading certificate:", err.message);
+    console.error('Error loading certificate:', err.message);
     process.exit(1);
 }
 
@@ -59,8 +62,9 @@ const dbConfig = {
     queueLimit: 0,
 };
 
-async function saveDataToDatabase() {
+export async function saveDataToDatabase() {
     if (rows.length === 0) return;
+
     let connection;
     try {
         connection = await mysql.createConnection(dbConfig);
@@ -76,7 +80,7 @@ async function saveDataToDatabase() {
                 row[3], // Address
                 row[4], // Phone
                 row[5], // Website
-                row[6]  // GST Number(s)
+                row[6], // GST Number(s)
             ]);
         }
         console.log(`Saved ${rows.length} records to database.`);
@@ -87,26 +91,27 @@ async function saveDataToDatabase() {
     }
 }
 
-async function closeAds(driver) {
+export async function closeAds(driver) {
     try {
         const closeBtn = await driver.wait(until.elementLocated(By.xpath("//span[contains(@class, 'ns-') and text()='Close']")), 5000);
         await closeBtn.click();
         await driver.sleep(1000);
-    } catch { }
+    } catch (e) { }
     try {
         const dismissBtn = await driver.wait(until.elementLocated(By.xpath("//div[@id='dismiss-button']")), 5000);
         await dismissBtn.click();
         await driver.sleep(1000);
-    } catch { }
+    } catch (e) { }
 }
 
-async function getGST(driver, companyName, location) {
+export async function getGST(driver, companyName, location) {
     let gstNumbers = [];
     try {
         await driver.executeScript("window.open('');");
         let tabs = await driver.getAllWindowHandles();
         await driver.switchTo().window(tabs[1]);
-        await driver.get("https://findgst.in/gstin-by-name");
+        await driver.get('https://findgst.in/gstin-by-name');
+
         await driver.sleep(2000);
         await closeAds(driver);
 
@@ -118,7 +123,7 @@ async function getGST(driver, companyName, location) {
         await btn.click();
 
         await driver.sleep(5000);
-        await driver.executeScript("window.scrollBy(0, 800);");
+        await driver.executeScript('window.scrollBy(0, 800);');
 
         const resultBlocks = await driver.findElements(By.xpath("//p[contains(@class, 'yellow') and contains(@class, 'lighten-5')]"));
         for (let block of resultBlocks) {
@@ -127,7 +132,7 @@ async function getGST(driver, companyName, location) {
             if (matches) gstNumbers.push(...matches);
         }
     } catch (e) {
-        console.log(`[GST] Error: ${companyName} | ${e.message}`);
+        console.log(`[GST] Error: ${companyName} | ${e}`);
     } finally {
         let tabs = await driver.getAllWindowHandles();
         if (tabs.length > 1) {
@@ -138,12 +143,12 @@ async function getGST(driver, companyName, location) {
     return [...new Set(gstNumbers)];
 }
 
-async function getMapData(driver, company, location) {
+export async function getMapData(driver, company, location) {
     let data = {
-        company: company,
-        address: "N/A",
-        phone: "N/A",
-        website: "N/A"
+        company,
+        address: 'N/A',
+        phone: 'N/A',
+        website: 'N/A',
     };
     try {
         await driver.executeScript("window.open('');");
@@ -166,13 +171,13 @@ async function getMapData(driver, company, location) {
             data.address = await driver.findElement(By.xpath("//div[contains(@class,'Io6YTe') and contains(@class, 'fontBodyMedium')]")).getText();
         } catch { }
         try {
-            data.website = await driver.findElement(By.xpath("//a[contains(@aria-label, 'Website')]")).getAttribute("href");
+            data.website = await driver.findElement(By.xpath("//a[contains(@aria-label, 'Website')]")).getAttribute('href');
         } catch { }
         try {
             data.phone = await driver.findElement(By.xpath("//div[starts-with(text(), '0') and contains(@class, 'Io6YTe')]")).getText();
         } catch { }
     } catch (e) {
-        console.log(`[Maps] Error: ${company} | ${e.message}`);
+        console.log(`[Maps] Error: ${company} | ${e}`);
     } finally {
         let tabs = await driver.getAllWindowHandles();
         if (tabs.length > 1) {
@@ -183,40 +188,40 @@ async function getMapData(driver, company, location) {
     return data;
 }
 
-(async () => {
-    const tempProfileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chrome-profile-'));
+export async function main() {
+    const chromeService = new chrome.ServiceBuilder('/usr/bin/chromedriver');
 
-    const options = new chrome.Options()
-        .addArguments(
-            `--user-data-dir=${tempProfileDir}`,
-            '--no-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu',
-            '--disable-software-rasterizer',
-            '--headless=new'
-        );
+    // Create a unique user data directory
+    const uniqueUserDataDir = path.join(__dirname, `chrome-profile-${Date.now()}-${process.pid}`);
+    if (!fs.existsSync(uniqueUserDataDir)) {
+        fs.mkdirSync(uniqueUserDataDir, { recursive: true });
+    }
 
+
+    // Configure Chrome options
+    const chromeOptions = new chrome.Options();
+    chromeOptions.setChromeBinaryPath('/usr/bin/chromium-browser');
+    chromeOptions.addArguments(`--user-data-dir=${uniqueUserDataDir}`);
+    chromeOptions.addArguments('--no-sandbox'); // For containerized environments
+    chromeOptions.addArguments('--disable-dev-shm-usage'); // Avoid resource issues
+    chromeOptions.addArguments('--headless=new'); // Run in headless mode to reduce conflicts
+    chromeOptions.addArguments('--disable-gpu'); // Disable GPU for headless
+    chromeOptions.addArguments('--disable-extensions'); // Disable extensions to avoid conflicts
+    chromeOptions.addArguments('--disable-cache'); // Prevent cache-related issues
+    chromeOptions.addArguments('--window-size=1920,1080'); // Set window size for consistency
+
+    // Initialize WebDriver with Chrome options
     const driver = await new Builder()
         .forBrowser('chrome')
-        .setChromeOptions(options)
-        .setChromeService(serviceBuilder)
+        .setChromeOptions(chromeOptions)
+        .setChromeService(chromeService)
         .build();
 
     let gstTracker = {};
-    const SCRAPE_TIMEOUT_MS = 3 * 60 * 1000;
-    const startTime = Date.now();
-
-    const maharashtraCities = ['Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Aurangabad'];
-    let citiesToScrape = [locationInput];
-
-    if (locationInput.toLowerCase() === 'maharashtra') {
-        console.log('Detected state input. Scraping for cities: ', maharashtraCities);
-        citiesToScrape = maharashtraCities;
-    }
 
     try {
         await driver.manage().window().maximize();
-        await driver.get("https://internshala.com/");
+        await driver.get('https://internshala.com/');
         await driver.wait(until.elementLocated(By.xpath("//button[@class='search-cta']")), 10000).click();
         await driver.sleep(2000);
 
@@ -225,7 +230,7 @@ async function getMapData(driver, company, location) {
         await driver.sleep(5000);
 
         try {
-            const closePopup = await driver.findElement(By.id("close_popup"));
+            const closePopup = await driver.findElement(By.id('close_popup'));
             await closePopup.click();
             await driver.sleep(2000);
         } catch { }
@@ -236,119 +241,110 @@ async function getMapData(driver, company, location) {
             await driver.sleep(2000);
         } catch { }
 
-        for (let city of citiesToScrape) {
-            console.log(`Scraping for city: ${city}`);
-            const locationDropdown = await driver.wait(until.elementLocated(By.xpath('//*[@id="city_sidebar_chosen"]')), 10000);
-            await locationDropdown.click();
-            await driver.sleep(1000);
-
-            const locationInputField = await driver.wait(until.elementLocated(By.xpath('//*[@id="city_sidebar_chosen"]//input')), 10000);
-            await locationInputField.clear();
-            await locationInputField.sendKeys(city);
-            await driver.sleep(1000);
-
-            try {
-                const suggestion = await driver.wait(until.elementLocated(By.xpath(`//li[contains(text(), '${city}')]`)), 5000);
-                await suggestion.click();
-            } catch {
-                console.log(`No suggestion found for ${city}. Using input as is.`);
-                await locationInputField.sendKeys(Key.RETURN);
-            }
-            await driver.sleep(2000);
-
-            let page = 1;
-            while (true) {
-                if (Date.now() - startTime > SCRAPE_TIMEOUT_MS) {
-                    console.log("Timeout reached. Stopping scraping.");
-                    break;
-                }
-
-                const cards = await driver.findElements(By.css('.individual_internship'));
-                console.log(`Scraping page ${page} with ${cards.length} cards in ${city}`);
-                let foundAtLeastOne = false;
-
-                for (let card of cards) {
-                    try {
-                        let title = await card.findElement(By.css('.job-internship-name a')).getText();
-                        let company = await card.findElement(By.css('.company-name')).getText();
-                        let locationText = await card.findElement(By.css('.locations a')).getText();
-
-                        const locations = locationText.split(',').map(loc => loc.trim().toLowerCase());
-                        const isWorkFromHome = await card.findElements(By.css('.locations .ic-16-home')).then(elements => elements.length > 0);
-
-                        let selectedLocation = locationText;
-                        if (isWorkFromHome) {
-                            selectedLocation = 'Work from home';
-                        } else if (!locations.some(loc => loc.includes(city.toLowerCase()))) {
-                            console.log(`Skipping card: ${title} @ ${company} (Locations: ${locationText} does not include ${city})`);
-                            continue;
-                        } else {
-                            selectedLocation = locations.find(loc => loc.includes(city.toLowerCase())) || locations[0];
-                        }
-
-                        foundAtLeastOne = true;
-                        const enriched = await getMapData(driver, company, selectedLocation);
-                        const gstNumbers = await getGST(driver, company, selectedLocation);
-
-                        let gstToSave = "N/A";
-                        if (gstNumbers.length > 0) {
-                            gstToSave = gstNumbers.join(", ");
-                            gstTracker[company] = gstNumbers;
-                        } else if (gstTracker[company]) {
-                            gstToSave = gstTracker[company].join(", ");
-                        }
-
-                        rows.push([
-                            title,
-                            enriched.company,
-                            selectedLocation,
-                            enriched.address,
-                            enriched.phone,
-                            enriched.website,
-                            gstToSave
-                        ]);
-
-                        console.log(`Scraped: ${title} @ ${company} in ${selectedLocation}`);
-
-                    } catch (e) {
-                        console.error(`Error processing card in ${city}: ${e.message}`);
-                        continue;
-                    }
-                }
-
-                if (!foundAtLeastOne) {
-                    console.log(`No more relevant listings found in ${city}. Moving to next city or exiting.`);
-                    break;
-                }
-
-                try {
-                    const nextBtn = await driver.findElement(By.xpath("//a[contains(text(), 'Next')]"));
-                    await nextBtn.click();
-                    await driver.sleep(3000);
-                    page++;
-                } catch {
-                    console.log(`No next page button found in ${city}. Moving to next city or exiting.`);
-                    break;
-                }
+        const locationSuggestions = await driver.findElements(By.xpath("//a[contains(@class, 'location-link')]"));
+        let matchedCity = null;
+        for (let suggestion of locationSuggestions) {
+            const suggestionText = await suggestion.getText();
+            if (suggestionText.toLowerCase().includes(city.toLowerCase())) {
+                matchedCity = suggestionText;
+                break;
             }
         }
 
-        if (rows.length === 0) {
-            console.log("No internships found for the specified criteria.");
+        if (matchedCity) {
+            console.log(`City suggestion found: ${matchedCity}`);
+            city = matchedCity;
         } else {
-            const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Data');
-            XLSX.writeFile(wb, filename);
-            console.log(`Excel saved as ${filename}`);
+            console.log(`No exact city match found. Continuing with the search for: ${city}`);
+        }
+
+        const locationDropdown = await driver.wait(until.elementLocated(By.xpath('//*[@id="city_sidebar_chosen"]')), 10000);
+        await locationDropdown.click();
+
+        await driver.sleep(1000);
+        const locationInput = await driver.wait(until.elementLocated(By.xpath('//*[@id="city_sidebar_chosen"]//input')), 10000);
+        await locationInput.clear();
+        await locationInput.sendKeys(city);
+        await locationInput.sendKeys(Key.RETURN);
+        await driver.sleep(2000);
+
+        let page = 1;
+        while (true) {
+            const cards = await driver.findElements(By.css('.individual_internship'));
+            console.log(`Scraping page ${page} with ${cards.length} cards`);
+
+            let foundAtLeastOne = false;
+
+            for (let card of cards) {
+                try {
+                    const title = await card.findElement(By.css('h3.job-internship-name a.job-title-href')).getText();
+                    const company = await card.findElement(By.css('p.company-name')).getText();
+                    const locationText = await card.findElement(By.css('div.row-1-item.locations span a')).getText();
+
+                    if (!locationText.toLowerCase().includes(city.toLowerCase())) continue;
+
+                    foundAtLeastOne = true;
+                    const selectedLocation = locationText.split(',')[0].trim();
+
+                    const enriched = await getMapData(driver, company, selectedLocation);
+                    const gstNumbers = await getGST(driver, company, selectedLocation);
+                    let gstToSave = 'N/A';
+
+                    if (gstNumbers.length) {
+                        gstTracker[company] = gstTracker[company] || new Set();
+                        for (let gst of gstNumbers) {
+                            if (!gstTracker[company].has(gst)) {
+                                gstToSave = gst;
+                                gstTracker[company].add(gst);
+                                break;
+                            }
+                        }
+                    }
+
+                    rows.push([
+                        title,
+                        company,
+                        selectedLocation,
+                        enriched.address,
+                        enriched.phone,
+                        enriched.website,
+                        gstToSave,
+                    ]);
+
+                    console.log(`${title} | ${company} | ${selectedLocation} | GST: ${gstToSave}`);
+                } catch (e) {
+                    console.log('Card parsing failed:', e);
+                }
+            }
+
+            if (!foundAtLeastOne) {
+                console.log(`No internships found matching the city "${city}".`);
+            }
 
             await saveDataToDatabase();
-        }
 
-    } catch (err) {
-        console.error("Fatal error:", err.message);
+            const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Internships');
+            XLSX.writeFile(wb, filename);
+            console.log(`Data saved to: ${filename}`);
+
+            try {
+                const nextBtn = await driver.wait(until.elementLocated(By.id('navigation-forward')), 5000);
+                await driver.executeScript("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", nextBtn);
+                await nextBtn.click();
+                page++;
+                await driver.sleep(5000);
+            } catch {
+                console.log('No more pages.');
+                break;
+            }
+        }
+    } catch (e) {
+        console.error('Fatal Error:', e);
     } finally {
         await driver.quit();
-        fs.rmSync(tempProfileDir, { recursive: true, force: true });
     }
-})();
+}
+
+main();

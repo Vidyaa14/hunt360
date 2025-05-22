@@ -13,6 +13,14 @@ import Reports from './features/corporate/pages/Reports';
 import MarketingData from './features/corporate/pages/MarketingData';
 import DataScraping from './features/corporate/pages/DataScraping';
 import BulkDataCleaning from './features/corporate/pages/BulkDataCleaning';
+import CampusDashboard from './features/campus/pages/Dashboard';
+import CampusDataScraping from './features/campus/pages/DataScraping';
+import HRData from './features/campus/pages/HRData';
+import BulkEditing from './features/campus/pages/BulkEditing';
+import CampusReports from './features/campus/pages/Reports';
+import UserManagement from './features/campus/pages/UserManagement';
+import Settings from './features/campus/pages/Settings';
+import MeetingSchedule from './features/campus/pages/MeetingSchedule';
 
 
 const App = () => {
@@ -33,6 +41,18 @@ const App = () => {
                     <Route path="single-data-edit" element={<SingleDataEdit />} />
                     <Route path="marketing-data" element={<MarketingData />} />
                     <Route path="reports" element={<Reports />} />
+                </Route>
+                <Route path="campus">
+                    <Route path="dashboard" element={<CampusDashboard />} />
+                    <Route path="data-scraping" element={<CampusDataScraping />} />
+                    <Route path="bulk-editing" element={<BulkEditing />} />
+                    <Route path="single-editing" element={<SingleDataEdit />} />
+                    <Route path="marketing-data" element={<MarketingData />} />
+                    <Route path="hrdata" element={<HRData />} />
+                    <Route path="reports" element={<CampusReports />} />
+                    <Route path="settings" element={<Settings />} />
+                    <Route path="meeting-schedule" element={<MeetingSchedule />} />
+                    <Route path="user-management" element={<UserManagement />} />
                 </Route>
             </Route>
         </Routes>
