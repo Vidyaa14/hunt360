@@ -22,7 +22,6 @@ import UserManagement from './features/campus/pages/UserManagement';
 import Settings from './features/campus/pages/Settings';
 import MeetingSchedule from './features/campus/pages/MeetingSchedule';
 
-
 const App = () => {
     return (
         <Routes>
@@ -30,29 +29,51 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
 
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}>
+            <Route
+                path="/dashboard"
+                element={
+                    <ProtectedRoute>
+                        <Dashboard />
+                    </ProtectedRoute>
+                }
+            >
                 <Route path="jobsearch" element={<JobHomePage />} />
                 <Route path="savedjobs" element={<SavedJobsPage />} />
                 <Route path="hrhunt" element={<div>HR Hunt Content</div>} />
                 <Route path="corporate">
                     <Route path="dashboard" element={<CorporateDashboard />} />
                     <Route path="data-scraping" element={<DataScraping />} />
-                    <Route path="bulk-data-cleaning" element={<BulkDataCleaning />} />
-                    <Route path="single-data-edit" element={<SingleDataEdit />} />
+                    <Route
+                        path="bulk-data-cleaning"
+                        element={<BulkDataCleaning />}
+                    />
+                    <Route
+                        path="single-data-edit"
+                        element={<SingleDataEdit />}
+                    />
                     <Route path="marketing-data" element={<MarketingData />} />
                     <Route path="reports" element={<Reports />} />
                 </Route>
                 <Route path="campus">
                     <Route path="dashboard" element={<CampusDashboard />} />
-                    <Route path="data-scraping" element={<CampusDataScraping />} />
+                    <Route
+                        path="data-scraping"
+                        element={<CampusDataScraping />}
+                    />
                     <Route path="bulk-editing" element={<BulkEditing />} />
                     <Route path="single-editing" element={<SingleDataEdit />} />
                     <Route path="marketing-data" element={<MarketingData />} />
                     <Route path="hrdata" element={<HRData />} />
                     <Route path="reports" element={<CampusReports />} />
                     <Route path="settings" element={<Settings />} />
-                    <Route path="meeting-schedule" element={<MeetingSchedule />} />
-                    <Route path="user-management" element={<UserManagement />} />
+                    <Route
+                        path="meeting-schedule"
+                        element={<MeetingSchedule />}
+                    />
+                    <Route
+                        path="user-management"
+                        element={<UserManagement />}
+                    />
                 </Route>
             </Route>
         </Routes>

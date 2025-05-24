@@ -10,8 +10,8 @@ const jobsApi = axios.create({
     baseURL: 'https://jsearch.p.rapidapi.com',
     headers: {
         'X-RapidAPI-Key': RAPID_API_KEY,
-        'X-RapidAPI-Host': 'jsearch.p.rapidapi.com'
-    }
+        'X-RapidAPI-Host': 'jsearch.p.rapidapi.com',
+    },
 });
 
 export const searchJobs = async (params) => {
@@ -28,8 +28,8 @@ export const searchJobs = async (params) => {
                 employment_types: params.employment_types || '',
                 job_requirements: params.job_requirements || '',
                 job_titles: params.job_titles || '',
-                company_types: params.company_types || ''
-            }
+                company_types: params.company_types || '',
+            },
         });
 
         return response.data;
@@ -44,8 +44,8 @@ export const getJobDetails = async (jobId) => {
 
         const response = await jobsApi.get('/job-details', {
             params: {
-                job_id: jobId
-            }
+                job_id: jobId,
+            },
         });
 
         return response.data;
@@ -60,20 +60,20 @@ export const checkApiConnection = async () => {
             params: {
                 query: 'developer',
                 page: 1,
-                num_pages: 1
-            }
+                num_pages: 1,
+            },
         });
 
         return {
             success: true,
             status: response.status,
-            message: 'API connection successful'
+            message: 'API connection successful',
         };
     } catch (error) {
         return {
             success: false,
             status: error.response?.status,
-            message: error.message
+            message: error.message,
         };
     }
 };
@@ -84,11 +84,13 @@ const handleError = (error, source) => {
     if (error.response) {
         console.error('🔍 Response Error:', {
             status: error.response.status,
-            data: error.response.data
+            data: error.response.data,
         });
 
         if (error.response.status === 429) {
-            console.warn('Too Many Requests: You might be hitting your plan limit on RapidAPI.');
+            console.warn(
+                'Too Many Requests: You might be hitting your plan limit on RapidAPI.'
+            );
         }
     }
 
@@ -98,5 +100,5 @@ const handleError = (error, source) => {
 export default {
     searchJobs,
     getJobDetails,
-    checkApiConnection
+    checkApiConnection,
 };

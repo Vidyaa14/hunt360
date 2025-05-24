@@ -12,7 +12,9 @@ const Card = ({
     role = 'region',
 }) => {
     const validTailwindClasses = (value, prefix) =>
-        value.startsWith(prefix) || value === 'auto' || /^[0-9]+(px|rem|%)$/.test(value);
+        value.startsWith(prefix) ||
+        value === 'auto' ||
+        /^[0-9]+(px|rem|%)$/.test(value);
 
     const widthClass = validTailwindClasses(width, 'w-') ? width : 'w-full';
     const heightClass = validTailwindClasses(height, 'h-') ? height : 'h-auto';

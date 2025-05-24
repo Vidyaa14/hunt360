@@ -7,12 +7,11 @@ import JobDetailsModal from '../components/jobsearch/JobDetailsModal';
 import JobList from '../components/jobsearch/JobList';
 import SearchBar from '../components/jobsearch/SearchBar';
 
-
 const JobHomePage = () => {
     const [apiStatus, setApiStatus] = useState({
         checked: false,
         working: true,
-        message: ''
+        message: '',
     });
 
     useEffect(() => {
@@ -22,7 +21,7 @@ const JobHomePage = () => {
                 setApiStatus({
                     checked: true,
                     working: result.success,
-                    message: result.message
+                    message: result.message,
                 });
 
                 if (!result.success) {
@@ -33,7 +32,8 @@ const JobHomePage = () => {
                 setApiStatus({
                     checked: true,
                     working: false,
-                    message: 'Failed to connect to job search API. Please check your API key.'
+                    message:
+                        'Failed to connect to job search API. Please check your API key.',
                 });
             }
         };
@@ -89,13 +89,22 @@ const JobHomePage = () => {
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ duration: 0.4 }}
                             >
-                                <h4 className="text-lg font-semibold">API Connection Issue</h4>
-                                <p>{apiStatus.message || 'Unable to connect to the job search API.'}</p>
+                                <h4 className="text-lg font-semibold">
+                                    API Connection Issue
+                                </h4>
+                                <p>
+                                    {apiStatus.message ||
+                                        'Unable to connect to the job search API.'}
+                                </p>
                                 <hr className="my-2" />
                                 <p className="mb-0">
-                                    Make sure you've created a <code>.env</code> file in the root of your project with the following content:
+                                    Make sure you've created a <code>.env</code>{' '}
+                                    file in the root of your project with the
+                                    following content:
                                     <br />
-                                    <code>VITE_RAPID_API_KEY=your_rapidapi_key_here</code>
+                                    <code>
+                                        VITE_RAPID_API_KEY=your_rapidapi_key_here
+                                    </code>
                                 </p>
                             </motion.div>
                         )}

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 export default function Login() {
     const { login } = useContext(AuthContext);
-    
+
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
@@ -26,11 +26,16 @@ export default function Login() {
     return (
         <section className="min-h-screen flex items-center justify-center bg-gray-50 py-16">
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-lg">
-                <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-6">Login to Hunt360</h2>
+                <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-6">
+                    Login to Hunt360
+                </h2>
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-700"
+                        >
                             Email or Username
                         </label>
                         <input
@@ -43,7 +48,10 @@ export default function Login() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium text-gray-700"
+                        >
                             Password
                         </label>
                         <input
@@ -63,7 +71,13 @@ export default function Login() {
                     </button>
                 </form>
                 <p className="mt-6 text-center text-sm text-gray-600">
-                    Don't have an account? <Link to="/signup" className="text-blue-600 hover:underline">Sign Up</Link>
+                    Don't have an account?{' '}
+                    <Link
+                        to="/signup"
+                        className="text-blue-600 hover:underline"
+                    >
+                        Sign Up
+                    </Link>
                 </p>
             </div>
         </section>

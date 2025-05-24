@@ -6,7 +6,6 @@ function Header({ toggleSidebar }) {
                 className="sm:hidden text-gray-600 hover:text-gray-800 text-2xl mr-2"
                 aria-label="Toggle sidebar"
             >
-
                 ☰
             </button>
             <img
@@ -22,4 +21,3 @@ function Header({ toggleSidebar }) {
 }
 
 export default Header;
-

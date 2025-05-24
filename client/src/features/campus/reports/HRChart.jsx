@@ -1,5 +1,12 @@
 /* eslint-disable no-unused-vars */
-import { ArcElement, Chart, Chart as ChartJS, Legend, Tooltip, registerables } from 'chart.js';
+import {
+    ArcElement,
+    Chart,
+    Chart as ChartJS,
+    Legend,
+    Tooltip,
+    registerables,
+} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -21,50 +28,78 @@ function HRChart() {
     const [totalhired, setTotalhired] = useState(0);
     const [totalstudent, setTotalstudent] = useState(0);
 
-
     const states = [
-        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-        "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-        "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-        "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana",
-        "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands",
-        "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Lakshadweep", "Delhi",
-        "Puducherry", "Ladakh", "Jammu and Kashmir"
+        'Andhra Pradesh',
+        'Arunachal Pradesh',
+        'Assam',
+        'Bihar',
+        'Chhattisgarh',
+        'Goa',
+        'Gujarat',
+        'Haryana',
+        'Himachal Pradesh',
+        'Jharkhand',
+        'Karnataka',
+        'Kerala',
+        'Madhya Pradesh',
+        'Maharashtra',
+        'Manipur',
+        'Meghalaya',
+        'Mizoram',
+        'Nagaland',
+        'Odisha',
+        'Punjab',
+        'Rajasthan',
+        'Sikkim',
+        'Tamil Nadu',
+        'Telangana',
+        'Tripura',
+        'Uttar Pradesh',
+        'Uttarakhand',
+        'West Bengal',
+        'Andaman and Nicobar Islands',
+        'Chandigarh',
+        'Dadra and Nagar Haveli and Daman and Diu',
+        'Lakshadweep',
+        'Delhi',
+        'Puducherry',
+        'Ladakh',
+        'Jammu and Kashmir',
     ];
 
     const cities = {
-        "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik"],
-        "Karnataka": ["Bengaluru", "Mysuru", "Hubballi", "Mangaluru"],
-        "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli"],
-        "Telangana": ["Hyderabad", "Warangal", "Nizamabad"],
-        "West Bengal": ["Kolkata", "Howrah", "Durgapur", "Asansol"],
-        "Delhi": ["Delhi", "New Delhi", "Dwarka"],
+        Maharashtra: ['Mumbai', 'Pune', 'Nagpur', 'Thane', 'Nashik'],
+        Karnataka: ['Bengaluru', 'Mysuru', 'Hubballi', 'Mangaluru'],
+        'Tamil Nadu': ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli'],
+        Telangana: ['Hyderabad', 'Warangal', 'Nizamabad'],
+        'West Bengal': ['Kolkata', 'Howrah', 'Durgapur', 'Asansol'],
+        Delhi: ['Delhi', 'New Delhi', 'Dwarka'],
         // Add more states and cities as needed
     };
 
     const handleUpdateReport = async () => {
         try {
-            const response = await fetch("http://localhost:5000/hr-chart?" + new URLSearchParams({
-                state,
-                district,
-                team
-            }), {
-                method: "GET",
-                headers: { "Content-Type": "application/json" }
-            });
+            const response = await fetch(
+                'http://localhost:5000/hr-chart?' +
+                    new URLSearchParams({
+                        state,
+                        district,
+                        team,
+                    }),
+                {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                }
+            );
 
             const data = await response.json();
             setChartData(data.chartData); // Now contains { team, total_hired }
-
         } catch (error) {
-            console.error("Error fetching HR chart data:", error);
+            console.error('Error fetching HR chart data:', error);
         }
     };
 
-
-
-
-    //export 
+    //export
     const handleExportPDF = async () => {
         const pdf = new jsPDF('landscape', 'mm', 'a4');
         const chartElements = document.querySelectorAll('.chart'); // class assigned to each chart
@@ -75,7 +110,10 @@ function HRChart() {
             // Scroll into view in case of rendering issues
             chartEl.scrollIntoView();
 
-            const canvas = await html2canvas(chartEl, { scale: 2, useCORS: true });
+            const canvas = await html2canvas(chartEl, {
+                scale: 2,
+                useCORS: true,
+            });
             const imgData = canvas.toDataURL('image/png');
 
             const imgProps = pdf.getImageProperties(imgData);
@@ -99,8 +137,9 @@ function HRChart() {
                 if (state) queryParams.append('state', state);
                 if (district) queryParams.append('district', district);
 
-
-                const response = await fetch(`http://localhost:5000/totalcollege?${queryParams.toString()}`);
+                const response = await fetch(
+                    `http://localhost:5000/totalcollege?${queryParams.toString()}`
+                );
                 const data = await response.json();
                 setTotalColleges(data.total);
             } catch (error) {
@@ -111,8 +150,7 @@ function HRChart() {
         fetchCollegeCount();
     }, [team, state, district]);
 
-
-    // //total students 
+    // //total students
     useEffect(() => {
         const fetchTotalStudents = async () => {
             try {
@@ -121,7 +159,9 @@ function HRChart() {
                 if (state) queryParams.append('state', state);
                 if (district) queryParams.append('district', district);
 
-                const response = await fetch(`http://localhost:5000/totalstudents?${queryParams}`);
+                const response = await fetch(
+                    `http://localhost:5000/totalstudents?${queryParams}`
+                );
                 const data = await response.json();
                 setTotalstudent(data.total_students || 0);
             } catch (error) {
@@ -132,9 +172,6 @@ function HRChart() {
         fetchTotalStudents();
     }, [team, state, district]);
 
-
-
-
     //  total Hired
     useEffect(() => {
         const fetchTotalHired = async () => {
@@ -144,7 +181,9 @@ function HRChart() {
                 if (state) queryParams.append('state', state);
                 if (district) queryParams.append('district', district);
 
-                const response = await fetch(`http://localhost:5000/totalhired?${queryParams.toString()}`);
+                const response = await fetch(
+                    `http://localhost:5000/totalhired?${queryParams.toString()}`
+                );
                 const data = await response.json();
 
                 // ✅ Corrected key: total_hired
@@ -157,20 +196,20 @@ function HRChart() {
         fetchTotalHired();
     }, [team, state, district]);
 
-
-
-
     return (
         <div>
-
             {/* Filter Card */}
-            <p className="text-sm sm:text-base md:text-lg text-gray-500 font-semibold mt-1">Hr Reports </p>
+            <p className="text-sm sm:text-base md:text-lg text-gray-500 font-semibold mt-1">
+                Hr Reports{' '}
+            </p>
 
             <Card className="p-6 sm:p-8 md:p-10">
                 <div>
                     {/* Header */}
                     <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
-                        <p className="text-xl font-bold text-gray-600">Report Filters</p>
+                        <p className="text-xl font-bold text-gray-600">
+                            Report Filters
+                        </p>
                         <div className="flex flex-wrap gap-3">
                             <button
                                 className="px-4 py-2 shadow-md hover:bg-gray-700 text-white bg-gray-900 rounded-full flex items-center"
@@ -185,13 +224,16 @@ function HRChart() {
                     </div>
 
                     <p className="font-semibold text-gray-500 mb-5">
-                        Customize your reports by time period, course and other parameters
+                        Customize your reports by time period, course and other
+                        parameters
                     </p>
 
                     {/* Filters */}
                     <div className="flex flex-col sm:flex-row sm:flex-wrap gap-6 items-start">
                         <div className="min-w-[200px]">
-                            <label className="block text-base font-medium text-gray-700">State</label>
+                            <label className="block text-base font-medium text-gray-700">
+                                State
+                            </label>
                             <select
                                 value={state}
                                 onChange={(e) => setState(e.target.value)}
@@ -207,7 +249,9 @@ function HRChart() {
                         </div>
 
                         <div className="min-w-[200px]">
-                            <label className="block text-base font-medium text-gray-700">City</label>
+                            <label className="block text-base font-medium text-gray-700">
+                                City
+                            </label>
                             <select
                                 value={district}
                                 onChange={(e) => setDistrict(e.target.value)}
@@ -224,7 +268,9 @@ function HRChart() {
                         </div>
 
                         <div className="min-w-[200px]">
-                            <label className="block text-base font-medium text-gray-700">Team</label>
+                            <label className="block text-base font-medium text-gray-700">
+                                Team
+                            </label>
                             <select
                                 value={team}
                                 onChange={(e) => setteam(e.target.value)}
@@ -255,159 +301,195 @@ function HRChart() {
                 <div className="grid grid-cols-4 min-w-[800px] gap-4 mt-5 mb-6">
                     {/* Total Colleges */}
                     <Card className="p-4 text-center">
-                        <div className="text-lg font-medium text-gray-700">Total Colleges</div>
-                        <h3 className="text-2xl font-semibold text-gray-900 mt-2">{totalColleges}</h3>
-                        <span className="text-green-600 text-sm mt-1 block">+12.5% vs last year</span>
+                        <div className="text-lg font-medium text-gray-700">
+                            Total Colleges
+                        </div>
+                        <h3 className="text-2xl font-semibold text-gray-900 mt-2">
+                            {totalColleges}
+                        </h3>
+                        <span className="text-green-600 text-sm mt-1 block">
+                            +12.5% vs last year
+                        </span>
                     </Card>
 
                     {/* Total Students */}
                     <Card className="p-4 text-center">
-                        <div className="text-lg font-medium text-gray-700">Total Students</div>
-                        <h3 className="text-2xl font-semibold text-gray-900 mt-2">{totalstudent}</h3>
-                        <span className="text-blue-600 text-sm mt-1 block">12 Hrs engaged</span>
+                        <div className="text-lg font-medium text-gray-700">
+                            Total Students
+                        </div>
+                        <h3 className="text-2xl font-semibold text-gray-900 mt-2">
+                            {totalstudent}
+                        </h3>
+                        <span className="text-blue-600 text-sm mt-1 block">
+                            12 Hrs engaged
+                        </span>
                     </Card>
 
                     {/* Total Hired */}
                     <Card className="p-4 text-center">
-                        <div className="text-lg font-medium text-gray-700">Total Hired</div>
-                        <h3 className="text-2xl font-semibold text-gray-900 mt-2">{totalhired}</h3>
-                        <span className="text-green-600 text-sm mt-1 block">+18.3% growth</span>
+                        <div className="text-lg font-medium text-gray-700">
+                            Total Hired
+                        </div>
+                        <h3 className="text-2xl font-semibold text-gray-900 mt-2">
+                            {totalhired}
+                        </h3>
+                        <span className="text-green-600 text-sm mt-1 block">
+                            +18.3% growth
+                        </span>
                     </Card>
                 </div>
             </div>
 
-
             {/* Charts Section */}
             <div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
                     {/* Bar Chart */}
                     <div className="bg-white chart p-6 rounded-lg shadow-md">
-                        <h3 className="text-xl font-semibold mb-4">Placement by Course</h3>
+                        <h3 className="text-xl font-semibold mb-4">
+                            Placement by Course
+                        </h3>
                         {chartData.length > 0 ? (
                             <Bar
                                 data={{
-                                    labels: chartData.map(item => item.team),
-                                    datasets: [{
-                                        label: 'Total Placements',
-                                        data: chartData.map(item => item.total_hired),
-                                        backgroundColor: 'rgba(190, 178, 198, 0.7)',
-                                        borderWidth: 1
-                                    }]
+                                    labels: chartData.map((item) => item.team),
+                                    datasets: [
+                                        {
+                                            label: 'Total Placements',
+                                            data: chartData.map(
+                                                (item) => item.total_hired
+                                            ),
+                                            backgroundColor:
+                                                'rgba(190, 178, 198, 0.7)',
+                                            borderWidth: 1,
+                                        },
+                                    ],
                                 }}
                                 options={{
                                     scales: {
                                         y: {
-                                            beginAtZero: true
-                                        }
-                                    }
+                                            beginAtZero: true,
+                                        },
+                                    },
                                 }}
                             />
                         ) : (
-                            <p className="text-gray-500">No data available for chart.</p>
+                            <p className="text-gray-500">
+                                No data available for chart.
+                            </p>
                         )}
                     </div>
 
                     {/* Scatter Chart */}
                     <div className="bg-white chart p-6 rounded-lg shadow-md">
-                        <h3 className="text-xl font-semibold mb-4">Placement Distribution</h3>
+                        <h3 className="text-xl font-semibold mb-4">
+                            Placement Distribution
+                        </h3>
                         {chartData.length > 0 ? (
                             <Scatter
                                 data={{
                                     datasets: [
                                         {
                                             label: 'Placement Distribution',
-                                            data: chartData.map(item => ({
+                                            data: chartData.map((item) => ({
                                                 x: item.team,
-                                                y: item.total_hired
+                                                y: item.total_hired,
                                             })),
-                                            backgroundColor: 'rgba(75, 192, 192, 0.6)', // Teal dots
+                                            backgroundColor:
+                                                'rgba(75, 192, 192, 0.6)', // Teal dots
                                             borderColor: '#fff',
                                             pointRadius: 6,
-                                            pointHoverRadius: 8
-                                        }
-                                    ]
+                                            pointHoverRadius: 8,
+                                        },
+                                    ],
                                 }}
                                 options={{
                                     responsive: true,
                                     plugins: {
                                         legend: {
-                                            display: false
+                                            display: false,
                                         },
                                         tooltip: {
                                             callbacks: {
-                                                label: context => {
+                                                label: (context) => {
                                                     return `${context.raw.x}: ${context.raw.y}`;
-                                                }
-                                            }
-                                        }
+                                                },
+                                            },
+                                        },
                                     },
                                     scales: {
                                         x: {
                                             type: 'category',
                                             title: {
                                                 display: true,
-                                                text: 'Course'
-                                            }
+                                                text: 'Course',
+                                            },
                                         },
                                         y: {
                                             title: {
                                                 display: true,
-                                                text: 'Total Placed'
+                                                text: 'Total Placed',
                                             },
-                                            beginAtZero: true
-                                        }
-                                    }
+                                            beginAtZero: true,
+                                        },
+                                    },
                                 }}
                             />
                         ) : (
-                            <p className="text-gray-500">No data available for chart.</p>
+                            <p className="text-gray-500">
+                                No data available for chart.
+                            </p>
                         )}
                     </div>
                 </div>
-                <Card className='chart mt-5'>
+                <Card className="chart mt-5">
                     <Line
                         data={{
-                            labels: chartData.map(item => item.team),
-                            datasets: [{
-                                label: 'Total Placements',
-                                data: chartData.map(item => item.total_hired),
-                                fill: false,
-                                borderColor: 'rgba(59, 130, 246, 0.7)', // Blue with 0.7 transparency
-                                tension: 0.4, // For smooth curves
-                                pointBackgroundColor: 'rgba(59, 130, 246, 1)',
-                                pointBorderColor: '#fff',
-                                pointHoverBackgroundColor: '#fff',
-                                pointHoverBorderColor: 'rgba(59, 130, 246, 1)'
-                            }]
+                            labels: chartData.map((item) => item.team),
+                            datasets: [
+                                {
+                                    label: 'Total Placements',
+                                    data: chartData.map(
+                                        (item) => item.total_hired
+                                    ),
+                                    fill: false,
+                                    borderColor: 'rgba(59, 130, 246, 0.7)', // Blue with 0.7 transparency
+                                    tension: 0.4, // For smooth curves
+                                    pointBackgroundColor:
+                                        'rgba(59, 130, 246, 1)',
+                                    pointBorderColor: '#fff',
+                                    pointHoverBackgroundColor: '#fff',
+                                    pointHoverBorderColor:
+                                        'rgba(59, 130, 246, 1)',
+                                },
+                            ],
                         }}
                         options={{
                             responsive: true,
                             plugins: {
                                 legend: {
                                     display: true,
-                                    position: 'top'
+                                    position: 'top',
                                 },
                                 tooltip: {
                                     mode: 'index',
                                     intersect: false,
-                                }
+                                },
                             },
                             scales: {
                                 x: {
                                     title: {
                                         display: true,
-                                        text: 'Courses'
-                                    }
+                                        text: 'Courses',
+                                    },
                                 },
                                 y: {
                                     beginAtZero: true,
                                     title: {
                                         display: true,
-                                        text: 'Placed Students'
-                                    }
-                                }
-                            }
+                                        text: 'Placed Students',
+                                    },
+                                },
+                            },
                         }}
                     />
                 </Card>
@@ -417,6 +499,3 @@ function HRChart() {
 }
 
 export default HRChart;
-
-
-

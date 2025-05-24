@@ -1,6 +1,5 @@
-
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
@@ -8,25 +7,27 @@ const baseURL = import.meta.env.VITE_API_BASE_URL
     : 'http://localhost:3000/api/corporate';
 
 const DataScraping = () => {
-    const [customIndustry, setCustomIndustry] = useState("");
-    const [customState, setCustomState] = useState("");
+    const [customIndustry, setCustomIndustry] = useState('');
+    const [customState, setCustomState] = useState('');
     const [selectedWebsite, setSelectedWebsite] = useState('');
     const [scrapedData, setScrapedData] = useState([]);
     const [logs, setLogs] = useState([]);
-    const [finalFile, setFinalFile] = useState("");
+    const [finalFile, setFinalFile] = useState('');
     const [isScraping, setIsScraping] = useState(false);
 
     const navigate = useNavigate();
     const goToDashboard = () => navigate('/');
 
-    useEffect(() => { fetchData(); }, []);
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const fetchData = async () => {
         try {
             const response = await axios.get(`${baseURL}/previous-scrapes`);
             setScrapedData(response.data || []);
         } catch (error) {
-            console.error("❌ Error fetching previous scrapes:", error);
+            console.error('❌ Error fetching previous scrapes:', error);
         }
     };
 
@@ -37,51 +38,68 @@ const DataScraping = () => {
         { name: 'FoundIt', value: 'foundit' },
         { name: 'Glassdoor', value: 'glassdoor' },
         { name: 'Shine', value: 'shine' },
-        { name: 'TimesJob', value: 'timesjob' }
+        { name: 'TimesJob', value: 'timesjob' },
     ];
 
     const handleScrape = async () => {
         if (!customState || !customIndustry || !selectedWebsite) {
-            alert("⚠️ Please select a City, Industry and Website.");
+            alert('⚠️ Please select a City, Industry and Website.');
             return;
         }
 
-        setLogs(["⏳ Scraping has started..."]);
-        setFinalFile("");
+        setLogs(['⏳ Scraping has started...']);
+        setFinalFile('');
         setIsScraping(true);
 
         try {
             const response = await axios.post(`${baseURL}/scrape`, {
                 industry: customIndustry,
                 state: customState,
-                website: selectedWebsite
+                website: selectedWebsite,
             });
 
             if (response.data.error) throw new Error(response.data.error);
 
             setScrapedData(response.data.data || []);
-            setLogs((prevLogs) => [...prevLogs, "✅ Scraping completed successfully!"]);
+            setLogs((prevLogs) => [
+                ...prevLogs,
+                '✅ Scraping completed successfully!',
+            ]);
             if (response.data.fileName) setFinalFile(response.data.fileName);
         } catch (error) {
-            console.error("❌ Scraping Error:", error.message);
-            setLogs((prevLogs) => [...prevLogs, "❌ Error occurred while scraping."]);
-            alert("Error occurred while scraping. Please try again.");
+            console.error('❌ Scraping Error:', error.message);
+            setLogs((prevLogs) => [
+                ...prevLogs,
+                '❌ Error occurred while scraping.',
+            ]);
+            alert('Error occurred while scraping. Please try again.');
         }
 
         setIsScraping(false);
     };
 
-
     return (
-        <div className="min-h-screen px-4 sm:px-6 lg:px-8 py-4 sm:py-0 overflow-y-auto overflow-x-hidden" style={{ backgroundColor: '#ede7f6' }}>
+        <div
+            className="min-h-screen px-4 sm:px-6 lg:px-8 py-4 sm:py-0 overflow-y-auto overflow-x-hidden"
+            style={{ backgroundColor: '#ede7f6' }}
+        >
             <div className="rounded-xl">
                 {/* Scraping Configuration */}
                 <div
                     className="py-4 sm:py-6 px-6 sm:px-8 rounded-md mb-4 sm:mb-6 shadow mx-4 sm:mx-6 lg:mx-[40px]"
-                    style={{ backgroundColor: '#e6e0f8', marginTop: '64px', padding: '15px', marginBottom: '20px' }}
+                    style={{
+                        backgroundColor: '#e6e0f8',
+                        marginTop: '64px',
+                        padding: '15px',
+                        marginBottom: '20px',
+                    }}
                 >
-                    <h2 className="text-lg sm:text-xl font-bold text-black">Scraping Configuration</h2>
-                    <p className="text-xs sm:text-sm text-black">Enter criteria for scraping data.</p>
+                    <h2 className="text-lg sm:text-xl font-bold text-black">
+                        Scraping Configuration
+                    </h2>
+                    <p className="text-xs sm:text-sm text-black">
+                        Enter criteria for scraping data.
+                    </p>
                 </div>
 
                 {/* Content Section */}
@@ -89,7 +107,9 @@ const DataScraping = () => {
                     className="p-4 sm:p-6 rounded-md border-purple-200 mx-4 sm:mx-6 lg:mx-[40px] bg-[#f3e5f5] shadow-[0_2px_5px_rgba(0,0,0,0.1)]"
                     style={{ padding: '20px' }}
                 >
-                    <label className="block text-xs sm:text-sm font-bold text-[#4A148C] mb-1">Industry</label>
+                    <label className="block text-xs sm:text-sm font-bold text-[#4A148C] mb-1">
+                        Industry
+                    </label>
                     <input
                         type="text"
                         value={customIndustry}
@@ -98,7 +118,9 @@ const DataScraping = () => {
                         className="w-full py-2 sm:py-3 px-3 sm:px-4 border border-[#d3cce3] rounded-md mb-3 sm:mb-4 focus:outline-none focus:ring-2 focus:ring-[#6a0dad] text-base sm:text-lg placeholder:text-base sm:placeholder:text-lg"
                     />
 
-                    <label className="block text-xs sm:text-sm font-bold text-[#4A148C] mb-1">City</label>
+                    <label className="block text-xs sm:text-sm font-bold text-[#4A148C] mb-1">
+                        City
+                    </label>
                     <input
                         type="text"
                         value={customState}
@@ -107,7 +129,9 @@ const DataScraping = () => {
                         className="w-full py-2 sm:py-3 px-3 sm:px-4 border border-[#d3cce3] rounded-md mb-3 sm:mb-4 focus:outline-none focus:ring-2 focus:ring-[#6a0dad] text-base sm:text-lg placeholder:text-base sm:placeholder:text-lg"
                     />
 
-                    <label className="block text-xs sm:text-sm font-bold text-[#4A148C] mb-1">Website</label>
+                    <label className="block text-xs sm:text-sm font-bold text-[#4A148C] mb-1">
+                        Website
+                    </label>
                     <select
                         value={selectedWebsite}
                         onChange={(e) => setSelectedWebsite(e.target.value)}
@@ -116,7 +140,9 @@ const DataScraping = () => {
                     >
                         <option value="">Select a Website</option>
                         {websites.map((website, index) => (
-                            <option key={index} value={website.value}>{website.name}</option>
+                            <option key={index} value={website.value}>
+                                {website.name}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -128,7 +154,7 @@ const DataScraping = () => {
                         onClick={handleScrape}
                         disabled={isScraping}
                     >
-                        {isScraping ? " Scraping..." : " Start Scraping "}
+                        {isScraping ? ' Scraping...' : ' Start Scraping '}
                     </button>
                     <button
                         className="bg-[#6A1B9A] text-white py-2 sm:py-[12px] px-4 sm:px-[20px] rounded-md text-sm sm:text-[16px] hover:opacity-90 cursor-pointer w-full sm:w-auto"
@@ -146,37 +172,63 @@ const DataScraping = () => {
 
                 {/* Logs Section */}
                 <div className="mt-4 sm:mt-6 text-xs sm:text-sm text-gray-800 mx-4 sm:mx-6 lg:mx-[40px]">
-                    {logs.length > 0
-                        ? logs.map((log, index) => <p key={index}>{log}</p>)
-                        : finalFile
-                            ? <p>Scraped Data Saved: <strong>{finalFile}</strong></p>
-                            : <p>No data available.</p>}
+                    {logs.length > 0 ? (
+                        logs.map((log, index) => <p key={index}>{log}</p>)
+                    ) : finalFile ? (
+                        <p>
+                            Scraped Data Saved: <strong>{finalFile}</strong>
+                        </p>
+                    ) : (
+                        <p>No data available.</p>
+                    )}
                 </div>
 
                 {/* Previous Scraped Data Section */}
                 <div className="mx-4 sm:mx-6 lg:mx-[40px]">
-                    <h3 className="text-base sm:text-lg font-semibold mt-6 sm:mt-8 mb-1 sm:mb-2">📌 Previous Scraped Data</h3>
+                    <h3 className="text-base sm:text-lg font-semibold mt-6 sm:mt-8 mb-1 sm:mb-2">
+                        📌 Previous Scraped Data
+                    </h3>
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse bg-[#f9f9f9] shadow-md text-xs sm:text-sm font-sans mt-4 sm:mt-5 min-w-[600px]">
                             <thead>
                                 <tr className="bg-[#6a0dad]">
-                                    <th className="p-2 sm:p-[12px] text-[#ffffff] uppercase text-left border border-[#ddd] text-xs sm:text-sm">Job Title</th>
-                                    <th className="p-2 sm:p-[12px] text-[#ffffff] uppercase text-left border border-[#ddd] text-xs sm:text-sm">Company</th>
-                                    <th className="p-2 sm:p-[12px] text-[#ffffff] uppercase text-left border border-[#ddd] text-xs sm:text-sm">Location</th>
+                                    <th className="p-2 sm:p-[12px] text-[#ffffff] uppercase text-left border border-[#ddd] text-xs sm:text-sm">
+                                        Job Title
+                                    </th>
+                                    <th className="p-2 sm:p-[12px] text-[#ffffff] uppercase text-left border border-[#ddd] text-xs sm:text-sm">
+                                        Company
+                                    </th>
+                                    <th className="p-2 sm:p-[12px] text-[#ffffff] uppercase text-left border border-[#ddd] text-xs sm:text-sm">
+                                        Location
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {scrapedData.length > 0 ? (
                                     scrapedData.map((row, index) => (
-                                        <tr key={index} className={`${index % 2 === 0 ? 'bg-[#e6e6fa]' : ''} hover:bg-[#dcd0ff] transition duration-300`}>
-                                            <td className="p-2 sm:p-[12px] border border-[#ddd]">{row.job_title}</td>
-                                            <td className="p-2 sm:p-[12px] border border-[#ddd]">{row.company_name}</td>
-                                            <td className="p-2 sm:p-[12px] border border-[#ddd]">{row.location}</td>
+                                        <tr
+                                            key={index}
+                                            className={`${index % 2 === 0 ? 'bg-[#e6e6fa]' : ''} hover:bg-[#dcd0ff] transition duration-300`}
+                                        >
+                                            <td className="p-2 sm:p-[12px] border border-[#ddd]">
+                                                {row.job_title}
+                                            </td>
+                                            <td className="p-2 sm:p-[12px] border border-[#ddd]">
+                                                {row.company_name}
+                                            </td>
+                                            <td className="p-2 sm:p-[12px] border border-[#ddd]">
+                                                {row.location}
+                                            </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="3" className="text-center p-3 sm:p-4 text-red-600">⚠️ No previous scrapes available.</td>
+                                        <td
+                                            colSpan="3"
+                                            className="text-center p-3 sm:p-4 text-red-600"
+                                        >
+                                            ⚠️ No previous scrapes available.
+                                        </td>
                                     </tr>
                                 )}
                             </tbody>

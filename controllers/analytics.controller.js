@@ -1,8 +1,8 @@
 import db from '../config/database.js';
 
 export const getAnalytics = async (req, res) => {
-  try {
-    const [sectorRows] = await db.query(`
+    try {
+        const [sectorRows] = await db.query(`
           SELECT job_title AS sectors, COUNT(*) AS count
           FROM scraped_data
           WHERE job_title IS NOT NULL AND job_title != '' AND job_title NOT IN ('Unknown', 'N/A')
@@ -11,23 +11,22 @@ export const getAnalytics = async (req, res) => {
           LIMIT 5;
       `);
 
-    const [statusRows] = await db.query(`
+        const [statusRows] = await db.query(`
           SELECT communication_status AS status, COUNT(*) AS count
           FROM scraped_data
           GROUP BY communication_status;
       `);
 
-    res.json({ sectors: sectorRows, status: statusRows });
-  } catch (err) {
-    console.error("Error in getAnalytics:", err);
-    res.status(500).json({ error: err.message });
-  }
+        res.json({ sectors: sectorRows, status: statusRows });
+    } catch (err) {
+        console.error('Error in getAnalytics:', err);
+        res.status(500).json({ error: err.message });
+    }
 };
 
-
 export const getYearlyTrends = async (req, res) => {
-  try {
-    const [rows] = await db.query(`
+    try {
+        const [rows] = await db.query(`
           SELECT YEAR(created_at) AS year,
                  SUM(lead_status = 'Closed') AS Closed,
                  SUM(lead_status = 'In Progress') AS InProgress,
@@ -38,17 +37,16 @@ export const getYearlyTrends = async (req, res) => {
           GROUP BY YEAR(created_at)
           ORDER BY year ASC;
       `);
-    res.json(rows);
-  } catch (err) {
-    console.error("Error fetching yearly trends:", err);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+        res.json(rows);
+    } catch (err) {
+        console.error('Error fetching yearly trends:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 };
 
-
 export const getCompanyYearTrends = async (req, res) => {
-  try {
-    const [rows] = await db.query(`
+    try {
+        const [rows] = await db.query(`
           SELECT company_name, YEAR(created_at) AS year, COUNT(*) AS total
           FROM scraped_data
           WHERE company_name IN (
@@ -65,15 +63,15 @@ export const getCompanyYearTrends = async (req, res) => {
           ORDER BY company_name, year;
       `);
 
-    const grouped = {};
-    rows.forEach(({ company_name, year, total }) => {
-      if (!grouped[year]) grouped[year] = { year };
-      grouped[year][company_name] = total;
-    });
+        const grouped = {};
+        rows.forEach(({ company_name, year, total }) => {
+            if (!grouped[year]) grouped[year] = { year };
+            grouped[year][company_name] = total;
+        });
 
-    res.json(Object.values(grouped));
-  } catch (err) {
-    console.error("Error fetching company trends:", err);
-    res.status(500).json({ error: "Failed to fetch company trend data" });
-  }
+        res.json(Object.values(grouped));
+    } catch (err) {
+        console.error('Error fetching company trends:', err);
+        res.status(500).json({ error: 'Failed to fetch company trend data' });
+    }
 };

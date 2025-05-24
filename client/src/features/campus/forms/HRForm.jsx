@@ -47,7 +47,9 @@ const useHrForm = ({ updatedData, setUpdatedData, onSave }) => {
                 await onSave();
                 setErrors({});
             } catch (err) {
-                setErrors({ form: 'Failed to save changes. Please try again.' });
+                setErrors({
+                    form: 'Failed to save changes. Please try again.',
+                });
             } finally {
                 setIsSubmitting(false);
             }
@@ -81,14 +83,19 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
             className="max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-lg space-y-10"
             aria-labelledby="formTitle"
         >
-            <h2 id="formTitle" className="text-3xl font-bold text-center text-gray-800">
+            <h2
+                id="formTitle"
+                className="text-3xl font-bold text-center text-gray-800"
+            >
                 Edit Hiring Team Details
             </h2>
             {errors.form && <p className={errorClass}>{errors.form}</p>}
 
             {/* Section: Basic Information */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Basic Information</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Basic Information
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label htmlFor="College_Name" className={labelClass}>
@@ -104,7 +111,11 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.College_Name}
-                            aria-describedby={errors.College_Name ? 'College_Name-error' : undefined}
+                            aria-describedby={
+                                errors.College_Name
+                                    ? 'College_Name-error'
+                                    : undefined
+                            }
                         />
                         {errors.College_Name && (
                             <p id="College_Name-error" className={errorClass}>
@@ -127,10 +138,14 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.District}
-                            aria-describedby={errors.District ? 'District-error' : undefined}
+                            aria-describedby={
+                                errors.District ? 'District-error' : undefined
+                            }
                         />
                         {errors.District && (
-                            <p id="District-error" className={errorClass}>{errors.District}</p>
+                            <p id="District-error" className={errorClass}>
+                                {errors.District}
+                            </p>
                         )}
                     </div>
 
@@ -148,9 +163,15 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.State}
-                            aria-describedby={errors.State ? 'State-error' : undefined}
+                            aria-describedby={
+                                errors.State ? 'State-error' : undefined
+                            }
                         />
-                        {errors.State && <p id="State-error" className={errorClass}>{errors.State}</p>}
+                        {errors.State && (
+                            <p id="State-error" className={errorClass}>
+                                {errors.State}
+                            </p>
+                        )}
                     </div>
 
                     <div>
@@ -221,7 +242,9 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
 
             {/* Section: Contact Information */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Contact Information</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Contact Information
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label htmlFor="Phone" className={labelClass}>
@@ -258,7 +281,9 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
 
             {/* Section: Director Details */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Director Details</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Director Details
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label htmlFor="Director_name" className={labelClass}>
@@ -310,10 +335,15 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
 
             {/* Section: Placement Coordinator */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Placement Coordinator</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Placement Coordinator
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label htmlFor="Placement_coor_name" className={labelClass}>
+                        <label
+                            htmlFor="Placement_coor_name"
+                            className={labelClass}
+                        >
                             Name
                         </label>
                         <input
@@ -328,7 +358,10 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="Placement_coor_contact" className={labelClass}>
+                        <label
+                            htmlFor="Placement_coor_contact"
+                            className={labelClass}
+                        >
                             Phone Number
                         </label>
                         <input
@@ -343,7 +376,10 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="Placement_coor_email" className={labelClass}>
+                        <label
+                            htmlFor="Placement_coor_email"
+                            className={labelClass}
+                        >
                             Email Address
                         </label>
                         <input
@@ -362,7 +398,9 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
 
             {/* Section: Hiring Team Information */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Hiring Team Information</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Hiring Team Information
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label htmlFor="Hr_team_name" className={labelClass}>
@@ -394,7 +432,10 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="Date_of_Next_Contact" className={labelClass}>
+                        <label
+                            htmlFor="Date_of_Next_Contact"
+                            className={labelClass}
+                        >
                             Date of Next Contact
                         </label>
                         <input
@@ -423,7 +464,10 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="Payment_received" className={labelClass}>
+                        <label
+                            htmlFor="Payment_received"
+                            className={labelClass}
+                        >
                             Payment Received
                         </label>
                         <select
@@ -455,7 +499,10 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="Replacement_period" className={labelClass}>
+                        <label
+                            htmlFor="Replacement_period"
+                            className={labelClass}
+                        >
                             Replacement Period
                         </label>
                         <input
@@ -491,10 +538,15 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
 
             {/* Section: Placement Details */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Placement Details</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Placement Details
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label htmlFor="Spoke_for_placement" className={labelClass}>
+                        <label
+                            htmlFor="Spoke_for_placement"
+                            className={labelClass}
+                        >
                             Spoke for Placement
                         </label>
                         <select
@@ -528,7 +580,10 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
                         </select>
                     </div>
                     <div>
-                        <label htmlFor="Interview_status" className={labelClass}>
+                        <label
+                            htmlFor="Interview_status"
+                            className={labelClass}
+                        >
                             Interview Status
                         </label>
                         <input
@@ -543,7 +598,10 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="Total_num_students" className={labelClass}>
+                        <label
+                            htmlFor="Total_num_students"
+                            className={labelClass}
+                        >
                             Total Number of Students
                         </label>
                         <input
@@ -622,10 +680,15 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
 
             {/* Section: Database Information */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Database Information</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Database Information
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label htmlFor="Data_updated_by_name" className={labelClass}>
+                        <label
+                            htmlFor="Data_updated_by_name"
+                            className={labelClass}
+                        >
                             Name of Updater
                         </label>
                         <input
@@ -640,7 +703,10 @@ const HrForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
                         />
                     </div>
                     <div>
-                        <label htmlFor="Update_timestamp" className={labelClass}>
+                        <label
+                            htmlFor="Update_timestamp"
+                            className={labelClass}
+                        >
                             Date of Last Update
                         </label>
                         <input
@@ -724,8 +790,14 @@ HrForm.propTypes = {
         Spoke_for_placement: PropTypes.string,
         Resume_received: PropTypes.string,
         Interview_status: PropTypes.string,
-        Total_num_students: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        Hired_students: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        Total_num_students: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number,
+        ]),
+        Hired_students: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number,
+        ]),
         Term: PropTypes.string,
         Data_updated_by_name: PropTypes.string,
         Placed_on_Month: PropTypes.string,

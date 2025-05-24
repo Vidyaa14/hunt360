@@ -1,5 +1,12 @@
 /* eslint-disable no-unused-vars */
-import { ArcElement, Chart, Chart as ChartJS, Legend, Tooltip, registerables } from 'chart.js';
+import {
+    ArcElement,
+    Chart,
+    Chart as ChartJS,
+    Legend,
+    Tooltip,
+    registerables,
+} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -23,24 +30,53 @@ function MarketingChart() {
     const [totalhiring, sethiring] = useState(0);
     const [totalhiringconsultant, sethiringconsultant] = useState(0);
     const [totalpayment, setotalpayment] = useState(0);
-    const years = ["2023", "2022", "2021"];
+    const years = ['2023', '2022', '2021'];
     const states = [
-        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-        "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-        "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-        "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana",
-        "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands",
-        "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", "Lakshadweep", "Delhi",
-        "Puducherry", "Ladakh", "Jammu and Kashmir"
+        'Andhra Pradesh',
+        'Arunachal Pradesh',
+        'Assam',
+        'Bihar',
+        'Chhattisgarh',
+        'Goa',
+        'Gujarat',
+        'Haryana',
+        'Himachal Pradesh',
+        'Jharkhand',
+        'Karnataka',
+        'Kerala',
+        'Madhya Pradesh',
+        'Maharashtra',
+        'Manipur',
+        'Meghalaya',
+        'Mizoram',
+        'Nagaland',
+        'Odisha',
+        'Punjab',
+        'Rajasthan',
+        'Sikkim',
+        'Tamil Nadu',
+        'Telangana',
+        'Tripura',
+        'Uttar Pradesh',
+        'Uttarakhand',
+        'West Bengal',
+        'Andaman and Nicobar Islands',
+        'Chandigarh',
+        'Dadra and Nagar Haveli and Daman and Diu',
+        'Lakshadweep',
+        'Delhi',
+        'Puducherry',
+        'Ladakh',
+        'Jammu and Kashmir',
     ];
 
     const cities = {
-        "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Thane", "Nashik"],
-        "Karnataka": ["Bengaluru", "Mysuru", "Hubballi", "Mangaluru"],
-        "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli"],
-        "Telangana": ["Hyderabad", "Warangal", "Nizamabad"],
-        "West Bengal": ["Kolkata", "Howrah", "Durgapur", "Asansol"],
-        "Delhi": ["Delhi", "New Delhi", "Dwarka"],
+        Maharashtra: ['Mumbai', 'Pune', 'Nagpur', 'Thane', 'Nashik'],
+        Karnataka: ['Bengaluru', 'Mysuru', 'Hubballi', 'Mangaluru'],
+        'Tamil Nadu': ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli'],
+        Telangana: ['Hyderabad', 'Warangal', 'Nizamabad'],
+        'West Bengal': ['Kolkata', 'Howrah', 'Durgapur', 'Asansol'],
+        Delhi: ['Delhi', 'New Delhi', 'Dwarka'],
         // Add more states and cities as needed
     };
 
@@ -54,8 +90,9 @@ function MarketingChart() {
                 if (state) queryParams.append('state', state);
                 if (district) queryParams.append('district', district);
 
-
-                const response = await fetch(`http://localhost:5000/total-clg?${queryParams.toString()}`);
+                const response = await fetch(
+                    `http://localhost:5000/total-clg?${queryParams.toString()}`
+                );
                 const data = await response.json();
                 setTotalColleges(data.total);
             } catch (error) {
@@ -66,8 +103,7 @@ function MarketingChart() {
         fetchCollegeCount();
     }, [team, proposal, state, district]);
 
-
-    //export 
+    //export
     const handleExportPDF = async () => {
         const pdf = new jsPDF('landscape', 'mm', 'a4');
         const chartElements = document.querySelectorAll('.chart'); // class assigned to each chart
@@ -78,7 +114,10 @@ function MarketingChart() {
             // Scroll into view in case of rendering issues
             chartEl.scrollIntoView();
 
-            const canvas = await html2canvas(chartEl, { scale: 2, useCORS: true });
+            const canvas = await html2canvas(chartEl, {
+                scale: 2,
+                useCORS: true,
+            });
             const imgData = canvas.toDataURL('image/png');
 
             const imgProps = pdf.getImageProperties(imgData);
@@ -93,48 +132,48 @@ function MarketingChart() {
         pdf.save('college_chart_report.pdf');
     };
 
-
-
     const handleUpdateReport = async () => {
-        const response = await fetch("http://localhost:5000/marketing_chart?" + new URLSearchParams({
-            team,
-            proposal,
-            state,
-            district,
-            course
-        }), {
-            method: "GET", // Use GET for fetching data
-            headers: { "Content-Type": "application/json" }
-        });
+        const response = await fetch(
+            'http://localhost:5000/marketing_chart?' +
+                new URLSearchParams({
+                    team,
+                    proposal,
+                    state,
+                    district,
+                    course,
+                }),
+            {
+                method: 'GET', // Use GET for fetching data
+                headers: { 'Content-Type': 'application/json' },
+            }
+        );
         const data = await response.json();
         setChartData(data.chartData); // Assuming the backend sends { chartData: [...] }
     };
 
-
-    // total hiring college 
+    // total hiring college
 
     useEffect(() => {
         fetch('http://localhost:5000/hiring-clg')
-            .then(response => response.json())
-            .then(data => {
-                console.log("Hiring Colleges API Response:", data);
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Hiring Colleges API Response:', data);
                 sethiring(data.total); // Ensure `total` exists in response
             })
-            .catch(error => console.error('Error fetching data:', error));
+            .catch((error) => console.error('Error fetching data:', error));
     }, []);
 
     // total hiring college from consultant
 
     useEffect(() => {
         fetch('http://localhost:5000/hiring-clg-consultant')
-            .then(response => response.json())
-            .then(data => {
-                console.log("Hiring Colleges API Response:", data);
+            .then((response) => response.json())
+            .then((data) => {
+                console.log('Hiring Colleges API Response:', data);
                 sethiringconsultant(data.total); // Ensure `total` exists in response
             })
-            .catch(error => console.error('Error fetching data:', error));
+            .catch((error) => console.error('Error fetching data:', error));
     }, []);
-
 
     //total payment
     useEffect(() => {
@@ -146,8 +185,9 @@ function MarketingChart() {
                 if (state) queryParams.append('state', state);
                 if (district) queryParams.append('district', district);
 
-
-                const response = await fetch(`http://localhost:5000/total-payment?${queryParams.toString()}`);
+                const response = await fetch(
+                    `http://localhost:5000/total-payment?${queryParams.toString()}`
+                );
                 const data = await response.json();
                 setotalpayment(data.total_payment || 0); // Use the correct key 'total_payment' here
             } catch (error) {
@@ -160,14 +200,17 @@ function MarketingChart() {
 
     return (
         <div>
-
             {/* Filter Card */}
-            <p className="text-xl font-semibold text-gray-900 mb-5">Marketing Reports </p>
+            <p className="text-xl font-semibold text-gray-900 mb-5">
+                Marketing Reports{' '}
+            </p>
 
             <Card className="p-6 sm:p-10 max-w-full">
                 <div>
                     <div className="flex flex-col sm:flex-row sm:justify-between mb-4 gap-4 sm:gap-0">
-                        <p className="text-xl font-bold text-gray-600">Report Filters</p>
+                        <p className="text-xl font-bold text-gray-600">
+                            Report Filters
+                        </p>
                         <div className="flex space-x-4 justify-start sm:justify-end">
                             <button
                                 type="button"
@@ -186,7 +229,8 @@ function MarketingChart() {
                     </div>
 
                     <p className="font-semibold text-gray-500 mb-5">
-                        Customize your reports by time period, course and other parameters
+                        Customize your reports by time period, course and other
+                        parameters
                     </p>
 
                     <div>
@@ -194,7 +238,10 @@ function MarketingChart() {
                         <div className="flex flex-col sm:flex-row sm:flex-wrap gap-6 overflow-x-auto">
                             {/* State */}
                             <div className="w-full sm:w-52">
-                                <label htmlFor="state-select" className="block text-xl font-medium text-gray-700 mb-1">
+                                <label
+                                    htmlFor="state-select"
+                                    className="block text-xl font-medium text-gray-700 mb-1"
+                                >
                                     State
                                 </label>
                                 <select
@@ -214,13 +261,18 @@ function MarketingChart() {
 
                             {/* City */}
                             <div className="w-full sm:w-52">
-                                <label htmlFor="city-select" className="block text-xl font-medium text-gray-700 mb-1">
+                                <label
+                                    htmlFor="city-select"
+                                    className="block text-xl font-medium text-gray-700 mb-1"
+                                >
                                     City
                                 </label>
                                 <select
                                     id="city-select"
                                     value={district}
-                                    onChange={(e) => setDistrict(e.target.value)}
+                                    onChange={(e) =>
+                                        setDistrict(e.target.value)
+                                    }
                                     className="w-full p-2 border border-gray-300 rounded"
                                 >
                                     <option value="">Select City</option>
@@ -235,7 +287,10 @@ function MarketingChart() {
 
                             {/* Team */}
                             <div className="w-full sm:w-52">
-                                <label htmlFor="team-select" className="block text-xl font-medium text-gray-700 mb-1">
+                                <label
+                                    htmlFor="team-select"
+                                    className="block text-xl font-medium text-gray-700 mb-1"
+                                >
                                     Team
                                 </label>
                                 <select
@@ -253,13 +308,18 @@ function MarketingChart() {
 
                             {/* Proposal */}
                             <div className="w-full sm:w-52">
-                                <label htmlFor="proposal-select" className="block text-xl font-medium text-gray-700 mb-1">
+                                <label
+                                    htmlFor="proposal-select"
+                                    className="block text-xl font-medium text-gray-700 mb-1"
+                                >
                                     Send Proposal?
                                 </label>
                                 <select
                                     id="proposal-select"
                                     value={proposal}
-                                    onChange={(e) => setProposal(e.target.value)}
+                                    onChange={(e) =>
+                                        setProposal(e.target.value)
+                                    }
                                     className="w-full p-2 border border-gray-300 rounded"
                                 >
                                     <option value="">ALL</option>
@@ -283,45 +343,68 @@ function MarketingChart() {
                 </div>
             </Card>
 
-
             {/* Stats */}
             <div className="overflow-x-auto">
                 <div className="grid grid-cols-4 min-w-[800px] gap-4 mt-5 mb-6">
                     <Card className="p-4 text-center">
-                        <div className="text-lg font-semibold">Total Colleges</div>
-                        <h3 className="text-xl font-semibold">{totalColleges}</h3>
-                        <span className="text-green-600 text-sm">+12.5% vs last year</span>
+                        <div className="text-lg font-semibold">
+                            Total Colleges
+                        </div>
+                        <h3 className="text-xl font-semibold">
+                            {totalColleges}
+                        </h3>
+                        <span className="text-green-600 text-sm">
+                            +12.5% vs last year
+                        </span>
                     </Card>
 
                     <Card className="p-4 text-center">
-                        <div className="text-lg font-semibold">Total Colleges interested in hiring</div>
+                        <div className="text-lg font-semibold">
+                            Total Colleges interested in hiring
+                        </div>
                         <h3 className="text-xl font-semibold">{totalhiring}</h3>
-                        <span className="text-green-600 text-sm">+4.2% vs last year</span>
+                        <span className="text-green-600 text-sm">
+                            +4.2% vs last year
+                        </span>
                     </Card>
 
                     <Card className="p-4 text-center">
-                        <div className="text-lg font-semibold">Total Colleges interested in hiring</div>
-                        <div className="text-m font-semibold">From Talent corner</div>
-                        <h3 className="text-xl font-semibold">{totalhiringconsultant}</h3>
-                        <span className="text-blue-600 text-sm">12 Marketings engaged</span>
+                        <div className="text-lg font-semibold">
+                            Total Colleges interested in hiring
+                        </div>
+                        <div className="text-m font-semibold">
+                            From Talent corner
+                        </div>
+                        <h3 className="text-xl font-semibold">
+                            {totalhiringconsultant}
+                        </h3>
+                        <span className="text-blue-600 text-sm">
+                            12 Marketings engaged
+                        </span>
                     </Card>
 
                     <Card className="p-4 text-center">
-                        <div className="text-lg font-semibold">Total Payment</div>
-                        <h3 className="text-xl font-semibold">₹{totalpayment}</h3>
-                        <span className="text-green-600 text-sm">+18.3% growth</span>
+                        <div className="text-lg font-semibold">
+                            Total Payment
+                        </div>
+                        <h3 className="text-xl font-semibold">
+                            ₹{totalpayment}
+                        </h3>
+                        <span className="text-green-600 text-sm">
+                            +18.3% growth
+                        </span>
                     </Card>
                 </div>
             </div>
-
-
 
             {/* Charts Section */}
             <div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {/* Bar Chart */}
                     <div className="bg-white chart p-6 rounded-lg shadow-md h-40 sm:h-56 lg:h-72">
-                        <h3 className="text-xl font-semibold mb-4">Placement by Course</h3>
+                        <h3 className="text-xl font-semibold mb-4">
+                            Placement by Course
+                        </h3>
                         {chartData.length > 0 ? (
                             <Bar
                                 data={{
@@ -329,8 +412,11 @@ function MarketingChart() {
                                     datasets: [
                                         {
                                             label: 'Total Placements',
-                                            data: chartData.map((item) => item.total_college),
-                                            backgroundColor: 'rgba(190, 178, 198, 0.7)',
+                                            data: chartData.map(
+                                                (item) => item.total_college
+                                            ),
+                                            backgroundColor:
+                                                'rgba(190, 178, 198, 0.7)',
                                             borderWidth: 1,
                                         },
                                     ],
@@ -344,16 +430,20 @@ function MarketingChart() {
                                         },
                                     },
                                 }}
-                            // width and height here are optional, the container controls size now
+                                // width and height here are optional, the container controls size now
                             />
                         ) : (
-                            <p className="text-gray-500">No data available for chart.</p>
+                            <p className="text-gray-500">
+                                No data available for chart.
+                            </p>
                         )}
                     </div>
 
                     {/* Scatter Chart */}
                     <div className="bg-white chart p-6 rounded-lg shadow-md h-40 sm:h-56 lg:h-72">
-                        <h3 className="text-xl font-semibold mb-4">Placement Distribution</h3>
+                        <h3 className="text-xl font-semibold mb-4">
+                            Placement Distribution
+                        </h3>
                         {chartData.length > 0 ? (
                             <Scatter
                                 data={{
@@ -364,11 +454,14 @@ function MarketingChart() {
                                                 x: item.team,
                                                 y: item.total_college,
                                             })),
-                                            backgroundColor: 'rgba(59, 130, 246, 1)',
-                                            borderColor: 'rgba(59, 130, 246, 0.7)',
+                                            backgroundColor:
+                                                'rgba(59, 130, 246, 1)',
+                                            borderColor:
+                                                'rgba(59, 130, 246, 0.7)',
                                             pointBorderColor: '#fff',
                                             pointHoverBackgroundColor: '#fff',
-                                            pointHoverBorderColor: 'rgba(59, 130, 246, 1)',
+                                            pointHoverBorderColor:
+                                                'rgba(59, 130, 246, 1)',
                                         },
                                     ],
                                 }}
@@ -376,23 +469,37 @@ function MarketingChart() {
                                     responsive: true,
                                     maintainAspectRatio: false,
                                     plugins: {
-                                        legend: { display: true, position: 'top' },
-                                        tooltip: { mode: 'nearest', intersect: false },
+                                        legend: {
+                                            display: true,
+                                            position: 'top',
+                                        },
+                                        tooltip: {
+                                            mode: 'nearest',
+                                            intersect: false,
+                                        },
                                     },
                                     scales: {
                                         x: {
                                             type: 'category',
-                                            title: { display: true, text: 'Courses' },
+                                            title: {
+                                                display: true,
+                                                text: 'Courses',
+                                            },
                                         },
                                         y: {
                                             beginAtZero: true,
-                                            title: { display: true, text: 'Placed Students' },
+                                            title: {
+                                                display: true,
+                                                text: 'Placed Students',
+                                            },
                                         },
                                     },
                                 }}
                             />
                         ) : (
-                            <p className="text-gray-500">No data available for chart.</p>
+                            <p className="text-gray-500">
+                                No data available for chart.
+                            </p>
                         )}
                     </div>
                 </div>
@@ -405,14 +512,18 @@ function MarketingChart() {
                             datasets: [
                                 {
                                     label: 'Total Colleges',
-                                    data: chartData.map((item) => item.total_college),
+                                    data: chartData.map(
+                                        (item) => item.total_college
+                                    ),
                                     fill: false,
                                     borderColor: 'rgba(59, 130, 246, 0.7)',
                                     tension: 0.4,
-                                    pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                                    pointBackgroundColor:
+                                        'rgba(59, 130, 246, 1)',
                                     pointBorderColor: '#fff',
                                     pointHoverBackgroundColor: '#fff',
-                                    pointHoverBorderColor: 'rgba(59, 130, 246, 1)',
+                                    pointHoverBorderColor:
+                                        'rgba(59, 130, 246, 1)',
                                 },
                             ],
                         }}
@@ -429,20 +540,18 @@ function MarketingChart() {
                                 },
                                 y: {
                                     beginAtZero: true,
-                                    title: { display: true, text: 'Placed Students' },
+                                    title: {
+                                        display: true,
+                                        text: 'Placed Students',
+                                    },
                                 },
                             },
                         }}
                     />
                 </Card>
             </div>
-
-
         </div>
     );
 }
 
 export default MarketingChart;
-
-
-

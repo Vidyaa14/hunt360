@@ -82,7 +82,8 @@ const useDashboardData = (filters) => {
                 totalColleges: collegeCount.total || 0,
                 totalScraped: totalScraped.total || 0,
                 totalCandidates: totalCandidates.total_candidates || 0,
-                totalPlacedCandidates: totalPlacedCandidates.total_candidates || 0,
+                totalPlacedCandidates:
+                    totalPlacedCandidates.total_candidates || 0,
                 totalHired: totalHired.total_hired || 0,
                 rows: Array.isArray(lastFiveRows) ? lastFiveRows : [],
                 chartData: {
@@ -115,7 +116,9 @@ const useDashboardData = (filters) => {
                     datasets: [
                         {
                             label: 'Total Colleges',
-                            data: courseCollege.map((item) => Number(item.total_College)),
+                            data: courseCollege.map((item) =>
+                                Number(item.total_College)
+                            ),
                             backgroundColor: 'rgba(190, 178, 198, 0.7)',
                             borderWidth: 1,
                         },
@@ -216,12 +219,14 @@ function Dashboard() {
                 Campus Recruitment Dashboard
             </h1>
             <p className="text-sm sm:text-base md:text-lg text-gray-500 font-semibold mt-1">
-                Manage colleges, companies, and recruitment activities in one place.
+                Manage colleges, companies, and recruitment activities in one
+                place.
             </p>
             <div className="flex flex-wrap items-center gap-2 text-gray-400 text-sm sm:text-base">
                 <Calendar />
                 <p className="font-semibold mt-1 sm:mt-0">
-                    {currentTime.toLocaleDateString()} | {currentTime.toLocaleTimeString()}
+                    {currentTime.toLocaleDateString()} |{' '}
+                    {currentTime.toLocaleTimeString()}
                 </p>
             </div>
 
@@ -244,7 +249,9 @@ function Dashboard() {
                 </select>
                 <select
                     value={filters.month}
-                    onChange={(e) => handleFilterChange('month', e.target.value)}
+                    onChange={(e) =>
+                        handleFilterChange('month', e.target.value)
+                    }
                     className="p-2 border rounded-lg"
                 >
                     <option value="">Select Month</option>
@@ -271,21 +278,27 @@ function Dashboard() {
                     type="text"
                     placeholder="State"
                     value={filters.state}
-                    onChange={(e) => handleFilterChange('state', e.target.value)}
+                    onChange={(e) =>
+                        handleFilterChange('state', e.target.value)
+                    }
                     className="p-2 border rounded-lg"
                 />
                 <input
                     type="text"
                     placeholder="District"
                     value={filters.district}
-                    onChange={(e) => handleFilterChange('district', e.target.value)}
+                    onChange={(e) =>
+                        handleFilterChange('district', e.target.value)
+                    }
                     className="p-2 border rounded-lg"
                 />
                 <input
                     type="text"
                     placeholder="Course"
                     value={filters.course}
-                    onChange={(e) => handleFilterChange('course', e.target.value)}
+                    onChange={(e) =>
+                        handleFilterChange('course', e.target.value)
+                    }
                     className="p-2 border rounded-lg"
                 />
                 <input
@@ -350,7 +363,9 @@ function Dashboard() {
                                     Total Candidates Placed
                                 </h1>
                                 <h1 className="text-3xl font-bold">
-                                    {loading ? 'Loading...' : totalPlacedCandidates}
+                                    {loading
+                                        ? 'Loading...'
+                                        : totalPlacedCandidates}
                                 </h1>
                             </div>
                         </div>
@@ -383,44 +398,60 @@ function Dashboard() {
                     {error ? (
                         <p className="text-red-600">{error}</p>
                     ) : loading ? (
-                        <p className="text-gray-500 text-center">Loading data...</p>
+                        <p className="text-gray-500 text-center">
+                            Loading data...
+                        </p>
                     ) : rows.length > 0 ? (
                         <div className="w-full overflow-x-auto">
                             <table className="min-w-full border border-gray-300 text-sm">
                                 <thead className="bg-gray-100 sticky top-0 z-10">
                                     <tr>
-                                        {Object.keys(rows[0]).map((key, i, arr) => (
-                                            <th
-                                                key={key}
-                                                className={`px-2 py-1 text-left text-gray-600 ${i !== arr.length - 1 ? 'border-r border-gray-300' : ''
+                                        {Object.keys(rows[0]).map(
+                                            (key, i, arr) => (
+                                                <th
+                                                    key={key}
+                                                    className={`px-2 py-1 text-left text-gray-600 ${
+                                                        i !== arr.length - 1
+                                                            ? 'border-r border-gray-300'
+                                                            : ''
                                                     }`}
-                                            >
-                                                {key}
-                                            </th>
-                                        ))}
+                                                >
+                                                    {key}
+                                                </th>
+                                            )
+                                        )}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {rows.map((row, rowIndex) => (
-                                        <tr key={rowIndex} className="hover:bg-gray-50">
-                                            {Object.values(row).map((value, colIndex, arr) => (
-                                                <td
-                                                    key={colIndex}
-                                                    className={`px-2 py-1 text-gray-700 whitespace-nowrap ${colIndex !== arr.length - 1
-                                                        ? 'border-r border-gray-200'
-                                                        : ''
+                                        <tr
+                                            key={rowIndex}
+                                            className="hover:bg-gray-50"
+                                        >
+                                            {Object.values(row).map(
+                                                (value, colIndex, arr) => (
+                                                    <td
+                                                        key={colIndex}
+                                                        className={`px-2 py-1 text-gray-700 whitespace-nowrap ${
+                                                            colIndex !==
+                                                            arr.length - 1
+                                                                ? 'border-r border-gray-200'
+                                                                : ''
                                                         }`}
-                                                >
-                                                    {value}
-                                                </td>
-                                            ))}
+                                                    >
+                                                        {value}
+                                                    </td>
+                                                )
+                                            )}
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
                     ) : (
-                        <p className="text-gray-500 text-center">No data found.</p>
+                        <p className="text-gray-500 text-center">
+                            No data found.
+                        </p>
                     )}
                 </Card>
             </div>
@@ -434,11 +465,15 @@ function Dashboard() {
                         </h3>
                         <div className="relative w-full h-[250px] sm:h-[300px] md:h-[350px]">
                             {loading ? (
-                                <p className="text-gray-500">Loading chart...</p>
+                                <p className="text-gray-500">
+                                    Loading chart...
+                                </p>
                             ) : chartData ? (
                                 <Bar data={chartData} options={chartOptions} />
                             ) : (
-                                <p className="text-gray-500">No data available for chart.</p>
+                                <p className="text-gray-500">
+                                    No data available for chart.
+                                </p>
                             )}
                         </div>
                     </Card>
@@ -448,11 +483,18 @@ function Dashboard() {
                         </h3>
                         <div className="relative w-full h-[250px] sm:h-[300px] md:h-[350px]">
                             {loading ? (
-                                <p className="text-gray-500">Loading chart...</p>
+                                <p className="text-gray-500">
+                                    Loading chart...
+                                </p>
                             ) : hrChartData ? (
-                                <Line data={hrChartData} options={chartOptions} />
+                                <Line
+                                    data={hrChartData}
+                                    options={chartOptions}
+                                />
                             ) : (
-                                <p className="text-gray-500">No data available for chart.</p>
+                                <p className="text-gray-500">
+                                    No data available for chart.
+                                </p>
                             )}
                         </div>
                     </Card>
@@ -465,9 +507,14 @@ function Dashboard() {
                         {loading ? (
                             <p className="text-gray-500">Loading chart...</p>
                         ) : courseChartData ? (
-                            <Bar data={courseChartData} options={courseChartOptions} />
+                            <Bar
+                                data={courseChartData}
+                                options={courseChartOptions}
+                            />
                         ) : (
-                            <p className="text-gray-500">Loading chart data...</p>
+                            <p className="text-gray-500">
+                                Loading chart data...
+                            </p>
                         )}
                     </div>
                 </Card>
@@ -475,7 +522,9 @@ function Dashboard() {
 
             {/* Quick Actions */}
             <div className="bg-white p-4 rounded-2xl shadow-md mt-10">
-                <p className="text-xl font-bold text-gray-600 mb-5">Quick Actions</p>
+                <p className="text-xl font-bold text-gray-600 mb-5">
+                    Quick Actions
+                </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <button
                         onClick={() => navigate('/single-editing')}

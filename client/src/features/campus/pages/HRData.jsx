@@ -119,28 +119,41 @@ const useCollegeData = () => {
         }
     }, []);
 
-    const handleEdit = useCallback((collegeId) => {
-        const collegeToEdit = colleges.find((col) => col.Clg_ID === collegeId);
-        setEditingCollege(collegeToEdit);
-        setShowEditForm(true);
-        setUpdatedData({ ...collegeToEdit });
-    }, [colleges]);
+    const handleEdit = useCallback(
+        (collegeId) => {
+            const collegeToEdit = colleges.find(
+                (col) => col.Clg_ID === collegeId
+            );
+            setEditingCollege(collegeToEdit);
+            setShowEditForm(true);
+            setUpdatedData({ ...collegeToEdit });
+        },
+        [colleges]
+    );
 
     const handleUpdate = useCallback(async () => {
         const updatedCollege = {
             ...updatedData,
             Annual_fees: updatedData.Annual_fees, // Fixed typo
-            Update_timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
+            Update_timestamp: new Date()
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' '),
         };
 
         setLoading(true);
         setError('');
 
         try {
-            await apiService.updateCollege(editingCollege.Clg_ID, updatedCollege);
+            await apiService.updateCollege(
+                editingCollege.Clg_ID,
+                updatedCollege
+            );
             setColleges((prev) =>
                 prev.map((col) =>
-                    col.Clg_ID === editingCollege.Clg_ID ? { ...col, ...updatedCollege } : col
+                    col.Clg_ID === editingCollege.Clg_ID
+                        ? { ...col, ...updatedCollege }
+                        : col
                 )
             );
             setEditingCollege(null);
@@ -153,26 +166,27 @@ const useCollegeData = () => {
         }
     }, [editingCollege, updatedData]);
 
-    const handleDelete = useCallback(
-        async (collegeId) => {
-            const confirmDelete = window.confirm('Are you sure you want to delete this record?');
-            if (!confirmDelete) return;
+    const handleDelete = useCallback(async (collegeId) => {
+        const confirmDelete = window.confirm(
+            'Are you sure you want to delete this record?'
+        );
+        if (!confirmDelete) return;
 
-            setLoading(true);
-            setError('');
+        setLoading(true);
+        setError('');
 
-            try {
-                await apiService.deleteCollege(collegeId);
-                setColleges((prev) => prev.filter((col) => col.Clg_ID !== collegeId));
-            } catch (err) {
-                console.error('Error deleting data:', err);
-                setError('Failed to delete college data.');
-            } finally {
-                setLoading(false);
-            }
-        },
-        []
-    );
+        try {
+            await apiService.deleteCollege(collegeId);
+            setColleges((prev) =>
+                prev.filter((col) => col.Clg_ID !== collegeId)
+            );
+        } catch (err) {
+            console.error('Error deleting data:', err);
+            setError('Failed to delete college data.');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     const handleCloseEditForm = useCallback(() => {
         setShowEditForm(false);
@@ -313,7 +327,9 @@ const HrData = ({ className = '' }) => {
 
             {/* Search Form */}
             <Card className="mt-5">
-                <h2 className="text-xl font-bold text-gray-400 mb-5">HR Data Search</h2>
+                <h2 className="text-xl font-bold text-gray-400 mb-5">
+                    HR Data Search
+                </h2>
                 {error && <p className="text-red-600 mb-4">{error}</p>}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div>
@@ -331,7 +347,9 @@ const HrData = ({ className = '' }) => {
                             value={college}
                             onChange={(e) => setCollege(e.target.value)}
                             disabled={loading}
-                            aria-describedby={error ? 'college-name-error' : undefined}
+                            aria-describedby={
+                                error ? 'college-name-error' : undefined
+                            }
                         />
                     </div>
 
@@ -351,9 +369,16 @@ const HrData = ({ className = '' }) => {
                             value={location}
                             onChange={setLocation}
                             menuPortalTarget={document.body}
-                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                            styles={{
+                                menuPortal: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                }),
+                            }}
                             isDisabled={loading}
-                            aria-describedby={error ? 'location-error' : undefined}
+                            aria-describedby={
+                                error ? 'location-error' : undefined
+                            }
                         />
                     </div>
 
@@ -373,9 +398,16 @@ const HrData = ({ className = '' }) => {
                             value={course}
                             onChange={setCourse}
                             menuPortalTarget={document.body}
-                            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                            styles={{
+                                menuPortal: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                }),
+                            }}
                             isDisabled={loading}
-                            aria-describedby={error ? 'courses-error' : undefined}
+                            aria-describedby={
+                                error ? 'courses-error' : undefined
+                            }
                         />
                     </div>
                 </div>
@@ -419,7 +451,9 @@ const HrData = ({ className = '' }) => {
             {/* Search Results */}
             <Card className="mt-5">
                 <div className="overflow-auto">
-                    <h2 className="text-xl font-bold text-gray-400 mb-5">Search Results</h2>
+                    <h2 className="text-xl font-bold text-gray-400 mb-5">
+                        Search Results
+                    </h2>
                     {loading ? (
                         <p className="text-gray-500">Loading...</p>
                     ) : error ? (
@@ -432,7 +466,11 @@ const HrData = ({ className = '' }) => {
                             <thead>
                                 <tr className="bg-gray-100 text-sm">
                                     {tableHeaders.map((header, idx) => (
-                                        <th key={idx} scope="col" className="border px-3 py-2">
+                                        <th
+                                            key={idx}
+                                            scope="col"
+                                            className="border px-3 py-2"
+                                        >
                                             {header}
                                         </th>
                                     ))}
@@ -440,44 +478,117 @@ const HrData = ({ className = '' }) => {
                             </thead>
                             <tbody>
                                 {filteredColleges.map((college) => (
-                                    <tr key={college.Clg_ID} className="text-sm text-center border-t">
-                                        <td className="border px-3 py-2">{college.Clg_ID}</td>
-                                        <td className="border px-3 py-2">{college.College_Name}</td>
-                                        <td className="border px-3 py-2">{college.District}</td>
-                                        <td className="border px-3 py-2">{college.State}</td>
-                                        <td className="border px-3 py-2">{college.Course}</td>
-                                        <td className="border px-3 py-2">{college.Annual_fees}</td>
-                                        <td className="border px-3 py-2">{college.Placement_fees}</td>
-                                        <td className="border px-3 py-2">{college.Ranking}</td>
-                                        <td className="border px-3 py-2">{college.Phone}</td>
-                                        <td className="border px-3 py-2">{college.Address}</td>
-                                        <td className="border px-3 py-2">{college.Director_name}</td>
-                                        <td className="border px-3 py-2">{college.Director_email}</td>
-                                        <td className="border px-3 py-2">{college.Director_number}</td>
-                                        <td className="border px-3 py-2">{college.Placement_coor_name}</td>
-                                        <td className="border px-3 py-2">{college.Placement_coor_email}</td>
-                                        <td className="border px-3 py-2">{college.Placement_coor_contact}</td>
-                                        <td className="border px-3 py-2">{college.Date_of_Contact}</td>
-                                        <td className="border px-3 py-2">{college.Date_of_Next_Contact}</td>
-                                        <td className="border px-3 py-2">{college.Hr_team_name}</td>
-                                        <td className="border px-3 py-2">{college.Send_proposal}</td>
-                                        <td className="border px-3 py-2">{college.Total_payment}</td>
-                                        <td className="border px-3 py-2">{college.Payment_received}</td>
-                                        <td className="border px-3 py-2">{college.Payment_period}</td>
-                                        <td className="border px-3 py-2">{college.Replacement_period}</td>
-                                        <td className="border px-3 py-2">{college.Spoke_for_placement}</td>
-                                        <td className="border px-3 py-2">{college.Resume_received}</td>
-                                        <td className="border px-3 py-2">{college.Interview_status}</td>
-                                        <td className="border px-3 py-2">{college.Total_num_students}</td>
-                                        <td className="border px-3 py-2">{college.Hired_students}</td>
-                                        <td className="border px-3 py-2">{college.Term}</td>
-                                        <td className="border px-3 py-2">{college.Data_updated_by_name}</td>
-                                        <td className="border px-3 py-2">{college.Placed_on_Month}</td>
-                                        <td className="border px-3 py-2">{college.Placed_on_Year}</td>
-                                        <td className="border px-3 py-2">{college.Update_timestamp}</td>
+                                    <tr
+                                        key={college.Clg_ID}
+                                        className="text-sm text-center border-t"
+                                    >
+                                        <td className="border px-3 py-2">
+                                            {college.Clg_ID}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.College_Name}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.District}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.State}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Course}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Annual_fees}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Placement_fees}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Ranking}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Phone}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Address}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Director_name}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Director_email}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Director_number}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Placement_coor_name}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Placement_coor_email}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Placement_coor_contact}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Date_of_Contact}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Date_of_Next_Contact}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Hr_team_name}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Send_proposal}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Total_payment}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Payment_received}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Payment_period}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Replacement_period}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Spoke_for_placement}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Resume_received}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Interview_status}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Total_num_students}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Hired_students}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Term}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Data_updated_by_name}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Placed_on_Month}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Placed_on_Year}
+                                        </td>
+                                        <td className="border px-3 py-2">
+                                            {college.Update_timestamp}
+                                        </td>
                                         <td className="flex flex-col gap-1 justify-center items-center py-2">
                                             <button
-                                                onClick={() => handleEdit(college.Clg_ID)}
+                                                onClick={() =>
+                                                    handleEdit(college.Clg_ID)
+                                                }
                                                 className="bg-yellow-400 shadow-md text-sm px-3 py-1 rounded hover:bg-yellow-500 disabled:opacity-50"
                                                 disabled={loading}
                                                 aria-label={`Edit details of college ${college.College_Name}`}
@@ -485,7 +596,9 @@ const HrData = ({ className = '' }) => {
                                                 Edit
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(college.Clg_ID)}
+                                                onClick={() =>
+                                                    handleDelete(college.Clg_ID)
+                                                }
                                                 className="bg-red-500 shadow-md text-white text-sm px-3 py-1 rounded hover:bg-red-600 disabled:opacity-50"
                                                 disabled={loading}
                                                 aria-label={`Delete college ${college.College_Name}`}
@@ -516,7 +629,10 @@ const HrData = ({ className = '' }) => {
                         className="bg-white p-6 rounded-lg shadow-lg w-[95%] max-w-4xl max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <h2 id="editFormTitle" className="text-2xl font-bold text-gray-800 mb-4">
+                        <h2
+                            id="editFormTitle"
+                            className="text-2xl font-bold text-gray-800 mb-4"
+                        >
                             Edit College Details
                         </h2>
                         <HrForm

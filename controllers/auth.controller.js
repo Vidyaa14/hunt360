@@ -27,7 +27,12 @@ export const signUp = async (req, res) => {
         );
 
         if (existing.length > 0) {
-            return res.status(409).json({ success: false, error: 'Username or email already in use' });
+            return res
+                .status(409)
+                .json({
+                    success: false,
+                    error: 'Username or email already in use',
+                });
         }
 
         const hashed = await bcrypt.hash(password, 10);
@@ -64,12 +69,16 @@ export const login = async (req, res) => {
         const user = rows[0];
 
         if (!user) {
-            return res.status(401).json({ success: false, error: 'Invalid credentials' });
+            return res
+                .status(401)
+                .json({ success: false, error: 'Invalid credentials' });
         }
 
         const match = await bcrypt.compare(password, user.password);
         if (!match) {
-            return res.status(401).json({ success: false, error: 'Invalid credentials' });
+            return res
+                .status(401)
+                .json({ success: false, error: 'Invalid credentials' });
         }
 
         const { id, username, email, role } = user;

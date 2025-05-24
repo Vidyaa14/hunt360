@@ -19,7 +19,8 @@ const useInsertForm = ({ onClose, onAddRow }) => {
     // Validate form fields
     const validateForm = useCallback(() => {
         const newErrors = {};
-        if (!formData.College_Name.trim()) newErrors.College_Name = 'College name is required';
+        if (!formData.College_Name.trim())
+            newErrors.College_Name = 'College name is required';
         if (!formData.District.trim()) newErrors.District = 'City is required';
         if (!formData.State.trim()) newErrors.State = 'State is required';
         if (formData.Annual_fees && isNaN(formData.Annual_fees))
@@ -78,10 +79,11 @@ const useInsertForm = ({ onClose, onAddRow }) => {
 };
 
 const InsertForm = ({ onClose, onAddRow }) => {
-    const { formData, errors, isSubmitting, handleChange, handleInsert } = useInsertForm({
-        onClose,
-        onAddRow,
-    });
+    const { formData, errors, isSubmitting, handleChange, handleInsert } =
+        useInsertForm({
+            onClose,
+            onAddRow,
+        });
 
     const inputClass =
         'w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100';
@@ -90,10 +92,15 @@ const InsertForm = ({ onClose, onAddRow }) => {
 
     return (
         <div className="max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-lg space-y-10">
-            <h2 className="text-3xl font-bold text-center text-gray-800">Add College Details</h2>
+            <h2 className="text-3xl font-bold text-center text-gray-800">
+                Add College Details
+            </h2>
 
             <section aria-labelledby="basic-info">
-                <h3 id="basic-info" className="text-2xl font-semibold text-gray-700 mb-6">
+                <h3
+                    id="basic-info"
+                    className="text-2xl font-semibold text-gray-700 mb-6"
+                >
                     Basic Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -111,7 +118,11 @@ const InsertForm = ({ onClose, onAddRow }) => {
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.College_Name}
-                            aria-describedby={errors.College_Name ? 'College_Name-error' : undefined}
+                            aria-describedby={
+                                errors.College_Name
+                                    ? 'College_Name-error'
+                                    : undefined
+                            }
                         />
                         {errors.College_Name && (
                             <p id="College_Name-error" className={errorClass}>
@@ -134,10 +145,14 @@ const InsertForm = ({ onClose, onAddRow }) => {
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.District}
-                            aria-describedby={errors.District ? 'District-error' : undefined}
+                            aria-describedby={
+                                errors.District ? 'District-error' : undefined
+                            }
                         />
                         {errors.District && (
-                            <p id="District-error" className={errorClass}>{errors.District}</p>
+                            <p id="District-error" className={errorClass}>
+                                {errors.District}
+                            </p>
                         )}
                     </div>
 
@@ -155,10 +170,14 @@ const InsertForm = ({ onClose, onAddRow }) => {
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.State}
-                            aria-describedby={errors.State ? 'State-error' : undefined}
+                            aria-describedby={
+                                errors.State ? 'State-error' : undefined
+                            }
                         />
                         {errors.State && (
-                            <p id="State-error" className={errorClass}>{errors.State}</p>
+                            <p id="State-error" className={errorClass}>
+                                {errors.State}
+                            </p>
                         )}
                     </div>
 
@@ -176,10 +195,16 @@ const InsertForm = ({ onClose, onAddRow }) => {
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.Annual_fees}
-                            aria-describedby={errors.Annual_fees ? 'Annual_fees-error' : undefined}
+                            aria-describedby={
+                                errors.Annual_fees
+                                    ? 'Annual_fees-error'
+                                    : undefined
+                            }
                         />
                         {errors.Annual_fees && (
-                            <p id="Annual_fees-error" className={errorClass}>{errors.Annual_fees}</p>
+                            <p id="Annual_fees-error" className={errorClass}>
+                                {errors.Annual_fees}
+                            </p>
                         )}
                     </div>
 
@@ -197,7 +222,11 @@ const InsertForm = ({ onClose, onAddRow }) => {
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.Placement_fees}
-                            aria-describedby={errors.Placement_fees ? 'Placement_fees-error' : undefined}
+                            aria-describedby={
+                                errors.Placement_fees
+                                    ? 'Placement_fees-error'
+                                    : undefined
+                            }
                         />
                         {errors.Placement_fees && (
                             <p id="Placement_fees-error" className={errorClass}>
@@ -220,10 +249,14 @@ const InsertForm = ({ onClose, onAddRow }) => {
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.Ranking}
-                            aria-describedby={errors.Ranking ? 'Ranking-error' : undefined}
+                            aria-describedby={
+                                errors.Ranking ? 'Ranking-error' : undefined
+                            }
                         />
                         {errors.Ranking && (
-                            <p id="Ranking-error" className={errorClass}>{errors.Ranking}</p>
+                            <p id="Ranking-error" className={errorClass}>
+                                {errors.Ranking}
+                            </p>
                         )}
                     </div>
 
@@ -246,7 +279,10 @@ const InsertForm = ({ onClose, onAddRow }) => {
             </section>
 
             <section aria-labelledby="contact-info">
-                <h3 id="contact-info" className="text-2xl font-semibold text-gray-700 mb-6">
+                <h3
+                    id="contact-info"
+                    className="text-2xl font-semibold text-gray-700 mb-6"
+                >
                     Contact Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -264,10 +300,14 @@ const InsertForm = ({ onClose, onAddRow }) => {
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.Phone}
-                            aria-describedby={errors.Phone ? 'Phone-error' : undefined}
+                            aria-describedby={
+                                errors.Phone ? 'Phone-error' : undefined
+                            }
                         />
                         {errors.Phone && (
-                            <p id="Phone-error" className={errorClass}>{errors.Phone}</p>
+                            <p id="Phone-error" className={errorClass}>
+                                {errors.Phone}
+                            </p>
                         )}
                     </div>
                     <div className="md:col-span-2">

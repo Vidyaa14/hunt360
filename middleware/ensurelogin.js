@@ -3,6 +3,9 @@ export const ensureLoggedIn = (req, res, next) => {
     if (req.session && req.session.orgEmail && req.session.orgName) {
         next();
     } else {
-        res.status(401).json({ success: false, error: "Organization not logged in." });
+        res.status(401).json({
+            success: false,
+            error: 'Organization not logged in.',
+        });
     }
 };

@@ -47,7 +47,9 @@ const useSingleEditForm = ({ updatedData, setUpdatedData, onSave }) => {
                 await onSave();
                 setErrors({});
             } catch (err) {
-                setErrors({ form: 'Failed to save changes. Please try again.' });
+                setErrors({
+                    form: 'Failed to save changes. Please try again.',
+                });
             } finally {
                 setIsSubmitting(false);
             }
@@ -68,12 +70,19 @@ const useSingleEditForm = ({ updatedData, setUpdatedData, onSave }) => {
  * @param {Function} props.onSave - Function to save changes
  * @returns {JSX.Element} SingleEditForm component
  */
-const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave }) => {
-    const { errors, isSubmitting, handleChange, handleSubmit } = useSingleEditForm({
-        updatedData,
-        setUpdatedData,
-        onSave,
-    });
+const SingleEditForm = ({
+    college,
+    updatedData,
+    setUpdatedData,
+    onClose,
+    onSave,
+}) => {
+    const { errors, isSubmitting, handleChange, handleSubmit } =
+        useSingleEditForm({
+            updatedData,
+            setUpdatedData,
+            onSave,
+        });
 
     return (
         <form
@@ -81,14 +90,19 @@ const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave 
             className="max-w-4xl mx-auto p-8 bg-white rounded-2xl shadow-lg space-y-10"
             aria-labelledby="formTitle"
         >
-            <h2 id="formTitle" className="text-3xl font-bold text-center text-gray-800">
+            <h2
+                id="formTitle"
+                className="text-3xl font-bold text-center text-gray-800"
+            >
                 Edit College Details
             </h2>
             {errors.form && <p className={errorClass}>{errors.form}</p>}
 
             {/* Section: Basic Information */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Basic Information</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Basic Information
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label htmlFor="College_Name" className={labelClass}>
@@ -104,7 +118,11 @@ const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave 
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.College_Name}
-                            aria-describedby={errors.College_Name ? 'College_Name-error' : undefined}
+                            aria-describedby={
+                                errors.College_Name
+                                    ? 'College_Name-error'
+                                    : undefined
+                            }
                         />
                         {errors.College_Name && (
                             <p id="College_Name-error" className={errorClass}>
@@ -127,10 +145,14 @@ const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave 
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.District}
-                            aria-describedby={errors.District ? 'District-error' : undefined}
+                            aria-describedby={
+                                errors.District ? 'District-error' : undefined
+                            }
                         />
                         {errors.District && (
-                            <p id="District-error" className={errorClass}>{errors.District}</p>
+                            <p id="District-error" className={errorClass}>
+                                {errors.District}
+                            </p>
                         )}
                     </div>
 
@@ -148,9 +170,15 @@ const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave 
                             onChange={handleChange}
                             disabled={isSubmitting}
                             aria-invalid={!!errors.State}
-                            aria-describedby={errors.State ? 'State-error' : undefined}
+                            aria-describedby={
+                                errors.State ? 'State-error' : undefined
+                            }
                         />
-                        {errors.State && <p id="State-error" className={errorClass}>{errors.State}</p>}
+                        {errors.State && (
+                            <p id="State-error" className={errorClass}>
+                                {errors.State}
+                            </p>
+                        )}
                     </div>
 
                     <div>
@@ -221,7 +249,9 @@ const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave 
 
             {/* Section: Contact Information */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Contact Information</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Contact Information
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label htmlFor="Phone" className={labelClass}>
@@ -258,7 +288,9 @@ const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave 
 
             {/* Section: Director Details */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Director Details</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Director Details
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label htmlFor="Director_name" className={labelClass}>
@@ -310,10 +342,15 @@ const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave 
 
             {/* Section: Placement Coordinator */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Placement Coordinator</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Placement Coordinator
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label htmlFor="Placement_coor_name" className={labelClass}>
+                        <label
+                            htmlFor="Placement_coor_name"
+                            className={labelClass}
+                        >
                             Name
                         </label>
                         <input
@@ -328,7 +365,10 @@ const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave 
                         />
                     </div>
                     <div>
-                        <label htmlFor="Placement_coor_contact" className={labelClass}>
+                        <label
+                            htmlFor="Placement_coor_contact"
+                            className={labelClass}
+                        >
                             Phone Number
                         </label>
                         <input
@@ -343,7 +383,10 @@ const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave 
                         />
                     </div>
                     <div>
-                        <label htmlFor="Placement_coor_email" className={labelClass}>
+                        <label
+                            htmlFor="Placement_coor_email"
+                            className={labelClass}
+                        >
                             Email Address
                         </label>
                         <input
@@ -362,10 +405,15 @@ const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave 
 
             {/* Section: Database Information */}
             <section>
-                <h3 className="text-2xl font-semibold text-gray-700 mb-6">Database Information</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6">
+                    Database Information
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label htmlFor="Data_updated_by_name" className={labelClass}>
+                        <label
+                            htmlFor="Data_updated_by_name"
+                            className={labelClass}
+                        >
                             Name of Updater
                         </label>
                         <input
@@ -380,7 +428,10 @@ const SingleEditForm = ({ college, updatedData, setUpdatedData, onClose, onSave 
                         />
                     </div>
                     <div>
-                        <label htmlFor="Update_timestamp" className={labelClass}>
+                        <label
+                            htmlFor="Update_timestamp"
+                            className={labelClass}
+                        >
                             Date of Last Update
                         </label>
                         <input
@@ -468,8 +519,14 @@ SingleEditForm.propTypes = {
         Spoke_for_placement: PropTypes.string,
         Resume_received: PropTypes.string,
         Interview_status: PropTypes.string,
-        Total_num_students: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        Hired_students: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        Total_num_students: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number,
+        ]),
+        Hired_students: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.number,
+        ]),
         Term: PropTypes.string,
         Placed_on_Month: PropTypes.string,
         Placed_on_Year: PropTypes.string,
@@ -478,6 +535,5 @@ SingleEditForm.propTypes = {
     onClose: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
 };
-
 
 export default memo(SingleEditForm);

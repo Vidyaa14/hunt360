@@ -59,7 +59,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             icon: Search,
             label: 'Job Search',
             children: [
-                { to: '/dashboard/jobsearch', icon: Search, label: 'Search Jobs' },
+                {
+                    to: '/dashboard/jobsearch',
+                    icon: Search,
+                    label: 'Search Jobs',
+                },
                 { to: '/dashboard/savedjobs', icon: Save, label: 'Saved Jobs' },
             ],
         },
@@ -69,11 +73,31 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             icon: User,
             label: 'Corporate Hunt',
             children: [
-                { to: '/dashboard/corporate/dashboard', icon: Home, label: 'Dashboard' },
-                { to: '/dashboard/corporate/data-scraping', icon: Database, label: 'Data Scraping' },
-                { to: '/dashboard/corporate/bulk-data-cleaning', icon: Wand, label: 'Bulk Data Cleaning' },
-                { to: '/dashboard/corporate/single-data-edit', icon: Edit, label: 'Single Data Edit' },
-                { to: '/dashboard/corporate/marketing-data', icon: Megaphone, label: 'Marketing Data' },
+                {
+                    to: '/dashboard/corporate/dashboard',
+                    icon: Home,
+                    label: 'Dashboard',
+                },
+                {
+                    to: '/dashboard/corporate/data-scraping',
+                    icon: Database,
+                    label: 'Data Scraping',
+                },
+                {
+                    to: '/dashboard/corporate/bulk-data-cleaning',
+                    icon: Wand,
+                    label: 'Bulk Data Cleaning',
+                },
+                {
+                    to: '/dashboard/corporate/single-data-edit',
+                    icon: Edit,
+                    label: 'Single Data Edit',
+                },
+                {
+                    to: '/dashboard/corporate/marketing-data',
+                    icon: Megaphone,
+                    label: 'Marketing Data',
+                },
             ],
         },
         {
@@ -81,16 +105,56 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             icon: BookOpen,
             label: 'Campus',
             children: [
-                { to: '/dashboard/campus/dashboard', icon: Home, label: 'Dashboard' },
-                { to: '/dashboard/campus/data-scraping', icon: Database, label: 'Data Scraping' },
-                { to: '/dashboard/campus/bulk-editing', icon: Wand, label: 'Bulk Editing' },
-                { to: '/dashboard/campus/single-editing', icon: Edit, label: 'Single Editing' },
-                { to: '/dashboard/campus/marketing-data', icon: Megaphone, label: 'Marketing Data' },
-                { to: '/dashboard/campus/hrdata', icon: Users, label: 'HR Data' },
-                { to: '/dashboard/campus/reports', icon: BarChart, label: 'Reports' },
-                { to: '/dashboard/campus/settings', icon: Settings, label: 'Settings' },
-                { to: '/dashboard/campus/meeting-schedule', icon: Calendar, label: 'Meeting Schedule' },
-                { to: '/dashboard/campus/user-management', icon: Users, label: 'User Management' },
+                {
+                    to: '/dashboard/campus/dashboard',
+                    icon: Home,
+                    label: 'Dashboard',
+                },
+                {
+                    to: '/dashboard/campus/data-scraping',
+                    icon: Database,
+                    label: 'Data Scraping',
+                },
+                {
+                    to: '/dashboard/campus/bulk-editing',
+                    icon: Wand,
+                    label: 'Bulk Editing',
+                },
+                {
+                    to: '/dashboard/campus/single-editing',
+                    icon: Edit,
+                    label: 'Single Editing',
+                },
+                {
+                    to: '/dashboard/campus/marketing-data',
+                    icon: Megaphone,
+                    label: 'Marketing Data',
+                },
+                {
+                    to: '/dashboard/campus/hrdata',
+                    icon: Users,
+                    label: 'HR Data',
+                },
+                {
+                    to: '/dashboard/campus/reports',
+                    icon: BarChart,
+                    label: 'Reports',
+                },
+                {
+                    to: '/dashboard/campus/settings',
+                    icon: Settings,
+                    label: 'Settings',
+                },
+                {
+                    to: '/dashboard/campus/meeting-schedule',
+                    icon: Calendar,
+                    label: 'Meeting Schedule',
+                },
+                {
+                    to: '/dashboard/campus/user-management',
+                    icon: Users,
+                    label: 'User Management',
+                },
             ],
         },
         { to: '/settings', icon: Settings, label: 'Settings' },
@@ -109,8 +173,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 <div className="flex items-center space-x-3 overflow-hidden">
                     {isOpen && (
                         <>
-                            <img src="/logo.png" alt="Hunt360 Logo" className="h-8 w-auto" />
-                            <span className="text-lg font-semibold text-gray-900">Hunt360</span>
+                            <img
+                                src="/logo.png"
+                                alt="Hunt360 Logo"
+                                className="h-8 w-auto"
+                            />
+                            <span className="text-lg font-semibold text-gray-900">
+                                Hunt360
+                            </span>
                         </>
                     )}
                 </div>
@@ -120,7 +190,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
                     aria-expanded={isOpen}
                 >
-                    {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+                    {isOpen ? (
+                        <ChevronLeft size={20} />
+                    ) : (
+                        <ChevronRight size={20} />
+                    )}
                 </button>
             </div>
 
@@ -134,10 +208,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                             className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200
                 ${isDropdown ? 'cursor-pointer hover:bg-gray-100 text-gray-700' : ''}
               `}
-                            onClick={() => isDropdown && toggleDropdown(item.label)}
+                            onClick={() =>
+                                isDropdown && toggleDropdown(item.label)
+                            }
                             role={isDropdown ? 'button' : undefined}
                             aria-haspopup={isDropdown ? 'true' : undefined}
-                            aria-expanded={isDropdown ? isDropdownOpen : undefined}
+                            aria-expanded={
+                                isDropdown ? isDropdownOpen : undefined
+                            }
                         >
                             <item.icon size={18} className="text-gray-500" />
                             {isOpen && (
@@ -145,7 +223,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                                     <span>{item.label}</span>
                                     {isDropdown && (
                                         <span className="text-gray-400">
-                                            {isDropdownOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                            {isDropdownOpen ? (
+                                                <ChevronUp size={14} />
+                                            ) : (
+                                                <ChevronDown size={14} />
+                                            )}
                                         </span>
                                     )}
                                 </div>
@@ -166,8 +248,15 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                                     }
                                     aria-label={item.label}
                                 >
-                                    <item.icon size={18} className="text-gray-500" />
-                                    {isOpen && <span className="ml-3">{item.label}</span>}
+                                    <item.icon
+                                        size={18}
+                                        className="text-gray-500"
+                                    />
+                                    {isOpen && (
+                                        <span className="ml-3">
+                                            {item.label}
+                                        </span>
+                                    )}
                                 </NavLink>
                             )}
 
@@ -193,7 +282,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                                             }
                                             aria-label={child.label}
                                         >
-                                            <child.icon size={10} className="mr-3 text-gray-400" />
+                                            <child.icon
+                                                size={10}
+                                                className="mr-3 text-gray-400"
+                                            />
                                             <span>{child.label}</span>
                                         </NavLink>
                                     ))}

@@ -13,14 +13,42 @@ const useScrapingForm = () => {
     const fileInputRef = useRef(null);
 
     const states = [
-        'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
-        'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand',
-        'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur',
-        'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab',
-        'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura',
-        'Uttar Pradesh', 'Uttarakhand', 'West Bengal', 'Andaman and Nicobar Islands',
-        'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu', 'Lakshadweep',
-        'Delhi', 'Puducherry', 'Ladakh', 'Jammu and Kashmir',
+        'Andhra Pradesh',
+        'Arunachal Pradesh',
+        'Assam',
+        'Bihar',
+        'Chhattisgarh',
+        'Goa',
+        'Gujarat',
+        'Haryana',
+        'Himachal Pradesh',
+        'Jharkhand',
+        'Karnataka',
+        'Kerala',
+        'Madhya Pradesh',
+        'Maharashtra',
+        'Manipur',
+        'Meghalaya',
+        'Mizoram',
+        'Nagaland',
+        'Odisha',
+        'Punjab',
+        'Rajasthan',
+        'Sikkim',
+        'Tamil Nadu',
+        'Telangana',
+        'Tripura',
+        'Uttar Pradesh',
+        'Uttarakhand',
+        'West Bengal',
+        'Andaman and Nicobar Islands',
+        'Chandigarh',
+        'Dadra and Nagar Haveli and Daman and Diu',
+        'Lakshadweep',
+        'Delhi',
+        'Puducherry',
+        'Ladakh',
+        'Jammu and Kashmir',
     ];
 
     const cities = {
@@ -53,7 +81,14 @@ const useScrapingForm = () => {
         'Jammu and Kashmir': ['Srinagar', 'Jammu'],
     };
 
-    const streams = ['Engineering', 'Management', 'Science', 'Arts', 'Commerce', 'BE/B.Tech'];
+    const streams = [
+        'Engineering',
+        'Management',
+        'Science',
+        'Arts',
+        'Commerce',
+        'BE/B.Tech',
+    ];
 
     const availableCities = customState ? cities[customState] || [] : [];
 
@@ -84,7 +119,14 @@ const useScrapingForm = () => {
     };
 };
 
-const useScrapingLogic = ({ selectedSite, customState, customCity, customStream, fileInputRef, resetForm }) => {
+const useScrapingLogic = ({
+    selectedSite,
+    customState,
+    customCity,
+    customStream,
+    fileInputRef,
+    resetForm,
+}) => {
     const [scrapedData, setScrapedData] = useState([]);
     const [logs, setLogs] = useState([]);
     const [finalFile, setFinalFile] = useState('');
@@ -132,7 +174,8 @@ const useScrapingLogic = ({ selectedSite, customState, customCity, customStream,
                 site: selectedSite,
                 state: customState,
                 city: customCity,
-                stream: selectedSite === 'College Dunia' ? customStream : undefined,
+                stream:
+                    selectedSite === 'College Dunia' ? customStream : undefined,
             });
             setScrapedData(data.results || []);
             if (data.fileName) setFinalFile(data.fileName);
@@ -140,7 +183,10 @@ const useScrapingLogic = ({ selectedSite, customState, customCity, customStream,
             resetForm();
         } catch (err) {
             console.error('Scraping Error:', err.message);
-            setLogs((prev) => [...prev, 'Error occurred while scraping. Please try again.']);
+            setLogs((prev) => [
+                ...prev,
+                'Error occurred while scraping. Please try again.',
+            ]);
             setError('Error occurred while scraping. Please try again.');
         } finally {
             setIsScraping(false);
@@ -169,9 +215,17 @@ const useScrapingLogic = ({ selectedSite, customState, customCity, customStream,
         }
     }, [fileInputRef]);
 
-    return { scrapedData, logs, finalFile, isScraping, files, error, handleScrape, handleUpload };
+    return {
+        scrapedData,
+        logs,
+        finalFile,
+        isScraping,
+        files,
+        error,
+        handleScrape,
+        handleUpload,
+    };
 };
-
 
 const DataScraping = ({ className = '' }) => {
     const {
@@ -192,15 +246,23 @@ const DataScraping = ({ className = '' }) => {
         resetForm,
     } = useScrapingForm();
 
-    const { scrapedData, logs, finalFile, isScraping, files, error, handleScrape, handleUpload } =
-        useScrapingLogic({
-            selectedSite,
-            customState,
-            customCity,
-            customStream,
-            fileInputRef,
-            resetForm,
-        });
+    const {
+        scrapedData,
+        logs,
+        finalFile,
+        isScraping,
+        files,
+        error,
+        handleScrape,
+        handleUpload,
+    } = useScrapingLogic({
+        selectedSite,
+        customState,
+        customCity,
+        customStream,
+        fileInputRef,
+        resetForm,
+    });
 
     const handleRefresh = useCallback(() => {
         window.location.reload();
@@ -212,7 +274,8 @@ const DataScraping = ({ className = '' }) => {
                 Educational Data Scraping
             </h1>
             <p className="text-sm sm:text-base md:text-lg text-gray-500 font-semibold mt-1">
-                Gather educational institution data for targeted marketing campaigns
+                Gather educational institution data for targeted marketing
+                campaigns
             </p>
 
             {/* Tabs and Refresh */}
@@ -220,10 +283,11 @@ const DataScraping = ({ className = '' }) => {
                 <div className="flex flex-wrap gap-4">
                     <button
                         onClick={() => setActiveTab('scrape')}
-                        className={`px-4 py-2 shadow-md rounded-lg transition ${activeTab === 'scrape'
-                            ? 'bg-gray-900 text-white hover:bg-gray-700'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            } disabled:opacity-50`}
+                        className={`px-4 py-2 shadow-md rounded-lg transition ${
+                            activeTab === 'scrape'
+                                ? 'bg-gray-900 text-white hover:bg-gray-700'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        } disabled:opacity-50`}
                         disabled={isScraping}
                         aria-label="Switch to Data Scrape tab"
                     >
@@ -231,10 +295,11 @@ const DataScraping = ({ className = '' }) => {
                     </button>
                     <button
                         onClick={() => setActiveTab('history')}
-                        className={`px-4 py-2 shadow-md rounded-lg transition ${activeTab === 'history'
-                            ? 'bg-gray-900 text-white hover:bg-gray-700'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            } disabled:opacity-50`}
+                        className={`px-4 py-2 shadow-md rounded-lg transition ${
+                            activeTab === 'history'
+                                ? 'bg-gray-900 text-white hover:bg-gray-700'
+                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        } disabled:opacity-50`}
                         disabled={isScraping}
                         aria-label="Switch to Scrape History tab"
                     >
@@ -257,9 +322,12 @@ const DataScraping = ({ className = '' }) => {
                     {activeTab === 'scrape' ? (
                         <div>
                             <h2 className="text-xl font-bold text-gray-600 mb-5">
-                                Collect educational institution data from various sources
+                                Collect educational institution data from
+                                various sources
                             </h2>
-                            {error && <p className="text-red-600 mb-4">{error}</p>}
+                            {error && (
+                                <p className="text-red-600 mb-4">{error}</p>
+                            )}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label
@@ -279,18 +347,27 @@ const DataScraping = ({ className = '' }) => {
                                         }}
                                         className="mt-1 block w-full h-10 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
                                         disabled={isScraping}
-                                        aria-describedby={error ? 'data-source-error' : undefined}
+                                        aria-describedby={
+                                            error
+                                                ? 'data-source-error'
+                                                : undefined
+                                        }
                                     >
                                         <option value="" disabled>
                                             Select a Site
                                         </option>
                                         <option value="AISHE">AISHE</option>
-                                        <option value="College Dunia">College Dunia</option>
+                                        <option value="College Dunia">
+                                            College Dunia
+                                        </option>
                                     </select>
                                 </div>
 
                                 <div>
-                                    <label htmlFor="state" className="block text-xl font-medium text-gray-700 mb-1">
+                                    <label
+                                        htmlFor="state"
+                                        className="block text-xl font-medium text-gray-700 mb-1"
+                                    >
                                         State
                                     </label>
                                     <select
@@ -302,7 +379,9 @@ const DataScraping = ({ className = '' }) => {
                                         }}
                                         className="mt-1 block w-full h-10 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
                                         disabled={isScraping}
-                                        aria-describedby={error ? 'state-error' : undefined}
+                                        aria-describedby={
+                                            error ? 'state-error' : undefined
+                                        }
                                     >
                                         <option value="">Select a State</option>
                                         {states.map((state) => (
@@ -324,12 +403,18 @@ const DataScraping = ({ className = '' }) => {
                                         <select
                                             id="city"
                                             value={customCity}
-                                            onChange={(e) => setCustomCity(e.target.value)}
+                                            onChange={(e) =>
+                                                setCustomCity(e.target.value)
+                                            }
                                             className="mt-1 block w-full h-10 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
                                             disabled={isScraping}
-                                            aria-describedby={error ? 'city-error' : undefined}
+                                            aria-describedby={
+                                                error ? 'city-error' : undefined
+                                            }
                                         >
-                                            <option value="">Select a City</option>
+                                            <option value="">
+                                                Select a City
+                                            </option>
                                             {availableCities.map((city) => (
                                                 <option key={city} value={city}>
                                                     {city}
@@ -350,14 +435,25 @@ const DataScraping = ({ className = '' }) => {
                                         <select
                                             id="stream"
                                             value={customStream}
-                                            onChange={(e) => setCustomStream(e.target.value)}
+                                            onChange={(e) =>
+                                                setCustomStream(e.target.value)
+                                            }
                                             className="mt-1 block w-full h-10 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
                                             disabled={isScraping}
-                                            aria-describedby={error ? 'stream-error' : undefined}
+                                            aria-describedby={
+                                                error
+                                                    ? 'stream-error'
+                                                    : undefined
+                                            }
                                         >
-                                            <option value="">Select Stream</option>
+                                            <option value="">
+                                                Select Stream
+                                            </option>
                                             {streams.map((stream) => (
-                                                <option key={stream} value={stream}>
+                                                <option
+                                                    key={stream}
+                                                    value={stream}
+                                                >
                                                     {stream}
                                                 </option>
                                             ))}
@@ -373,7 +469,9 @@ const DataScraping = ({ className = '' }) => {
                                     disabled={isScraping}
                                     aria-label="Start scraping"
                                 >
-                                    {isScraping ? 'Scraping...' : 'Start Scraping'}
+                                    {isScraping
+                                        ? 'Scraping...'
+                                        : 'Start Scraping'}
                                 </button>
                                 <div>
                                     <label
@@ -388,7 +486,11 @@ const DataScraping = ({ className = '' }) => {
                                         ref={fileInputRef}
                                         className="mt-1 block w-full border border-gray-300 rounded-md"
                                         disabled={isScraping}
-                                        aria-describedby={error ? 'file-upload-error' : undefined}
+                                        aria-describedby={
+                                            error
+                                                ? 'file-upload-error'
+                                                : undefined
+                                        }
                                     />
                                     <button
                                         onClick={handleUpload}
@@ -396,17 +498,24 @@ const DataScraping = ({ className = '' }) => {
                                         disabled={isScraping}
                                         aria-label="Upload file"
                                     >
-                                        {isScraping ? 'Uploading...' : 'Upload File'}
+                                        {isScraping
+                                            ? 'Uploading...'
+                                            : 'Upload File'}
                                     </button>
                                 </div>
                             </div>
 
                             {logs.length > 0 && (
                                 <div className="mt-6">
-                                    <h3 className="text-lg font-semibold text-gray-700 mb-2">Logs</h3>
+                                    <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                                        Logs
+                                    </h3>
                                     <ul className="space-y-2">
                                         {logs.map((log, index) => (
-                                            <li key={index} className="text-gray-600">
+                                            <li
+                                                key={index}
+                                                className="text-gray-600"
+                                            >
                                                 {log}
                                             </li>
                                         ))}
@@ -416,25 +525,37 @@ const DataScraping = ({ className = '' }) => {
                         </div>
                     ) : (
                         <div>
-                            <h2 className="text-2xl font-semibold mb-2">Scrape History</h2>
-                            <p className="text-gray-700 mb-4">View previously scraped data</p>
+                            <h2 className="text-2xl font-semibold mb-2">
+                                Scrape History
+                            </h2>
+                            <p className="text-gray-700 mb-4">
+                                View previously scraped data
+                            </p>
                             {error ? (
                                 <p className="text-red-600">{error}</p>
                             ) : files.length === 0 ? (
-                                <p className="text-gray-500">No scrape history available.</p>
+                                <p className="text-gray-500">
+                                    No scrape history available.
+                                </p>
                             ) : (
                                 <div className="overflow-x-auto">
                                     <table className="min-w-full border border-gray-300 rounded-lg text-left">
                                         <thead className="bg-gray-100">
                                             <tr>
-                                                <th className="px-4 py-2 border-b border-gray-300">File Name</th>
+                                                <th className="px-4 py-2 border-b border-gray-300">
+                                                    File Name
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {files.map((item, idx) => (
                                                 <tr
                                                     key={idx}
-                                                    className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
+                                                    className={
+                                                        idx % 2 === 0
+                                                            ? 'bg-white'
+                                                            : 'bg-gray-50'
+                                                    }
                                                 >
                                                     <td className="px-4 py-2 border-b border-gray-300">
                                                         {item.File}
@@ -452,7 +573,9 @@ const DataScraping = ({ className = '' }) => {
 
             {/* Latest Scraped File */}
             <Card className="mt-5 p-6 bg-white shadow-md rounded-2xl">
-                <h2 className="text-xl font-bold text-gray-600 mb-5">Latest Scraped File</h2>
+                <h2 className="text-xl font-bold text-gray-600 mb-5">
+                    Latest Scraped File
+                </h2>
                 {finalFile ? (
                     <p className="text-xl text-green-700 flex items-center gap-2">
                         <span>✅</span>

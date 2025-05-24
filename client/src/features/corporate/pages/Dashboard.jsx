@@ -1,16 +1,35 @@
 /* eslint-disable no-unused-vars */
 import axios from 'axios';
-import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LineElement, LinearScale, PointElement, Tooltip } from 'chart.js';
+import {
+    ArcElement,
+    BarElement,
+    CategoryScale,
+    Chart as ChartJS,
+    Legend,
+    LineElement,
+    LinearScale,
+    PointElement,
+    Tooltip,
+} from 'chart.js';
 import { useEffect, useState } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import { useNavigate } from 'react-router-dom';
-const COLORS = ["#0088FE", "#FF8042"];
+const COLORS = ['#0088FE', '#FF8042'];
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
     ? `${import.meta.env.VITE_API_BASE_URL}/corporate`
     : 'http://localhost:3000/api/corporate';
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement);
+ChartJS.register(
+    ArcElement,
+    Tooltip,
+    Legend,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    LineElement,
+    PointElement
+);
 
 const Dashboard = () => {
     const [data, setData] = useState({});
@@ -20,30 +39,33 @@ const Dashboard = () => {
     const [companyTrends, setCompanyTrends] = useState([]);
     const [meetingNotifications, setMeetingNotifications] = useState([]);
 
-
     useEffect(() => {
-        axios.get('http://localhost:3000/dashboard').then((res) => setData(res.data));
-        axios.get('http://localhost:3000/analytics').then((res) => setAnalytics(res.data));
-        axios.get("http://localhost:3000/trends/yearly").then((res) => setYearTrends(res.data));
-        axios.get("http://localhost:3000/trends/company-year").then((res) => setCompanyTrends(res.data));
+        axios
+            .get('http://localhost:3000/dashboard')
+            .then((res) => setData(res.data));
+        axios
+            .get('http://localhost:3000/analytics')
+            .then((res) => setAnalytics(res.data));
+        axios
+            .get('http://localhost:3000/trends/yearly')
+            .then((res) => setYearTrends(res.data));
+        axios
+            .get('http://localhost:3000/trends/company-year')
+            .then((res) => setCompanyTrends(res.data));
 
-
-        fetch("http://localhost:3000/api/upcoming-meetings")
-
+        fetch('http://localhost:3000/api/upcoming-meetings')
             .then((res) => res.json())
             .then((data) => {
-                console.log("Fetched Meetings:", data); // Debugging
+                console.log('Fetched Meetings:', data); // Debugging
                 setMeetingNotifications(data); // Works if backend returns plain array
             })
             .catch((err) => {
-                console.error("Error fetching meetings:", err);
+                console.error('Error fetching meetings:', err);
             });
-
-
     }, []);
 
-    const filteredSectors = analytics.sectors.filter(item => item.count > 0);
-    const filteredStatus = analytics.status.filter(item => item.count > 0);
+    const filteredSectors = analytics.sectors.filter((item) => item.count > 0);
+    const filteredStatus = analytics.status.filter((item) => item.count > 0);
 
     const sectorData = {
         labels: filteredSectors.map((item) => item.sectors),
@@ -51,7 +73,13 @@ const Dashboard = () => {
             {
                 label: 'Sector Distribution',
                 data: filteredSectors.map((item) => item.count),
-                backgroundColor: ['#f72585', '#4361ee', '#fca311', '#4cc9f0', '#9d4edd'],
+                backgroundColor: [
+                    '#f72585',
+                    '#4361ee',
+                    '#fca311',
+                    '#4cc9f0',
+                    '#9d4edd',
+                ],
             },
         ],
     };
@@ -67,7 +95,10 @@ const Dashboard = () => {
         ],
     };
 
-    const totalSectors = filteredSectors.reduce((acc, val) => acc + val.count, 0);
+    const totalSectors = filteredSectors.reduce(
+        (acc, val) => acc + val.count,
+        0
+    );
     const totalStatus = filteredStatus.reduce((acc, val) => acc + val.count, 0);
 
     const formatPercentage = (count, total) =>
@@ -76,27 +107,27 @@ const Dashboard = () => {
         labels: yearTrends.map((item) => item.year),
         datasets: [
             {
-                label: "Closed",
+                label: 'Closed',
                 data: yearTrends.map((item) => item.Closed),
-                borderColor: "#00C49F",
+                borderColor: '#00C49F',
                 fill: false,
             },
             {
-                label: "In Progress",
+                label: 'In Progress',
                 data: yearTrends.map((item) => item.InProgress),
-                borderColor: "#FF8042",
+                borderColor: '#FF8042',
                 fill: false,
             },
             {
-                label: "Dropped",
+                label: 'Dropped',
                 data: yearTrends.map((item) => item.Dropped),
-                borderColor: "#f72585",
+                borderColor: '#f72585',
                 fill: false,
             },
             {
-                label: "New",
+                label: 'New',
                 data: yearTrends.map((item) => item.New),
-                borderColor: "#4361ee",
+                borderColor: '#4361ee',
                 fill: false,
             },
         ],
@@ -110,7 +141,7 @@ const Dashboard = () => {
                 intersect: false,
             },
             legend: {
-                position: "top",
+                position: 'top',
             },
         },
         scales: {
@@ -118,13 +149,13 @@ const Dashboard = () => {
                 beginAtZero: true,
                 title: {
                     display: true,
-                    text: "Count",
+                    text: 'Count',
                 },
             },
             x: {
                 title: {
                     display: true,
-                    text: "Year",
+                    text: 'Year',
                 },
                 ticks: {
                     padding: 20, // adds space between Y-axis and first point
@@ -134,13 +165,13 @@ const Dashboard = () => {
                 },
                 offset: true, // THIS pushes points away from edge!
             },
-
         },
     };
     const companyLabels = companyTrends.map((item) => item.year);
-    const companyKeys = companyTrends.length > 0
-        ? Object.keys(companyTrends[0]).filter((k) => k !== "year")
-        : [];
+    const companyKeys =
+        companyTrends.length > 0
+            ? Object.keys(companyTrends[0]).filter((k) => k !== 'year')
+            : [];
     const companyDatasets = companyKeys.map((company, idx) => ({
         label: company,
         data: companyTrends.map((item) => item[company] || 0),
@@ -161,16 +192,16 @@ const Dashboard = () => {
                 intersect: false,
             },
             legend: {
-                position: "top",
+                position: 'top',
             },
         },
         scales: {
             y: {
                 beginAtZero: true,
-                title: { display: true, text: "Count" },
+                title: { display: true, text: 'Count' },
             },
             x: {
-                title: { display: true, text: "Year" },
+                title: { display: true, text: 'Year' },
                 ticks: {
                     padding: 20, // adds space between Y-axis and first point
                 },
@@ -187,7 +218,11 @@ const Dashboard = () => {
             <div className="flex-1 p-4 sm:p-6 relative overflow-hidden">
                 <div className="p-4 sm:p-6 bg-[#f5efff] rounded-lg shadow-md min-h-[230px]">
                     <div className="absolute top-[30%] left-[40%] -translate-x-1/2 -translate-y-1/2 opacity-[0.08] -z-10 pointer-events-none">
-                        <img src={`/logo.png`} alt="Watermark Logo" className="max-w-[900px] w-[200%] h-auto" />
+                        <img
+                            src={`/logo.png`}
+                            alt="Watermark Logo"
+                            className="max-w-[900px] w-[200%] h-auto"
+                        />
                     </div>
                     <h2 className="text-lg sm:text-xl font-semibold mb-2.5 text-[#4b0082] pl-4 tracking-wide">
                         Corporate Data Management
@@ -205,7 +240,11 @@ const Dashboard = () => {
                                 <ul className="text-sm">
                                     {meetingNotifications.map((item, index) => (
                                         <li key={index} className="mb-1">
-                                            <strong>{item.company_name}</strong> – {new Date(item.meeting_date).toLocaleDateString()}
+                                            <strong>{item.company_name}</strong>{' '}
+                                            –{' '}
+                                            {new Date(
+                                                item.meeting_date
+                                            ).toLocaleDateString()}
                                         </li>
                                     ))}
                                 </ul>
@@ -227,25 +266,25 @@ const Dashboard = () => {
                     <div className="flex flex-wrap justify-center items-center mt-2.5 gap-2 mx-4 mb-6">
                         <button
                             className="px-3 py-1.5 sm:px-4 sm:py-2 border-none rounded-md text-white cursor-pointer text-xs sm:text-sm bg-[#2f80ed] hover:bg-[#2563eb] tracking-wide"
-                            onClick={() => navigate("/single-data-edit")}
+                            onClick={() => navigate('/single-data-edit')}
                         >
                             Edit data
                         </button>
                         <button
                             className="px-3 py-1.5 sm:px-4 sm:py-2 border-none rounded-md text-white cursor-pointer text-xs sm:text-sm bg-[#27ae60] hover:bg-[#219653] tracking-wide"
-                            onClick={() => navigate("/data-scraping")}
+                            onClick={() => navigate('/data-scraping')}
                         >
                             Import from Website
                         </button>
                         <button
                             className="px-3 py-1.5 sm:px-4 sm:py-2 border-none rounded-md text-white cursor-pointer text-xs sm:text-sm bg-[#a259ff] hover:bg-[#8b4ee6] tracking-wide"
-                            onClick={() => navigate("/bulk-data-cleaning")}
+                            onClick={() => navigate('/bulk-data-cleaning')}
                         >
                             Bulk Upload CSV
                         </button>
                         <button
                             className="px-3 py-1.5 sm:px-4 sm:py-2 border-none rounded-md text-white cursor-pointer text-xs sm:text-sm bg-[#eb3b7d] hover:bg-[#d4336f] tracking-wide"
-                            onClick={() => navigate("/marketing-data")}
+                            onClick={() => navigate('/marketing-data')}
                         >
                             Send to Marketing
                         </button>
@@ -345,7 +384,10 @@ const Dashboard = () => {
                                 Sector Distribution
                             </h4>
                             {analytics.sectors.map((s) => (
-                                <p key={s.sectors} className="my-1.5 text-xs sm:text-sm text-[#444] tracking-wide">
+                                <p
+                                    key={s.sectors}
+                                    className="my-1.5 text-xs sm:text-sm text-[#444] tracking-wide"
+                                >
                                     {s.sectors}
                                 </p>
                             ))}
@@ -359,8 +401,19 @@ const Dashboard = () => {
                                     maintainAspectRatio: false,
                                     plugins: { legend: { display: false } },
                                     scales: {
-                                        y: { beginAtZero: true, title: { display: true, text: 'Count' } },
-                                        x: { title: { display: true, text: 'Sectors' } },
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Count',
+                                            },
+                                        },
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Sectors',
+                                            },
+                                        },
                                     },
                                 }}
                             />
@@ -374,7 +427,10 @@ const Dashboard = () => {
                                 Status Breakdown
                             </h4>
                             {analytics.status.map((s) => (
-                                <p key={s.status} className="my-1.5 text-xs sm:text-sm text-[#444] tracking-wide">
+                                <p
+                                    key={s.status}
+                                    className="my-1.5 text-xs sm:text-sm text-[#444] tracking-wide"
+                                >
                                     {s.status}
                                 </p>
                             ))}
@@ -392,15 +448,33 @@ const Dashboard = () => {
                                             callbacks: {
                                                 label: function (context) {
                                                     const count = context.raw;
-                                                    const percentage = totalStatus ? ((count / totalStatus) * 100).toFixed(1) : 0;
+                                                    const percentage =
+                                                        totalStatus
+                                                            ? (
+                                                                  (count /
+                                                                      totalStatus) *
+                                                                  100
+                                                              ).toFixed(1)
+                                                            : 0;
                                                     return `${count}`;
                                                 },
                                             },
                                         },
                                     },
                                     scales: {
-                                        y: { beginAtZero: true, title: { display: true, text: 'Count' } },
-                                        x: { title: { display: true, text: 'Status' } },
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Count',
+                                            },
+                                        },
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Status',
+                                            },
+                                        },
                                     },
                                 }}
                             />
@@ -415,14 +489,23 @@ const Dashboard = () => {
                             </h4>
                             <div>
                                 {yearTrends?.map((item, idx) => (
-                                    <div key={idx} className="mb-1.5 text-xs sm:text-sm text-[#444] tracking-wide">
-                                        <strong>{item.year}:</strong> New: {item.New}, Closed: {item.Closed}, In Progress: {item.InProgress}, Dropped: {item.Dropped}
+                                    <div
+                                        key={idx}
+                                        className="mb-1.5 text-xs sm:text-sm text-[#444] tracking-wide"
+                                    >
+                                        <strong>{item.year}:</strong> New:{' '}
+                                        {item.New}, Closed: {item.Closed}, In
+                                        Progress: {item.InProgress}, Dropped:{' '}
+                                        {item.Dropped}
                                     </div>
                                 ))}
                             </div>
                         </div>
                         <div className="w-full h-[200px] sm:h-[250px]">
-                            <Line data={hiringTrendData} options={hiringTrendOptions} />
+                            <Line
+                                data={hiringTrendData}
+                                options={hiringTrendOptions}
+                            />
                         </div>
                     </div>
 
@@ -434,18 +517,27 @@ const Dashboard = () => {
                             </h4>
                             <div>
                                 {companyTrends?.map((item, idx) => (
-                                    <div key={idx} className="mb-1.5 text-xs sm:text-sm text-[#444] tracking-wide">
-                                        <strong>{item.year}:</strong>{" "}
+                                    <div
+                                        key={idx}
+                                        className="mb-1.5 text-xs sm:text-sm text-[#444] tracking-wide"
+                                    >
+                                        <strong>{item.year}:</strong>{' '}
                                         {Object.entries(item)
-                                            .filter(([key]) => key !== "year")
-                                            .map(([company, total]) => `${company}: ${total}`)
-                                            .join(", ")}
+                                            .filter(([key]) => key !== 'year')
+                                            .map(
+                                                ([company, total]) =>
+                                                    `${company}: ${total}`
+                                            )
+                                            .join(', ')}
                                     </div>
                                 ))}
                             </div>
                         </div>
                         <div className="w-full h-[200px] sm:h-[250px]">
-                            <Line data={companyChartData} options={companyChartOptions} />
+                            <Line
+                                data={companyChartData}
+                                options={companyChartOptions}
+                            />
                         </div>
                     </div>
                 </div>

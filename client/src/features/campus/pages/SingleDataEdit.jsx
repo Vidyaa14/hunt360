@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import SingleEditForm from './Forms/SingleEditForm';
-import { Plus } from "lucide-react";
-import Card from "../components/Card";
-import InserForm from "./Forms/InsertForm";
+import { Plus } from 'lucide-react';
+import Card from '../components/Card';
+import InserForm from './Forms/InsertForm';
 
 const locationOptions = [
     { value: 'Mumbai', label: 'Mumbai' },
@@ -53,7 +53,7 @@ const SingleDataEdit = () => {
         Placement_coor_contact: '',
         Placement_coor_email: '',
         Data_updated_by_name: '',
-        Term: ''
+        Term: '',
     });
 
     const handleSearch = async () => {
@@ -66,9 +66,9 @@ const SingleDataEdit = () => {
             const response = await axios.get('http://localhost:5000/search', {
                 params: {
                     college,
-                    location: location.map(l => l.value).join(','),
-                    course: course.map(c => c.value).join(','),
-                }
+                    location: location.map((l) => l.value).join(','),
+                    course: course.map((c) => c.value).join(','),
+                },
             });
             setColleges(response.data);
         } catch (error) {
@@ -78,7 +78,7 @@ const SingleDataEdit = () => {
     };
 
     const handleEdit = (collegeId) => {
-        const collegeToEdit = colleges.find(col => col.Clg_ID === collegeId);
+        const collegeToEdit = colleges.find((col) => col.Clg_ID === collegeId);
         setEditingCollege(collegeToEdit);
         setShowEditForm(true);
         setUpdatedData({ ...collegeToEdit });
@@ -92,13 +92,23 @@ const SingleDataEdit = () => {
     const handleUpdate = async () => {
         const updatedCollege = {
             ...updatedData,
-            Update_timestamp: new Date().toISOString().slice(0, 19).replace('T', ' ')
+            Update_timestamp: new Date()
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' '),
         };
 
         try {
-            await axios.put(`http://localhost:5000/update/${editingCollege.Clg_ID}`, updatedCollege);
-            setColleges(prev =>
-                prev.map(col => (col.Clg_ID === editingCollege.Clg_ID ? { ...col, ...updatedCollege } : col))
+            await axios.put(
+                `http://localhost:5000/update/${editingCollege.Clg_ID}`,
+                updatedCollege
+            );
+            setColleges((prev) =>
+                prev.map((col) =>
+                    col.Clg_ID === editingCollege.Clg_ID
+                        ? { ...col, ...updatedCollege }
+                        : col
+                )
             );
             setEditingCollege(null);
             setShowEditForm(false);
@@ -108,33 +118,41 @@ const SingleDataEdit = () => {
     };
 
     const handleDelete = async (collegeId) => {
-        const confirmDelete = window.confirm('Are you sure you want to delete this record?');
+        const confirmDelete = window.confirm(
+            'Are you sure you want to delete this record?'
+        );
         if (!confirmDelete) return;
 
         try {
             await axios.delete(`http://localhost:5000/delete/${collegeId}`);
-            setColleges(colleges.filter(col => col.Clg_ID !== collegeId));
+            setColleges(colleges.filter((col) => col.Clg_ID !== collegeId));
         } catch (error) {
             console.error('Error deleting data:', error);
         }
     };
 
     const filteredColleges = showUpdatedOnly
-        ? colleges.filter(college => college.Update_timestamp !== null)
+        ? colleges.filter((college) => college.Update_timestamp !== null)
         : colleges;
 
     return (
         <div className="p-6 max-w-full">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-3 sm:mb-4 md:mb-5">Single Data  Edit </h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-3 sm:mb-4 md:mb-5">
+                Single Data Edit{' '}
+            </h1>
             <p className="text-sm sm:text-base md:text-lg text-gray-500 font-semibold mt-1">
                 Dashboard - Single data edit
             </p>
             <Card className="mt-5 p-6">
-                <p className="text-xl font-bold text-gray-400 mb-5">Single Data Search</p>
+                <p className="text-xl font-bold text-gray-400 mb-5">
+                    Single Data Search
+                </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div>
-                        <label className="block text-xl mb-2 font-medium text-gray-700">College Name</label>
+                        <label className="block text-xl mb-2 font-medium text-gray-700">
+                            College Name
+                        </label>
                         <input
                             type="text"
                             className="w-full border rounded px-3 py-2"
@@ -145,7 +163,9 @@ const SingleDataEdit = () => {
                     </div>
 
                     <div>
-                        <label className="block text-xl mb-2 font-medium text-gray-700">Location/City</label>
+                        <label className="block text-xl mb-2 font-medium text-gray-700">
+                            Location/City
+                        </label>
                         <Select
                             isMulti
                             isSearchable
@@ -155,15 +175,26 @@ const SingleDataEdit = () => {
                             onChange={setLocation}
                             menuPortalTarget={document.body}
                             styles={{
-                                menuPortal: base => ({ ...base, zIndex: 9999 }),
-                                container: base => ({ ...base, maxWidth: '100%' }),
-                                control: base => ({ ...base, minHeight: '38px' }),
+                                menuPortal: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                }),
+                                container: (base) => ({
+                                    ...base,
+                                    maxWidth: '100%',
+                                }),
+                                control: (base) => ({
+                                    ...base,
+                                    minHeight: '38px',
+                                }),
                             }}
                         />
                     </div>
 
                     <div>
-                        <label className="block text-xl mb-2 font-medium text-gray-700">Courses</label>
+                        <label className="block text-xl mb-2 font-medium text-gray-700">
+                            Courses
+                        </label>
                         <Select
                             isMulti
                             isSearchable
@@ -173,9 +204,18 @@ const SingleDataEdit = () => {
                             onChange={setCourse}
                             menuPortalTarget={document.body}
                             styles={{
-                                menuPortal: base => ({ ...base, zIndex: 9999 }),
-                                container: base => ({ ...base, maxWidth: '100%' }),
-                                control: base => ({ ...base, minHeight: '38px' }),
+                                menuPortal: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                }),
+                                container: (base) => ({
+                                    ...base,
+                                    maxWidth: '100%',
+                                }),
+                                control: (base) => ({
+                                    ...base,
+                                    minHeight: '38px',
+                                }),
                             }}
                         />
                     </div>
@@ -189,7 +229,9 @@ const SingleDataEdit = () => {
                         onChange={() => setShowUpdatedOnly(!showUpdatedOnly)}
                         className="h-4 w-4"
                     />
-                    <label htmlFor="updated-data" className="text-gray-700">Show Updated Data Only</label>
+                    <label htmlFor="updated-data" className="text-gray-700">
+                        Show Updated Data Only
+                    </label>
                 </div>
 
                 <div className="flex flex-wrap gap-4 mb-10">
@@ -225,10 +267,11 @@ const SingleDataEdit = () => {
                 </div>
             </Card>
 
-
             <Card className="mt-5">
                 <div className="overflow-auto">
-                    <p className="text-xl font-bold text-gray-400 mb-5">Search Results</p>
+                    <p className="text-xl font-bold text-gray-400 mb-5">
+                        Search Results
+                    </p>
 
                     {loading ? (
                         <p>Loading...</p>
@@ -237,11 +280,26 @@ const SingleDataEdit = () => {
                             <thead>
                                 <tr className="bg-gray-100 text-sm">
                                     {[
-                                        'College ID', 'Name', 'District', 'State', 'Courses',
-                                        'Annual Fees', 'Placement Fees', 'Ranking', 'Phone', 'Address',
-                                        'Director Name', 'Director Email', 'Director Contact',
-                                        'Coordinator Name', 'Coordinator Email', 'Coordinator Contact',
-                                        'Term', 'Updated By', 'Timestamp', 'Actions'
+                                        'College ID',
+                                        'Name',
+                                        'District',
+                                        'State',
+                                        'Courses',
+                                        'Annual Fees',
+                                        'Placement Fees',
+                                        'Ranking',
+                                        'Phone',
+                                        'Address',
+                                        'Director Name',
+                                        'Director Email',
+                                        'Director Contact',
+                                        'Coordinator Name',
+                                        'Coordinator Email',
+                                        'Coordinator Contact',
+                                        'Term',
+                                        'Updated By',
+                                        'Timestamp',
+                                        'Actions',
                                     ].map((header, idx) => (
                                         <th
                                             key={idx}
@@ -254,39 +312,81 @@ const SingleDataEdit = () => {
                             </thead>
 
                             <tbody>
-                                {filteredColleges.map(college => (
+                                {filteredColleges.map((college) => (
                                     <tr
                                         key={college.Clg_ID}
                                         className="text-sm text-center border-t hover:bg-gray-50"
                                     >
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Clg_ID}</td>
-                                        <td className="whitespace-nowrap px-3 py-2 text-left">{college.College_Name}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.District}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.State}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Course}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Anual_fees}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Placement_fees}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Ranking}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Phone}</td>
-                                        <td className="whitespace-nowrap px-3 py-2 text-left">{college.Address}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Director_name}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Director_email}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Director_number}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Placement_coor_name}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Placement_coor_email}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Placement_coor_contact}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Term}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Data_updated_by_name}</td>
-                                        <td className="whitespace-nowrap px-3 py-2">{college.Update_timestamp}</td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Clg_ID}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2 text-left">
+                                            {college.College_Name}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.District}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.State}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Course}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Anual_fees}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Placement_fees}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Ranking}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Phone}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2 text-left">
+                                            {college.Address}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Director_name}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Director_email}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Director_number}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Placement_coor_name}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Placement_coor_email}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Placement_coor_contact}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Term}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Data_updated_by_name}
+                                        </td>
+                                        <td className="whitespace-nowrap px-3 py-2">
+                                            {college.Update_timestamp}
+                                        </td>
                                         <td className="flex flex-col gap-1 justify-center items-center py-2 whitespace-nowrap">
                                             <button
-                                                onClick={() => handleEdit(college.Clg_ID)}
+                                                onClick={() =>
+                                                    handleEdit(college.Clg_ID)
+                                                }
                                                 className="bg-yellow-400 shadow-md text-sm px-3 py-1 rounded hover:bg-yellow-500"
                                             >
                                                 Edit
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(college.Clg_ID)}
+                                                onClick={() =>
+                                                    handleDelete(college.Clg_ID)
+                                                }
                                                 className="bg-red-500 shadow-md text-white text-sm px-3 py-1 rounded hover:bg-red-600"
                                             >
                                                 Delete
@@ -301,7 +401,6 @@ const SingleDataEdit = () => {
                     )}
                 </div>
             </Card>
-
 
             {/* Edit Form Modal */}
             {editingCollege && (
@@ -325,7 +424,6 @@ const SingleDataEdit = () => {
                     </div>
                 </div>
             )}
-
 
             {/* Modal Overlay */}
             {isModalOpen && (
@@ -352,8 +450,6 @@ const SingleDataEdit = () => {
                     </div>
                 </div>
             )}
-
-
         </div>
     );
 };

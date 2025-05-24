@@ -11,7 +11,7 @@ const JobCard = ({ job }) => {
             num.toLocaleString('en-US', {
                 style: 'currency',
                 currency: currency || 'USD',
-                maximumFractionDigits: 0
+                maximumFractionDigits: 0,
             });
 
         if (min && max) {
@@ -48,7 +48,10 @@ const JobCard = ({ job }) => {
     const savedStatus = isJobSaved(job.job_id);
 
     return (
-        <div className="bg-white mb-3 shadow-sm border border-gray-200 rounded-md job-card" onClick={handleViewDetails}>
+        <div
+            className="bg-white mb-3 shadow-sm border border-gray-200 rounded-md job-card"
+            onClick={handleViewDetails}
+        >
             <div className="p-4">
                 <div className="flex justify-between">
                     <div className="flex">
@@ -59,33 +62,43 @@ const JobCard = ({ job }) => {
                                 className="company-logo mr-3 w-16 h-16 object-contain"
                             />
                         ) : (
-                            <div
-                                className="company-logo-placeholder mr-3 bg-gray-100 flex items-center justify-center w-16 h-16"
-                            >
-                                <span className="text-gray-600">{job.employer_name?.[0] || '?'}</span>
+                            <div className="company-logo-placeholder mr-3 bg-gray-100 flex items-center justify-center w-16 h-16">
+                                <span className="text-gray-600">
+                                    {job.employer_name?.[0] || '?'}
+                                </span>
                             </div>
                         )}
 
                         <div>
-                            <h5 className="text-xl font-semibold mb-1">{job.job_title}</h5>
-                            <h6 className="text-base text-gray-600 mb-2">{job.employer_name}</h6>
+                            <h5 className="text-xl font-semibold mb-1">
+                                {job.job_title}
+                            </h5>
+                            <h6 className="text-base text-gray-600 mb-2">
+                                {job.employer_name}
+                            </h6>
 
                             <div className="job-meta flex gap-3 text-gray-600 text-sm">
                                 <span>
                                     <i className="bi bi-geo-alt mr-1"></i>
-                                    {job.job_city || job.job_country || 'Remote'}
+                                    {job.job_city ||
+                                        job.job_country ||
+                                        'Remote'}
                                 </span>
 
                                 {job.job_employment_type && (
                                     <span>
                                         <i className="bi bi-briefcase mr-1"></i>
-                                        {job.job_employment_type.replace('_', ' ').toLowerCase()}
+                                        {job.job_employment_type
+                                            .replace('_', ' ')
+                                            .toLowerCase()}
                                     </span>
                                 )}
 
                                 <span>
                                     <i className="bi bi-clock mr-1"></i>
-                                    {getRelativeTimeString(job.job_posted_at_datetime_utc)}
+                                    {getRelativeTimeString(
+                                        job.job_posted_at_datetime_utc
+                                    )}
                                 </span>
                             </div>
                         </div>
@@ -96,12 +109,18 @@ const JobCard = ({ job }) => {
                             className={`px-2 py-1 rounded-md text-sm ${savedStatus ? 'bg-yellow-400 text-white hover:bg-yellow-500' : 'border border-gray-500 text-gray-700 hover:bg-gray-200'}`}
                             onClick={handleSaveToggle}
                         >
-                            <i className={`bi ${savedStatus ? 'bi-bookmark-fill' : 'bi-bookmark'}`}></i>
+                            <i
+                                className={`bi ${savedStatus ? 'bi-bookmark-fill' : 'bi-bookmark'}`}
+                            ></i>
                         </button>
 
                         {job.job_min_salary && job.job_max_salary && (
                             <div className="text-green-600 mt-2 font-bold">
-                                {formatSalary(job.job_min_salary, job.job_max_salary, job.job_salary_currency)}
+                                {formatSalary(
+                                    job.job_min_salary,
+                                    job.job_max_salary,
+                                    job.job_salary_currency
+                                )}
                             </div>
                         )}
                     </div>
@@ -109,12 +128,18 @@ const JobCard = ({ job }) => {
 
                 {job.job_highlights?.Qualifications && (
                     <div className="mt-3">
-                        <h6 className="text-sm text-gray-600">Qualifications:</h6>
+                        <h6 className="text-sm text-gray-600">
+                            Qualifications:
+                        </h6>
                         <ul className="text-sm mb-0">
-                            {job.job_highlights.Qualifications.slice(0, 2).map((qual, index) => (
-                                <li key={index}>{qual}</li>
-                            ))}
-                            {job.job_highlights.Qualifications.length > 2 && <li>...</li>}
+                            {job.job_highlights.Qualifications.slice(0, 2).map(
+                                (qual, index) => (
+                                    <li key={index}>{qual}</li>
+                                )
+                            )}
+                            {job.job_highlights.Qualifications.length > 2 && (
+                                <li>...</li>
+                            )}
                         </ul>
                     </div>
                 )}
@@ -146,9 +171,9 @@ JobCard.propTypes = {
         job_max_salary: PropTypes.number,
         job_salary_currency: PropTypes.string,
         job_highlights: PropTypes.shape({
-            Qualifications: PropTypes.arrayOf(PropTypes.string)
-        })
-    }).isRequired
+            Qualifications: PropTypes.arrayOf(PropTypes.string),
+        }),
+    }).isRequired,
 };
 
 export default JobCard;

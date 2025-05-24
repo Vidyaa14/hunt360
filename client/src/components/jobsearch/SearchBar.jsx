@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useJobContext } from '../../contexts/useJobContext';
 
-
 const SearchBar = () => {
     const { handleSearch, loading, filters, error } = useJobContext();
     const [localQuery, setLocalQuery] = useState('');
@@ -31,7 +30,7 @@ const SearchBar = () => {
         'Data Scientist',
         'DevOps Engineer',
         'Marketing Specialist',
-        'Content Writer'
+        'Content Writer',
     ];
 
     // Employment types
@@ -40,14 +39,14 @@ const SearchBar = () => {
         { value: 'FULLTIME', label: 'Full-time' },
         { value: 'CONTRACTOR', label: 'Contractor' },
         { value: 'PARTTIME', label: 'Part-time' },
-        { value: 'INTERN', label: 'Intern' }
+        { value: 'INTERN', label: 'Intern' },
     ];
 
     const datePostedOptions = [
         { value: 'all', label: 'Any time' },
         { value: 'today', label: 'Today' },
         { value: 'week', label: 'Past week' },
-        { value: 'month', label: 'Past month' }
+        { value: 'month', label: 'Past month' },
     ];
 
     const handleSubmit = (e) => {
@@ -65,7 +64,7 @@ const SearchBar = () => {
             jobCategory: formData.get('jobCategory') || '',
             remoteJobsOnly: formData.get('remoteJobsOnly') === 'on',
             employmentType: formData.get('employmentType') || '',
-            datePosted: formData.get('datePosted') || 'all'
+            datePosted: formData.get('datePosted') || 'all',
         };
 
         handleSearch(localQuery, newFilters);
@@ -77,7 +76,7 @@ const SearchBar = () => {
     };
 
     const addOperator = (operator) => {
-        setLocalQuery(prev => {
+        setLocalQuery((prev) => {
             const trimmed = prev.trim();
             if (trimmed.length === 0) return '';
             return `${trimmed} ${operator} `;
@@ -87,7 +86,10 @@ const SearchBar = () => {
     return (
         <div className="bg-gray-100 p-4 rounded-md shadow-sm mb-4">
             {localError && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-3" role="alert">
+                <div
+                    className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-3"
+                    role="alert"
+                >
                     <i className="bi bi-exclamation-triangle-fill mr-2"></i>
                     {localError}
                 </div>
@@ -154,7 +156,12 @@ const SearchBar = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <div className="mb-3">
-                        <label htmlFor="jobCategory" className="block text-sm text-gray-600 mb-1">Job Category</label>
+                        <label
+                            htmlFor="jobCategory"
+                            className="block text-sm text-gray-600 mb-1"
+                        >
+                            Job Category
+                        </label>
                         <select
                             id="jobCategory"
                             name="jobCategory"
@@ -162,16 +169,23 @@ const SearchBar = () => {
                             defaultValue={filters.jobCategory}
                         >
                             <option value="">All Job Categories</option>
-                            {jobCategories.filter(cat => cat).map((category) => (
-                                <option key={category} value={category}>
-                                    {category}
-                                </option>
-                            ))}
+                            {jobCategories
+                                .filter((cat) => cat)
+                                .map((category) => (
+                                    <option key={category} value={category}>
+                                        {category}
+                                    </option>
+                                ))}
                         </select>
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="employmentType" className="block text-sm text-gray-600 mb-1">Employment Type</label>
+                        <label
+                            htmlFor="employmentType"
+                            className="block text-sm text-gray-600 mb-1"
+                        >
+                            Employment Type
+                        </label>
                         <select
                             id="employmentType"
                             name="employmentType"
@@ -187,7 +201,12 @@ const SearchBar = () => {
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="datePosted" className="block text-sm text-gray-600 mb-1">Date Posted</label>
+                        <label
+                            htmlFor="datePosted"
+                            className="block text-sm text-gray-600 mb-1"
+                        >
+                            Date Posted
+                        </label>
                         <select
                             id="datePosted"
                             name="datePosted"
@@ -211,7 +230,10 @@ const SearchBar = () => {
                                 className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                 defaultChecked={filters.remoteJobsOnly}
                             />
-                            <label htmlFor="remoteJobsOnly" className="ml-2 text-sm text-gray-600">
+                            <label
+                                htmlFor="remoteJobsOnly"
+                                className="ml-2 text-sm text-gray-600"
+                            >
                                 Remote jobs only
                             </label>
                         </div>

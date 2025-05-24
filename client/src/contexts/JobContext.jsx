@@ -30,7 +30,10 @@ export const JobProvider = ({ children }) => {
             try {
                 setSavedJobs(JSON.parse(storedSavedJobs));
             } catch (err) {
-                console.error('Error parsing saved jobs from localStorage:', err);
+                console.error(
+                    'Error parsing saved jobs from localStorage:',
+                    err
+                );
             }
         }
     }, []);
@@ -102,7 +105,9 @@ export const JobProvider = ({ children }) => {
         let updatedSavedJobs;
 
         if (alreadySaved) {
-            updatedSavedJobs = savedJobs.filter((savedJob) => savedJob.job_id !== job.job_id);
+            updatedSavedJobs = savedJobs.filter(
+                (savedJob) => savedJob.job_id !== job.job_id
+            );
         } else {
             updatedSavedJobs = [...savedJobs, job];
         }

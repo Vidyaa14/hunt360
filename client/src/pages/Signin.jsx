@@ -24,7 +24,7 @@ export default function SignUp() {
         e.preventDefault();
 
         if (formData.password !== formData.confirmPassword) {
-            setError("Passwords do not match.");
+            setError('Passwords do not match.');
             return;
         }
 
@@ -44,11 +44,16 @@ export default function SignUp() {
     return (
         <section className="min-h-screen flex items-center justify-center bg-gray-50 py-16">
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-lg">
-                <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-6">Sign Up for Hunt360</h2>
+                <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-6">
+                    Sign Up for Hunt360
+                </h2>
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                        <label
+                            htmlFor="username"
+                            className="block text-sm font-medium text-gray-700"
+                        >
                             Full Name
                         </label>
                         <input
@@ -61,7 +66,10 @@ export default function SignUp() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-700"
+                        >
                             Email
                         </label>
                         <input
@@ -74,7 +82,10 @@ export default function SignUp() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium text-gray-700"
+                        >
                             Password
                         </label>
                         <input
@@ -87,7 +98,10 @@ export default function SignUp() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                        <label
+                            htmlFor="confirmPassword"
+                            className="block text-sm font-medium text-gray-700"
+                        >
                             Confirm Password
                         </label>
                         <input
@@ -107,7 +121,10 @@ export default function SignUp() {
                     </button>
                 </form>
                 <p className="mt-6 text-center text-sm text-gray-600">
-                    Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login</Link>
+                    Already have an account?{' '}
+                    <Link to="/login" className="text-blue-600 hover:underline">
+                        Login
+                    </Link>
                 </p>
             </div>
         </section>

@@ -13,7 +13,9 @@ const buildQueryParams = (filters) => {
 };
 
 export const fetchCollegeCount = async (filters) => {
-    const response = await fetch(`${API_BASE_URL}/college-count?${buildQueryParams(filters)}`);
+    const response = await fetch(
+        `${API_BASE_URL}/college-count?${buildQueryParams(filters)}`
+    );
     if (!response.ok) throw new Error('Failed to fetch college count');
     return response.json();
 };
@@ -25,19 +27,25 @@ export const fetchTotalScraped = async () => {
 };
 
 export const fetchTotalCandidates = async (filters) => {
-    const response = await fetch(`${API_BASE_URL}/total-candidates?${buildQueryParams(filters)}`);
+    const response = await fetch(
+        `${API_BASE_URL}/total-candidates?${buildQueryParams(filters)}`
+    );
     if (!response.ok) throw new Error('Failed to fetch total candidates');
     return response.json();
 };
 
 export const fetchTotalPlacedCandidates = async (filters) => {
-    const response = await fetch(`${API_BASE_URL}/placed-candidates?${buildQueryParams(filters)}`);
+    const response = await fetch(
+        `${API_BASE_URL}/placed-candidates?${buildQueryParams(filters)}`
+    );
     if (!response.ok) throw new Error('Failed to fetch placed candidates');
     return response.json();
 };
 
 export const fetchTotalHired = async (filters) => {
-    const response = await fetch(`${API_BASE_URL}/totalhired?${buildQueryParams(filters)}`);
+    const response = await fetch(
+        `${API_BASE_URL}/totalhired?${buildQueryParams(filters)}`
+    );
     if (!response.ok) throw new Error('Failed to fetch total hired');
     return response.json();
 };
@@ -82,7 +90,10 @@ export const addMeeting = async (meeting) => {
 };
 
 export const updateMeeting = async (meeting, index) => {
-    const response = await axios.put(`${API_BASE_URL}/meetings/${index}`, meeting);
+    const response = await axios.put(
+        `${API_BASE_URL}/meetings/${index}`,
+        meeting
+    );
     if (response.status !== 200) throw new Error('Failed to update meeting');
     return response.data;
 };
@@ -119,7 +130,10 @@ export const searchColleges = async (params) => {
 };
 
 export const updateCollege = async (collegeId, data) => {
-    const response = await axios.put(`${API_BASE_URL}/update/${collegeId}`, data);
+    const response = await axios.put(
+        `${API_BASE_URL}/update/${collegeId}`,
+        data
+    );
     return response.data;
 };
 
