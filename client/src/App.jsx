@@ -1,26 +1,35 @@
-import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './auth/ProtectedRoute';
-import Dashboard from './pages/Dashboard';
-import JobHomePage from './pages/JobHome';
-import Login from './pages/Login';
-import SignUp from './pages/Signin';
-import Welcome from './pages/Welcome';
-import SavedJobsPage from './pages/SavedJobsPage';
-import CorporateDashboard from './features/corporate/pages/Dashboard';
-import SingleDataEdit from './features/corporate/pages/SingleDataEdit';
-import Reports from './features/corporate/pages/Reports';
-import MarketingData from './features/corporate/pages/MarketingData';
-import DataScraping from './features/corporate/pages/DataScraping';
-import BulkDataCleaning from './features/corporate/pages/BulkDataCleaning';
+import BulkEditing from './features/campus/pages/BulkEditing';
 import CampusDashboard from './features/campus/pages/Dashboard';
 import CampusDataScraping from './features/campus/pages/DataScraping';
 import HRData from './features/campus/pages/HRData';
-import BulkEditing from './features/campus/pages/BulkEditing';
-import CampusReports from './features/campus/pages/Reports';
-import UserManagement from './features/campus/pages/UserManagement';
-import Settings from './features/campus/pages/Settings';
 import MeetingSchedule from './features/campus/pages/MeetingSchedule';
+import CampusReports from './features/campus/pages/Reports';
+import Settings from './features/campus/pages/Settings';
+import UserManagement from './features/campus/pages/UserManagement';
+import BulkDataCleaning from './features/corporate/pages/BulkDataCleaning';
+import CorporateDashboard from './features/corporate/pages/Dashboard';
+import DataScraping from './features/corporate/pages/DataScraping';
+import MarketingData from './features/corporate/pages/MarketingData';
+import Reports from './features/corporate/pages/Reports';
+import SingleDataEdit from './features/corporate/pages/SingleDataEdit';
+import AboutUs from './features/hr/pages/AboutUs';
+import HRAdminDashboard from './features/hr/pages/AdminDashboard';
+import HRHuntDashboard from './features/hr/pages/Dashboard';
+import HREditContactForm from './features/hr/pages/EditContactForm';
+import HRProfileDetails from './features/hr/pages/HRProfileDetails';
+import HRLandingPage from './features/hr/pages/LandingPage';
+import HRProfilePage from './features/hr/pages/ProfilePage';
+import HRProfileSettings from './features/hr/pages/ProfileSettings';
+import HRSavedProfessionals from './features/hr/pages/SavedProfessionals';
+import Dashboard from './pages/Dashboard';
+import JobHomePage from './pages/JobHome';
+import Login from './pages/Login';
+import SavedJobsPage from './pages/SavedJobsPage';
+import SignUp from './pages/Signin';
+import Welcome from './pages/Welcome';
+import SettingsPage from './pages/Settings';
 
 const App = () => {
     return (
@@ -37,6 +46,7 @@ const App = () => {
                     </ProtectedRoute>
                 }
             >
+                <Route path="settings" element={<SettingsPage />} />
                 <Route path="jobsearch" element={<JobHomePage />} />
                 <Route path="savedjobs" element={<SavedJobsPage />} />
                 <Route path="hrhunt" element={<div>HR Hunt Content</div>} />
@@ -74,6 +84,19 @@ const App = () => {
                         path="user-management"
                         element={<UserManagement />}
                     />
+                </Route>
+
+                <Route path="hr-hunt">
+                    <Route index element={<HRHuntDashboard />} />
+                    <Route path="dashboard" element={<HRHuntDashboard />} />
+                    <Route path="about-us" element={<AboutUs />} />
+                    <Route path="admin-dashboard" element={<HRAdminDashboard />} />
+                    <Route path="edit-contact-form" element={<HREditContactForm />} />
+                    <Route path="profile-details" element={<HRProfileDetails />} />
+                    <Route path="landing-page" element={<HRLandingPage />} />
+                    <Route path="profile-page" element={<HRProfilePage />} />
+                    <Route path="profile-settings" element={<HRProfileSettings />} />
+                    <Route path="saved-professionals" element={<HRSavedProfessionals />} />
                 </Route>
             </Route>
         </Routes>

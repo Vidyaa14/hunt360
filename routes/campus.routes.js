@@ -21,17 +21,17 @@ import {
     getHrTeamChart,
     getLastFiveRows,
     getMarketingTeamChart,
-    getTotalScraped
+    getTotalScraped,
 } from '../controllers/dashboard.controller.js';
 import {
     getHrChart,
     getTotalHired,
-    getTotalStudents
+    getTotalStudents,
 } from '../controllers/hr.controller.js';
 import {
     getMarketingChart,
     getTotalColleges,
-    getTotalPayment
+    getTotalPayment,
 } from '../controllers/marketing.controller.js';
 
 const router = express.Router();
@@ -51,24 +51,24 @@ router.get('/chart-data', getChartData);
 router.post('/add-college', addCollege);
 
 /* Marketing Routes */
-router.get("/total-clg", getTotalColleges);
-router.get("/total-payment", getTotalPayment);
-router.get("/marketing_chart", getMarketingChart);
+router.get('/total-clg', getTotalColleges);
+router.get('/total-payment', getTotalPayment);
+router.get('/marketing_chart', getMarketingChart);
 
 /* HR Routes */
-router.get("/totalcollege", getTotalColleges);
-router.get("/totalhired", getTotalHired);
-router.get("/totalstudents", getTotalStudents);
-router.get("/hr-chart", getHrChart);
+router.get('/totalcollege', getTotalColleges);
+router.get('/totalhired', getTotalHired);
+router.get('/totalstudents', getTotalStudents);
+router.get('/hr-chart', getHrChart);
 
 /* Dashboard Routes */
-router.get("/distinct", getDistinctFiles);
-router.get("/hiring-clg", getHiringColleges);
-router.get("/hiring-clg-consultant", getHiringCollegesConsultant);
-router.get("/total-scraped", getTotalScraped);
-router.get("/last-5-rows", getLastFiveRows);
-router.get("/mteam-chart", getMarketingTeamChart);
-router.get("/hrteam-chart", getHrTeamChart);
-router.get("/course-college", getCourseCollege);
+router.get('/distinct', getDistinctFiles);
+router.get('/hiring-clg', getHiringColleges);
+router.get('/hiring-clg-consultant', getHiringCollegesConsultant);
+router.get('/total-scraped', getTotalScraped);
+router.get('/last-5-rows', getLastFiveRows);
+router.get('/mteam-chart', getMarketingTeamChart);
+router.get('/hrteam-chart', getHrTeamChart);
+router.get('/course-college', getCourseCollege);
 
 export default router;

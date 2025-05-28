@@ -27,12 +27,10 @@ export const signUp = async (req, res) => {
         );
 
         if (existing.length > 0) {
-            return res
-                .status(409)
-                .json({
-                    success: false,
-                    error: 'Username or email already in use',
-                });
+            return res.status(409).json({
+                success: false,
+                error: 'Username or email already in use',
+            });
         }
 
         const hashed = await bcrypt.hash(password, 10);
