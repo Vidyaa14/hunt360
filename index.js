@@ -6,18 +6,19 @@ import multer from 'multer';
 import swaggerUI from 'swagger-ui-express';
 import YAML from 'yamljs';
 import authRoutes from './routes/auth.routes.js';
-import corporateRoutes from './routes/corporate.routes.js';
 import campusRoutes from './routes/campus.routes.js';
+import corporateRoutes from './routes/corporate.routes.js';
+import './utils/warmup.js';
 
 dotenv.config();
 
 const app = express();
 const upload = multer({ dest: 'uploads/resumes/' });
 const allowedOrigins = [
+    'http://localhost:3000',
     'http://localhost:5173',
     'https://hunt360.vercel.app',
     'https://hunt360.onrender.com',
-    'http://localhost:3000',
 ];
 
 app.use(
@@ -52,6 +53,10 @@ app.use(
 app.use('/api/auth', authRoutes);
 app.use('/api/campus', campusRoutes);
 app.use('/api/corporate', corporateRoutes);
+
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
 
 const PORT = process.env.PORT || 3000;
 
