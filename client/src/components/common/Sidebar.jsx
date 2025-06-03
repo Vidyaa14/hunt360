@@ -32,15 +32,10 @@ import {
     Contact,
     Settings2Icon,
     Bookmark,
+    Upload,
+    FileSearch,
 } from 'lucide-react';
 
-/**
- * Sidebar component for navigation with collapsible menu and dropdowns.
- * @param {Object} props - Component props
- * @param {boolean} props.isOpen - Whether the sidebar is open
- * @param {Function} props.toggleSidebar - Function to toggle sidebar visibility
- * @returns {JSX.Element} Sidebar component
- */
 const Sidebar = ({ isOpen, toggleSidebar }) => {
     const [openDropdowns, setOpenDropdowns] = useState({});
 
@@ -104,6 +99,23 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 { to: '/dashboard/campus/settings', icon: Settings, label: 'Settings' },
                 { to: '/dashboard/campus/meeting-schedule', icon: Calendar, label: 'Meeting Schedule' },
                 { to: '/dashboard/campus/user-management', icon: Users, label: 'User Management' },
+            ],
+        },
+        {
+            to: '/resume-hunt',
+            icon: FileSearch,
+            label: 'Resume Hunt',
+            children: [
+                {
+                    to: '/dashboard/resume-hunt/resume-upload',
+                    icon: Upload,
+                    label: 'Upload Resume',
+                },
+                {
+                    to: '/dashboard/resume-hunt/resume-search',
+                    icon: Search,
+                    label: 'Search Resume',
+                },
             ],
         },
         { to: '/dashboard/settings', icon: Settings, label: 'Settings' },

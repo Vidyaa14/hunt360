@@ -30,6 +30,8 @@ import SavedJobsPage from './pages/SavedJobsPage';
 import SignUp from './pages/Signin';
 import Welcome from './pages/Welcome';
 import SettingsPage from './pages/Settings';
+import ResumeUpload from './features/resumehunt/pages/UploadResumes';
+import ResumeSearch from './features/resumehunt/pages/SearchResumes';
 
 const App = () => {
     return (
@@ -97,6 +99,12 @@ const App = () => {
                     <Route path="profile-page" element={<HRProfilePage />} />
                     <Route path="profile-settings" element={<HRProfileSettings />} />
                     <Route path="saved-professionals" element={<HRSavedProfessionals />} />
+                </Route>
+
+                <Route path="resume-hunt">
+                    <Route index element={<ResumeSearch />} />
+                    <Route path="resume-search" element={<ResumeSearch />} />
+                    <Route path="resume-upload" element={<ResumeUpload />} />
                 </Route>
             </Route>
         </Routes>
