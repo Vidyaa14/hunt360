@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Navbar from '../components/Navbar';
-import EditContactForm from './EditContactForm';
-import { FaLinkedin } from 'react-icons/fa';
 import axios from 'axios';
+import { useState } from 'react';
+import { FaLinkedin } from 'react-icons/fa';
+import styled from 'styled-components';
+import EditContactForm from './EditContactForm';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
   ? `${import.meta.env.VITE_API_BASE_URL}/hrhunt`
@@ -195,7 +194,6 @@ const Dashboard = () => {
 
   return (
     <div>
-      <Navbar />
       <DashboardContainer>
         <MainContent>
           <ContentSection>
