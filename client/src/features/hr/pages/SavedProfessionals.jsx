@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import Navbar from '../components/Navbar';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
@@ -107,7 +106,6 @@ const SavedProfessionals = () => {
 
     return (
         <div>
-            <Navbar />
             <Container>
                 <Title>Reports</Title>
                 <Table>
