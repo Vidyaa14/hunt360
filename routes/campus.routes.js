@@ -1,4 +1,4 @@
-import express from 'express';
+import { Router } from 'express';
 import {
     addCollege,
     deleteCollege,
@@ -34,7 +34,7 @@ import {
     getTotalPayment,
 } from '../controllers/marketing.controller.js';
 
-const router = express.Router();
+const router = Router();
 
 /* College Routes */
 router.post('/upload', uploadFile);

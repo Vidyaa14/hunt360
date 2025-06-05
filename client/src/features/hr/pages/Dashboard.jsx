@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import Navbar from '../components/Navbar';
 import EditContactForm from './EditContactForm';
+import { FaLinkedin } from 'react-icons/fa';
+import axios from 'axios';
 
-const hexToRgba = (hex, alpha) => {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
+const baseURL = import.meta.env.VITE_API_BASE_URL
+  ? `${import.meta.env.VITE_API_BASE_URL}/hrhunt`
+  : 'http://localhost:3000/api/hrhunt';
 
 const purple = '#a000c8';
 const darkPurple = '#8a00c2';
 
 const DashboardContainer = styled.div`
+  min-height: 100vh;
+  padding-top: 80px;
 `;
 
 const MainContent = styled.div`
@@ -36,7 +38,7 @@ const FilterSection = styled.div`
   background-color: #fff;
   padding: 1rem;
   border-radius: 0.5rem;
-  box-shadow: 0 2px 4px ${hexToRgba(purple, 0.3)};
+  box-shadow: 0 2px 4px rgba(160, 0, 200, 0.3);
 `;
 
 const Select = styled.select`
@@ -71,11 +73,11 @@ const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
-  box-shadow: 0 2px 4px ${hexToRgba(purple, 0.2)};
+  box-shadow: 0 2px 4px rgba(160, 0, 200, 0.2);
 `;
 
 const TableHeader = styled.thead`
-  background-color: ${hexToRgba(purple, 0.1)};
+  background-color: rgba(160, 0, 200, 0.1);
 `;
 
 const Th = styled.th`
@@ -104,14 +106,59 @@ const EditButton = styled.button`
 `;
 
 const Dashboard = () => {
-  const [professionals, setProfessionals] = useState([
-    { name: 'Jessica Williams', title: 'Talent Acquisition Specialist', company: 'Amazon', location: 'New York', status: 'Hiring Now' },
-    { name: 'Emily Thompson', title: 'Recruitment Manager', company: 'Meta', location: 'Remote', status: 'Hiring Now' },
-    { name: 'John Smith', title: 'HR Manager', company: 'TCS', location: 'Mumbai', status: '' },
-  ]);
-
+  const [professionals, setProfessionals] = useState([]);
   const [selected, setSelected] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [filters, setFilters] = useState({
+    industry: '',
+    location: '',
+    designation: '',
+    experience: ''
+  });
+
+  const industryOptions = [
+    'Advertising',
+    'Banking & Finance',
+    'Coaching/Consulting',
+    'Consulting',
+    'IT',
+    'Pharmaceutical',
+    'Other'
+  ];
+
+  const locationOptions = [
+    'Bengaluru',
+    'Mumbai',
+    'Delhi NCR',
+    'Pune',
+    'Bangalore',
+    'Gurgaon',
+    'Chennai',
+    'Noida',
+    'Ahmedabad',
+    'Varanasi',
+    'Other'
+  ];
+
+  const designationOptions = [
+    'Senior HRBP',
+    'Senior HR Manager',
+    'HRBP Manager',
+    'HRBP Lead',
+    'HR Manager',
+    'HR Director',
+    'HR Business Partner',
+    'Other'
+  ];
+
+  const experienceOptions = [
+    '10–15 years',
+    '15–20 years',
+    '20–25 years',
+    '25–30 years',
+    '30+ years'
+  ];
 
   const openEditModal = (professional) => {
     setSelected(professional);
@@ -125,16 +172,8 @@ const Dashboard = () => {
 
   const handleSave = async (updatedData) => {
     try {
-      const response = await fetch(`/api/professionals/${selected.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedData),
-      });
-
-      if (!response.ok) throw new Error('Failed to update professional');
-
       const updatedList = professionals.map((item) =>
-        item.id === selected.id ? updatedData : item
+        item.name === selected?.name ? updatedData : item
       );
       setProfessionals(updatedList);
       closeModal();
@@ -144,25 +183,58 @@ const Dashboard = () => {
     }
   };
 
+  const handleSearch = async () => {
+    try {
+      const res = await axios.post(`${baseURL}/professionals/filter`, filters);
+      setProfessionals(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error('Error fetching professionals:', error);
+      setProfessionals([]);
+    }
+  };
 
   return (
     <div>
+      <Navbar />
       <DashboardContainer>
         <MainContent>
           <ContentSection>
             <FilterSection>
               <SectionTitle>Filters</SectionTitle>
+
               <label>Industry</label>
-              <Select><option>Select industry</option></Select>
+              <Select value={filters.industry} onChange={(e) => setFilters({ ...filters, industry: e.target.value })}>
+                <option value="">Select industry</option>
+                {industryOptions.map((item, i) => (
+                  <option key={i} value={item}>{item}</option>
+                ))}
+              </Select>
+
               <label>Location</label>
-              <Select><option>Select location</option></Select>
-              <label>Company</label>
-              <Select><option>Select company</option></Select>
-              <label>Hiring Status</label>
-              <Select><option>Select status</option></Select>
+              <Select value={filters.location} onChange={(e) => setFilters({ ...filters, location: e.target.value })}>
+                <option value="">Select location</option>
+                {locationOptions.map((item, i) => (
+                  <option key={i} value={item}>{item}</option>
+                ))}
+              </Select>
+
+              <label>Designation</label>
+              <Select value={filters.designation} onChange={(e) => setFilters({ ...filters, designation: e.target.value })}>
+                <option value="">Select designation</option>
+                {designationOptions.map((item, i) => (
+                  <option key={i} value={item}>{item}</option>
+                ))}
+              </Select>
+
               <label>Experience</label>
-              <Select><option>Select experience</option></Select>
-              <SearchButton>Search</SearchButton>
+              <Select value={filters.experience} onChange={(e) => setFilters({ ...filters, experience: e.target.value })}>
+                <option value="">Select experience</option>
+                {experienceOptions.map((item, i) => (
+                  <option key={i} value={item}>{item}</option>
+                ))}
+              </Select>
+
+              <SearchButton onClick={handleSearch}>Search</SearchButton>
             </FilterSection>
 
             <ReportsSection>
@@ -174,7 +246,7 @@ const Dashboard = () => {
                     <Th>Title</Th>
                     <Th>Company</Th>
                     <Th>Location</Th>
-                    <Th>Status</Th>
+                    <Th>LinkedIn</Th>
                     <Th>Action</Th>
                   </tr>
                 </TableHeader>
@@ -185,7 +257,15 @@ const Dashboard = () => {
                       <Td>{pro.title}</Td>
                       <Td>{pro.company}</Td>
                       <Td>{pro.location}</Td>
-                      <Td>{pro.status || '-'}</Td>
+                      <Td>
+                        {pro.linkedin ? (
+                          <a href={pro.linkedin} target="_blank" rel="noopener noreferrer">
+                            <FaLinkedin size={20} color="#0e76a8" />
+                          </a>
+                        ) : (
+                          '-'
+                        )}
+                      </Td>
                       <Td>
                         <EditButton onClick={() => openEditModal(pro)}>Edit</EditButton>
                       </Td>

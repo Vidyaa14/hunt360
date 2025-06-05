@@ -8,6 +8,7 @@ import YAML from 'yamljs';
 import authRoutes from './routes/auth.routes.js';
 import campusRoutes from './routes/campus.routes.js';
 import corporateRoutes from './routes/corporate.routes.js';
+import hrhuntRoutes from './routes/hrhunt.routes.js';
 import './utils/warmup.js';
 
 dotenv.config();
@@ -52,6 +53,7 @@ app.use(
 );
 app.use('/api/auth', authRoutes);
 app.use('/api/campus', campusRoutes);
+app.use('/api/hrhunt', hrhuntRoutes);
 app.use('/api/corporate', corporateRoutes);
 
 app.get('/health', (req, res) => {

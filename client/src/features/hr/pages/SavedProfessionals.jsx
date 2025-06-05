@@ -1,5 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
+import Navbar from '../components/Navbar';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+
+const baseURL = import.meta.env.VITE_API_BASE_URL
+    ? `${import.meta.env.VITE_API_BASE_URL}/hrhunt`
+    : 'http://localhost:3000/api/hrhunt';
 
 const purple = '#a000c8';
 const darkPurple = '#8a00c2';
@@ -53,32 +60,37 @@ const DownloadButton = styled.button`
   }
 `;
 
-const data = [
-    {
-        name: 'Jessica Williams',
-        contact: 'jessica@example.com',
-        date: '25-05-2025',
-        timesContacted: 2,
-        contactedBy: 'Recruiter A',
-        contactedPerson: 'Jessica',
-        notes: 'Interested in remote work'
-    },
-    {
-        name: 'John Smith',
-        contact: 'johnsmith@example.com',
-        date: '20-05-2025',
-        timesContacted: 1,
-        contactedBy: 'Recruiter B',
-        contactedPerson: 'John',
-        notes: 'Waiting for follow-up'
-    }
-];
+
 
 const SavedProfessionals = () => {
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        // Fetch data from the backend
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${baseURL}/response`);
+                setData(response.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const downloadCSV = () => {
         const headers = ['Name', 'Contact', 'Date of Contact', 'Times Contacted', 'Contacted By', 'Contacted Person', 'Notes'];
         const rows = data.map(item =>
-            [item.name, item.contact, item.date, item.timesContacted, item.contactedBy, item.contactedPerson, item.notes]
+            [
+                item.name,
+                item.contact,
+                item.date_of_contact,
+                item.number_of_times_contacted,
+                item.contacted_by,
+                item.contacted_person,
+                item.feedback_notes
+            ]
         );
 
         let csvContent = "data:text/csv;charset=utf-8,"
@@ -95,6 +107,7 @@ const SavedProfessionals = () => {
 
     return (
         <div>
+            <Navbar />
             <Container>
                 <Title>Reports</Title>
                 <Table>
@@ -114,11 +127,11 @@ const SavedProfessionals = () => {
                             <tr key={index}>
                                 <Td>{person.name}</Td>
                                 <Td>{person.contact}</Td>
-                                <Td>{person.date}</Td>
-                                <Td>{person.timesContacted}</Td>
-                                <Td>{person.contactedBy}</Td>
-                                <Td>{person.contactedPerson}</Td>
-                                <Td>{person.notes}</Td>
+                                <Td>{person.date_of_contact}</Td>
+                                <Td>{person.number_of_times_contacted}</Td>
+                                <Td>{person.contacted_by}</Td>
+                                <Td>{person.contacted_person}</Td>
+                                <Td>{person.feedback_notes}</Td>
                             </tr>
                         ))}
                     </tbody>
