@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 //import EmailGenerator from "./EmailGenerator";
+import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
@@ -16,7 +17,7 @@ const SendEmail = () => {
         numEmails: 1,
         sendIn: 0,
     });
-    const [attachments, setAttachments] = useState([null]);
+    const [attachments, setAttachments] = useState([]);
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
@@ -54,25 +55,30 @@ const SendEmail = () => {
         setErrors((prev) => ({ ...prev, [name]: '' }));
     };
 
+    const showToast = (message, background) => {
+        Toastify({
+            text: message,
+            duration: 3000,
+            style: { background },
+        }).showToast();
+    };
+
     const sendEmail = async () => {
         if (!validateForm()) {
-            window.Toastify({
-                text: 'Please fix the form errors before submitting',
-                duration: 3000,
-                style: { background: 'red' },
-            }).showToast();
+            showToast('Please fix the form errors before submitting', 'red');
             return;
         }
 
         setIsLoading(true);
         const data = new FormData();
-        data.append('recipient', formData.recipient);
-        data.append('describe', formData.describe);
-        data.append('subject', formData.subject);
-        data.append('body', formData.body);
-        data.append('numEmails', formData.numEmails);
-        data.append('sendIn', formData.sendIn);
-        data.append('userId', 1);
+        data.append('recipient', String(formData.recipient));
+        data.append('describe', String(formData.describe));
+        data.append('subject', String(formData.subject));
+        data.append('body', String(formData.body));
+        data.append('numEmails', String(formData.numEmails));
+        data.append('sendIn', String(formData.sendIn));
+        data.append('userId', '1');
+
 
         attachments.forEach((file, index) => {
             if (file) data.append('attachments', file);
@@ -86,11 +92,7 @@ const SendEmail = () => {
 
             const result = await response.json();
             if (response.ok) {
-                window.Toastify({
-                    text: result.message || 'Email(s) scheduled successfully!',
-                    duration: 3000,
-                    style: { background: 'green' },
-                }).showToast();
+                showToast(result.message || 'Email(s) scheduled successfully!', 'green');
                 setFormData({
                     recipient: '',
                     describe: '',
@@ -101,18 +103,10 @@ const SendEmail = () => {
                 });
                 setAttachments([null]);
             } else {
-                window.Toastify({
-                    text: result.message || 'Failed to send email',
-                    duration: 3000,
-                    style: { background: 'red' },
-                }).showToast();
+                showToast(result.message || 'Failed to send email', 'red');
             }
         } catch (error) {
-            window.Toastify({
-                text: `Error sending email: ${error.message}`,
-                duration: 3000,
-                style: { background: 'red' },
-            }).showToast();
+            showToast(`Error sending email: ${error.message}`, 'red');
         } finally {
             setIsLoading(false);
         }

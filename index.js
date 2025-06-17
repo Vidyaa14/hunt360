@@ -19,6 +19,7 @@ const upload = multer({ dest: 'uploads/resumes/' });
 const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5173',
+    'http://localhost:5174',
     'https://hunt360.vercel.app',
     'https://hunt360.onrender.com',
 ];
@@ -46,7 +47,6 @@ app.use(
     })
 );
 
-app.use(upload.any());
 app.use(
     '/api-docs',
     swaggerUI.serve,

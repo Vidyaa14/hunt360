@@ -145,9 +145,8 @@ export const getEmailStatus = async (req, res) => {
     try {
         const { page = 1, pageSize = 10 } = req.query;
         const offset = (page - 1) * pageSize;
-        const userId = req.body.userId || 1; // Placeholder: Replace with actual user authentication
 
-        // Query to fetch email status with pagination
+        // Query to fetch all email statuses
         const [rows] = await db.query(
             `
             SELECT 
@@ -155,26 +154,25 @@ export const getEmailStatus = async (req, res) => {
                 e.Subject AS subject,
                 el.Status AS status,
                 el.Timestamp AS timestamp,
-                e.Body AS recipient
+                e.Body AS recipient,
+                e.UserId AS userId
             FROM EmailLogs el
             JOIN Emails e ON el.EmailID = e.EmailID
-            WHERE e.UserId = ?
             ORDER BY el.Timestamp DESC
             LIMIT ? OFFSET ?
             `,
-            [userId, parseInt(pageSize), parseInt(offset)]
+            [parseInt(pageSize), parseInt(offset)]
         );
 
-        // Get total count for pagination
+        // Get total count
         const [countResult] = await db.query(
             `
             SELECT COUNT(*) AS total
             FROM EmailLogs el
             JOIN Emails e ON el.EmailID = e.EmailID
-            WHERE e.UserId = ?
-            `,
-            [userId]
+            `
         );
+
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / pageSize);
 
@@ -192,33 +190,28 @@ export const getEmailHistory = async (req, res) => {
     try {
         const { page = 1, pageSize = 10 } = req.query;
         const offset = (page - 1) * pageSize;
-        const userId = req.body.userId || 1; // Placeholder: Replace with actual user authentication
 
-        // Query to fetch email history with pagination
+        // Fetch all email history
         const [rows] = await db.query(
             `
             SELECT 
                 EmailID AS emailId,
                 Recipient AS recipient,
                 Subject AS subject,
+                UserId AS userId,
                 CreatedAt AS sentAt
             FROM Emails
-            WHERE UserId = ?
             ORDER BY CreatedAt DESC
             LIMIT ? OFFSET ?
             `,
-            [userId, parseInt(pageSize), parseInt(offset)]
+            [parseInt(pageSize), parseInt(offset)]
         );
 
-        // Get total count for pagination
+        // Get total count
         const [countResult] = await db.query(
-            `
-            SELECT COUNT(*) AS total
-            FROM Emails
-            WHERE UserId = ?
-            `,
-            [userId]
+            `SELECT COUNT(*) AS total FROM Emails`
         );
+
         const totalRecords = countResult[0].total;
         const totalPages = Math.ceil(totalRecords / pageSize);
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'toastify-js/src/toastify.css';
+import Toastify from 'toastify-js';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
     ? `${import.meta.env.VITE_API_BASE_URL}/email-service`
@@ -12,6 +13,25 @@ const EmailHistory = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const pageSize = 10;
+
+    const showToast = (message, background) => {
+        try {
+            if (Toastify) {
+                Toastify({
+                    text: message,
+                    duration: 3000,
+                    style: { background },
+                }).showToast();
+            } else {
+                console.warn('Toastify not available, falling back to alert');
+                alert(message);
+            }
+        } catch (err) {
+            console.error('Toastify error:', err);
+            alert(message);
+        }
+    };
+
 
     const fetchEmailHistory = async (pageNum) => {
         setIsLoading(true);
@@ -29,11 +49,7 @@ const EmailHistory = () => {
             }
         } catch (err) {
             setError(err.message);
-            window.Toastify({
-                text: `Error: ${err.message}`,
-                duration: 3000,
-                style: { background: 'red' },
-            }).showToast();
+            showToast(`Error: ${err.message}`, 'red');
         } finally {
             setIsLoading(false);
         }
