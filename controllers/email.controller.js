@@ -231,3 +231,120 @@ export const getEmailHistory = async (req, res) => {
         res.status(500).json({ message: `Error fetching email history: ${error.message}` });
     }
 };
+
+export const getUsers = async (req, res) => {
+    try {
+        const { page = 1, pageSize = 10 } = req.query;
+        const offset = (page - 1) * pageSize;
+
+        // Query to fetch users with pagination
+        const [rows] = await db.query(
+            `
+            SELECT 
+                UserId AS userId,
+                Email AS email,
+                Name AS name,
+                PhoneNumber AS phone,
+                Role AS role
+            FROM EmailUsers
+            ORDER BY UserId ASC
+            LIMIT ? OFFSET ?
+            `,
+            [parseInt(pageSize), parseInt(offset)]
+        );
+
+        // Get total count for pagination
+        const [countResult] = await db.query(
+            `
+            SELECT COUNT(*) AS total
+            FROM Users
+            `
+        );
+        const totalRecords = countResult[0].total;
+        const totalPages = Math.ceil(totalRecords / pageSize);
+
+        res.status(200).json({
+            data: rows,
+            totalPages,
+            currentPage: parseInt(page),
+        });
+    } catch (error) {
+        res.status(500).json({ message: `Error fetching users: ${error.message}` });
+    }
+};
+
+export const updateUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { email, name, phone, role } = req.body;
+
+        if (!email || !name || !role) {
+            return res.status(400).json({ message: 'Email, name, and role are required' });
+        }
+
+        // Validate email format
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            return res.status(400).json({ message: 'Invalid email format' });
+        }
+
+        // Validate phone if provided
+        if (phone && !/^\+?\d{10,15}$/.test(phone)) {
+            return res.status(400).json({ message: 'Invalid phone number format (10-15 digits)' });
+        }
+
+        // Check for duplicate email (excluding the current user)
+        const [existingEmail] = await db.query(
+            `SELECT UserId FROM EmailUsers WHERE Email = ? AND UserId != ?`,
+            [email, userId]
+        );
+        if (existingEmail.length > 0) {
+            return res.status(400).json({ message: 'Email already in use by another user' });
+        }
+
+        // Update user
+        const [result] = await db.query(
+            `
+            UPDATE EmailUsers
+            SET Email = ?, Name = ?, PhoneNumber = ?, Role = ?
+            WHERE UserId = ?
+            `,
+            [email, name, phone || null, role, userId]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: `Error updating user: ${error.message}` });
+    }
+};
+
+export const deleteUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Check if user exists
+        const [user] = await db.query(`SELECT UserId FROM EmailUsers WHERE UserId = ?`, [userId]);
+        if (user.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check for associated emails
+        const [emails] = await db.query(`SELECT EmailID FROM Emails WHERE UserId = ?`, [userId]);
+        if (emails.length > 0) {
+            return res.status(400).json({ message: 'Cannot delete user with associated emails' });
+        }
+
+        // Delete user
+        const [result] = await db.query(`DELETE FROM EmailUsers WHERE UserId = ?`, [userId]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: `Error deleting user: ${error.message}` });
+    }
+};
