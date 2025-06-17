@@ -128,6 +128,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 { to: '/dashboard/email-service/email-history', icon: BookTemplate, label: 'Email Templates' },
                 { to: '/dashboard/email-service/email-sent', icon: Send, label: 'Email Sent' },
                 { to: '/dashboard/email-service/email-status', icon: TowerControl, label: 'Email Sent' },
+                { to: '/dashboard/email-service/users-list', icon: TowerControl, label: 'Users List' },
 
             ],
         },

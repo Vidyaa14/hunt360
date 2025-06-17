@@ -35,6 +35,7 @@ import ResumeSearch from './features/resumehunt/pages/SearchResumes';
 import EmailStatus from './components/email/EmailStatus';
 import EmailHistory from './components/email/EmailHistory';
 import EmailSend from './components/email/SendEmail';
+import UserList from './components/email/UserList';
 
 const App = () => {
     return (
@@ -115,6 +116,7 @@ const App = () => {
                     <Route path="email-sent" element={<EmailSend />} />
                     <Route path="email-history" element={<EmailHistory />} />
                     <Route path="email-status" element={<EmailStatus />} />
+                    <Route path="users-list" element={<UserList />} />
                 </Route>
             </Route>
         </Routes>
