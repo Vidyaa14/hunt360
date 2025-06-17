@@ -257,7 +257,7 @@ export const getUsers = async (req, res) => {
         const [countResult] = await db.query(
             `
             SELECT COUNT(*) AS total
-            FROM Users
+            FROM EmailUsers
             `
         );
         const totalRecords = countResult[0].total;
