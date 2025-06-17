@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.routes.js';
 import campusRoutes from './routes/campus.routes.js';
 import corporateRoutes from './routes/corporate.routes.js';
 import hrhuntRoutes from './routes/hrhunt.routes.js';
+import emailRoutes from './routes/email.routes.js';
 import './utils/warmup.js';
 
 dotenv.config();
@@ -55,6 +56,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/campus', campusRoutes);
 app.use('/api/hrhunt', hrhuntRoutes);
 app.use('/api/corporate', corporateRoutes);
+app.use('/api/email-service', emailRoutes);
 
 app.get('/health', (req, res) => {
     res.status(200).send('OK');

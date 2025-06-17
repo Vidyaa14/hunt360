@@ -17,6 +17,7 @@ const db = mysql.createPool({
     connectionLimit: 50,
     connectTimeout: 60000,
     queueLimit: 0,
+    multipleStatements: true
 });
 
 (async () => {

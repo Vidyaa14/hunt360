@@ -32,6 +32,9 @@ import Welcome from './pages/Welcome';
 import SettingsPage from './pages/Settings';
 import ResumeUpload from './features/resumehunt/pages/UploadResumes';
 import ResumeSearch from './features/resumehunt/pages/SearchResumes';
+import EmailStatus from './components/email/EmailStatus';
+import EmailHistory from './components/email/EmailHistory';
+import EmailSend from './components/email/SendEmail';
 
 const App = () => {
     return (
@@ -105,6 +108,13 @@ const App = () => {
                     <Route index element={<ResumeSearch />} />
                     <Route path="resume-search" element={<ResumeSearch />} />
                     <Route path="resume-upload" element={<ResumeUpload />} />
+                </Route>
+
+                <Route path="email-service">
+                    <Route index element={<EmailSend />} />
+                    <Route path="email-sent" element={<EmailSend />} />
+                    <Route path="email-history" element={<EmailHistory />} />
+                    <Route path="email-status" element={<EmailStatus />} />
                 </Route>
             </Route>
         </Routes>

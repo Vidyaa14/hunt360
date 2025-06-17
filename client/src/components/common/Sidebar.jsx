@@ -34,6 +34,10 @@ import {
     Bookmark,
     Upload,
     FileSearch,
+    BookTemplate,
+    Send,
+    TowerControl,
+    Building,
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
@@ -117,6 +121,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     label: 'Search Resume',
                 },
             ],
+        },
+        {
+            to: '/dashboard/email-service', icon: BookTemplate, label: "Email Service",
+            children: [
+                { to: '/dashboard/email-service/email-history', icon: BookTemplate, label: 'Email Templates' },
+                { to: '/dashboard/email-service/email-sent', icon: Send, label: 'Email Sent' },
+                { to: '/dashboard/email-service/email-status', icon: TowerControl, label: 'Email Sent' },
+
+            ],
+        },
+        {
+            to: '/dashboard/campus', icon: Building, label: 'Campus',
+            children: [
+            ]
         },
         { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
     ];
