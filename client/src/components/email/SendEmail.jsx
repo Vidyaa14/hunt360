@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-//import EmailGenerator from "./EmailGenerator";
 import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
+import Papa from 'papaparse';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
     ? `${import.meta.env.VITE_API_BASE_URL}/email-service`
@@ -10,26 +10,52 @@ const baseURL = import.meta.env.VITE_API_BASE_URL
 
 const SendEmail = () => {
     const [formData, setFormData] = useState({
-        recipient: '',
         describe: '',
         subject: '',
         body: '',
         numEmails: 1,
         sendIn: 0,
     });
+    const [emailFile, setEmailFile] = useState(null);
+    const [emailList, setEmailList] = useState([]);
     const [attachments, setAttachments] = useState([]);
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
 
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.recipient) newErrors.recipient = 'Recipient email is required';
+        if (emailList.length === 0) newErrors.emailFile = 'Please upload a valid CSV file with email addresses';
         if (!formData.subject) newErrors.subject = 'Subject is required';
         if (!formData.body) newErrors.body = 'Body is required';
         if (formData.numEmails < 1) newErrors.numEmails = 'Number of emails must be at least 1';
         if (formData.sendIn < 0) newErrors.sendIn = 'Send time cannot be negative';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
+    };
+
+    const handleCSVUpload = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type === 'text/csv') {
+            setEmailFile(file);
+            Papa.parse(file, {
+                complete: (result) => {
+                    const emails = result.data
+                        .map(row => {
+                            const email = row.email || row[0];
+                            return email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : null;
+                        })
+                        .filter(email => email);
+                    setEmailList(emails);
+                    setErrors((prev) => ({ ...prev, emailFile: emails.length === 0 ? 'No valid email addresses found in CSV' : '' }));
+                },
+                header: true,
+                skipEmptyLines: true,
+            });
+        } else {
+            setEmailFile(null);
+            setEmailList([]);
+            setErrors((prev) => ({ ...prev, emailFile: 'Please upload a valid CSV file' }));
+        }
     };
 
     const addAttachment = () => {
@@ -71,14 +97,13 @@ const SendEmail = () => {
 
         setIsLoading(true);
         const data = new FormData();
-        data.append('recipient', String(formData.recipient));
+        data.append('recipients', JSON.stringify(emailList)); // Send array of emails
         data.append('describe', String(formData.describe));
         data.append('subject', String(formData.subject));
         data.append('body', String(formData.body));
         data.append('numEmails', String(formData.numEmails));
         data.append('sendIn', String(formData.sendIn));
         data.append('userId', '1');
-
 
         attachments.forEach((file, index) => {
             if (file) data.append('attachments', file);
@@ -94,13 +119,14 @@ const SendEmail = () => {
             if (response.ok) {
                 showToast(result.message || 'Email(s) scheduled successfully!', 'green');
                 setFormData({
-                    recipient: '',
                     describe: '',
                     subject: '',
                     body: '',
                     numEmails: 1,
                     sendIn: 0,
                 });
+                setEmailFile(null);
+                setEmailList([]);
                 setAttachments([null]);
             } else {
                 showToast(result.message || 'Failed to send email', 'red');
@@ -118,16 +144,17 @@ const SendEmail = () => {
                 <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Send Email</h2>
                 <div className="space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Recipient Email</label>
+                        <label className="block text-sm font-medium text-gray-700">Upload Email List (CSV)</label>
                         <input
-                            type="email"
-                            name="recipient"
-                            className={`mt-1 w-full border rounded-md px-3 py-2 focus:ring-purple-500 focus:border-purple-500 ${errors.recipient ? 'border-red-500' : 'border-gray-300'}`}
-                            placeholder="recipient@example.com"
-                            value={formData.recipient}
-                            onChange={handleInputChange}
+                            type="file"
+                            accept=".csv"
+                            className={`mt-1 w-full border rounded-md px-3 py-2 focus:ring-purple-500 focus:border-purple-500 ${errors.emailFile ? 'border-red-500' : 'border-gray-300'}`}
+                            onChange={handleCSVUpload}
                         />
-                        {errors.recipient && <p className="text-red-500 text-sm mt-1">{errors.recipient}</p>}
+                        {emailList.length > 0 && (
+                            <p className="text-sm text-gray-600 mt-1">{emailList.length} email(s) loaded</p>
+                        )}
+                        {errors.emailFile && <p className="text-red-500 text-sm mt-1">{errors.emailFile}</p>}
                     </div>
 
                     <div>

@@ -79,12 +79,23 @@ export const updateEmailStatus = async (emailId, status, message) => {
 
 export const sendEmail = async (req, res) => {
     try {
-        const { describe, subject, body, numEmails, sendIn } = req.body;
+        const { recipients, describe, subject, body, numEmails, sendIn } = req.body;
         const attachments = req.files;
         const userId = req.body.userId || 1;
 
-        if (!subject || !body || !userId) {
-            return res.status(400).json({ message: 'Subject, body, and userId are required' });
+        if (!recipients || !subject || !body || !userId) {
+            return res.status(400).json({ message: 'Recipients, subject, body, and userId are required' });
+        }
+
+        // Parse recipients from JSON string to array
+        let recipientList;
+        try {
+            recipientList = JSON.parse(recipients);
+            if (!Array.isArray(recipientList) || recipientList.length === 0) {
+                return res.status(400).json({ message: 'Recipients must be a non-empty array' });
+            }
+        } catch (error) {
+            return res.status(400).json({ message: 'Invalid recipients format' });
         }
 
         const { emailId } = await saveEmail({
@@ -92,6 +103,7 @@ export const sendEmail = async (req, res) => {
             describe,
             subject,
             body,
+            recipients: recipientList, // Store recipient list in DB
             attachments: attachments?.map(file => ({
                 filename: file.originalname,
                 content: file.buffer,
@@ -113,25 +125,28 @@ export const sendEmail = async (req, res) => {
             content: file.buffer,
         })) || [];
 
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: process.env.DEFAULT_RECIPIENT || 'recipient@example.com',
-            subject,
-            text: body,
-            attachments: emailAttachments,
-        };
-
         const sendTime = sendIn ? Date.now() + sendIn * 60 * 1000 : Date.now();
 
-        for (let i = 0; i < numEmails; i++) {
-            setTimeout(async () => {
-                try {
-                    await transporter.sendMail(mailOptions);
-                    await updateEmailStatus(emailId, 'Sent', 'Email sent successfully');
-                } catch (error) {
-                    await updateEmailStatus(emailId, 'Failed', `Error sending email: ${error.message}`);
-                }
-            }, sendTime - Date.now());
+        // Send email to each recipient
+        for (const recipient of recipientList) {
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: recipient,
+                subject,
+                text: body,
+                attachments: emailAttachments,
+            };
+
+            for (let i = 0; i < numEmails; i++) {
+                setTimeout(async () => {
+                    try {
+                        await transporter.sendMail(mailOptions);
+                        await updateEmailStatus(emailId, 'Sent', `Email sent successfully to ${recipient}`);
+                    } catch (error) {
+                        await updateEmailStatus(emailId, 'Failed', `Error sending email to ${recipient}: ${error.message}`);
+                    }
+                }, sendTime - Date.now());
+            }
         }
 
         res.status(200).json({ message: 'Email(s) scheduled successfully', emailId });

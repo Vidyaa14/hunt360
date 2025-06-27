@@ -19,6 +19,7 @@
         "html2pdf.js": "^0.10.3",
         "lucide-react": "^0.509.0",
         "mammoth": "^1.9.1",
+        "papaparse": "^5.5.3",
         "prop-types": "^15.8.1",
         "react": "^19.1.0",
         "react-calendar": "^5.1.0",
