@@ -39,6 +39,8 @@ import {
     TowerControl,
     Building,
     Users2,
+    ClipboardList,
+    Layers,
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
@@ -89,6 +91,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 { to: '/dashboard/corporate/marketing-data', icon: Megaphone, label: 'Marketing Data' },
             ],
         },
+        {
+            to: '/senior-management',
+            icon: Briefcase,
+            label: 'Senior Management',
+            children: [
+                { to: '/dashboard/senior-management/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+                { to: '/dashboard/senior-management/report', icon: FileText, label: 'Report' },
+                { to: '/dashboard/senior-management/single-data-edit', icon: Edit, label: 'Single Data Edit' },
+                { to: '/dashboard/senior-management/final-report', icon: ClipboardList, label: 'Final Report' },
+                { to: '/dashboard/senior-management/data-scraping', icon: Database, label: 'Data Scraping' },
+                { to: '/dashboard/senior-management/bulk-data', icon: Layers, label: 'Bulk Data' },
+            ]
+        },
+
         {
             to: '/campus',
             icon: BookOpen,

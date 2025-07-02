@@ -36,6 +36,12 @@ import EmailStatus from './components/email/EmailStatus';
 import EmailHistory from './components/email/EmailHistory';
 import EmailSend from './components/email/SendEmail';
 import UserList from './components/email/UserList';
+import SeniorDashboard from './components/seniormgt/Dashboard';
+import SeniorReport from './components/seniormgt/Reports';
+import SeniorSingleDataEdit from './components/seniormgt/SingleDataEdit';
+import SeniorFinalReport from './components/seniormgt/FinalProfile';
+import SeniorDataScraping from './components/seniormgt/DataScraping';
+import SeniorBulkData from './components/seniormgt/BulkDataCleaning';
 
 const App = () => {
     return (
@@ -117,6 +123,16 @@ const App = () => {
                     <Route path="email-history" element={<EmailHistory />} />
                     <Route path="email-status" element={<EmailStatus />} />
                     <Route path="users-list" element={<UserList />} />
+                </Route>
+
+                <Route path="senior-management">
+                    <Route index element={<SeniorDashboard />} />
+                    <Route path="dashboard" element={<SeniorDashboard />} />
+                    <Route path="report" element={<SeniorReport />} />
+                    <Route path="single-data-edit" element={<SeniorSingleDataEdit />} />
+                    <Route path="final-report" element={<SeniorFinalReport />} />
+                    <Route path="data-scraping" element={<SeniorDataScraping />} />
+                    <Route path="bulk-data" element={<SeniorBulkData />} />
                 </Route>
             </Route>
         </Routes>

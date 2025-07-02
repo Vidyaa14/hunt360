@@ -1,0 +1,183 @@
+import React, { useState, useEffect } from 'react';
+
+const baseURL = import.meta.env.VITE_API_BASE_URL
+    ? `${import.meta.env.VITE_API_BASE_URL}/linkedin`
+    : 'http://localhost:3000/api/linkedin';
+
+const BulkDataCleaning = () => {
+    const [file, setFile] = useState(null);
+    const [stats, setStats] = useState({
+        total: 0,
+        missing: {
+            name: 0,
+            company: 0,
+            location: 0,
+            follower: 0,
+            connection: 0,
+            url: 0
+        },
+        duplicates: 0
+    });
+
+    const handleFileChange = (event) => {
+        setFile(event.target.files[0]);
+    };
+
+    const handleUpload = async () => {
+        if (!file) {
+            alert("Please select a file to upload.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const response = await fetch(`${baseURL}/upload`, {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.error) {
+                throw new Error(result.error);
+            }
+
+            alert(result.message);
+            await fetchStats();
+            setFile(null);
+            document.getElementById("fileInput").value = "";
+        } catch (error) {
+            console.error("Upload error:", error.message);
+            alert(`Error uploading file: ${error.message}`);
+        }
+    };
+
+    const handleCleanDuplicates = async () => {
+        try {
+            const response = await fetch(`${baseURL}/clean-duplicates`, {
+                method: "DELETE",
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.error) {
+                throw new Error(result.error);
+            }
+
+            alert(result.message);
+            await fetchStats();
+        } catch (error) {
+            console.error("Error cleaning duplicates:", error.message);
+            alert(`Failed to clean duplicates: ${error.message}`);
+        }
+    };
+
+    const fetchStats = async () => {
+        try {
+            const response = await fetch(`${baseURL}/data-stats`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            setStats(data);
+        } catch (error) {
+            console.error("Failed to fetch stats:", error.message);
+            alert(`Failed to fetch stats: ${error.message}`);
+        }
+    };
+
+    useEffect(() => {
+        fetchStats();
+    }, []);
+
+    return (
+        <div className="mt-5">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 mb-4 sm:mb-5">
+                <div className="rounded-[12px] p-4 sm:p-5 shadow-md flex-1 bg-[#fff]">
+                    <h3 className="text-[#4A148C] text-base sm:text-lg font-semibold mb-2">
+                        Processing Dataset
+                    </h3>
+                    <p className="text-xs sm:text-sm mb-2"> piracy Clean duplicate records</p>
+                    <button
+                        className="bg-[#6A1B9A] hover:opacity-90 cursor-pointer rounded-md text-white border-none px-4 sm:px-5 py-2 sm:py-2 mt-2 sm:mt-3 w-full text-sm sm:text-base"
+                        onClick={handleCleanDuplicates}
+                    >
+                        Clean Now
+                    </button>
+                </div>
+
+                <div className="rounded-[12px] p-4 sm:p-5 shadow-md flex-1 bg-[#fff]">
+                    <h3 className="text-[#4A148C] text-base sm:text-lg font-semibold mb-2">
+                        Upload New Data
+                    </h3>
+                    <p className="text-xs sm:text-sm mb-2">
+                        {file ? `Selected file: ${file.name}` : "Import CSV, Excel or connect to your data source"}
+                    </p>
+                    <button
+                        className="bg-[#6A1B9A] hover:opacity-90 cursor-pointer rounded-md text-white border-none px-4 sm:px-5 py-2 sm:py-2 mt-2 sm:mt-3 w-full text-sm sm:text-base"
+                        onClick={() => document.getElementById("fileInput").click()}
+                    >
+                        Choose File
+                    </button>
+                    <input
+                        type="file"
+                        id="fileInput"
+                        accept=".csv, .xlsx, .xls"
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
+                    />
+                    <button
+                        className="bg-[#6A1B9A] hover:opacity-90 cursor-pointer rounded-md text-white border-none px-4 sm:px-5 py-2 sm:py-2 mt-2 sm:mt-3 w-full text-sm sm:text-base"
+                        onClick={handleUpload}
+                    >
+                        Upload
+                    </button>
+                </div>
+
+                <div className="rounded-[12px] p-4 sm:p-5 shadow-md flex-1 bg-[#fff]">
+                    <h3 className="text-[#4A148C] text-base sm:text-lg font-semibold mb-2">
+                        Missing Records
+                    </h3>
+                    <p className="text-xs sm:text-sm mb-2">Refresh Issue Categories records</p>
+                    <button
+                        className="bg-[#6A1B9A] hover:opacity-90 cursor-pointer rounded-md text-white border-none px-4 sm:px-5 py-2 sm:py-2 mt-2 sm:mt-3 w-full text-sm sm:text-base"
+                        onClick={fetchStats}
+                    >
+                        Refresh Data
+                    </button>
+                </div>
+            </div>
+            <div className="p-3 sm:p-4 md:p-5 rounded-[12px] shadow-md mb-4 sm:mb-5 bg-[#fff] text-left">
+                <h2 className="text-[#4A148C] text-lg sm:text-xl font-semibold mb-2">Issue Categories</h2>
+                <ul className="list-none p-0 m-0 text-sm sm:text-base">
+                    <li className="py-2 border-b border-[#eee]"><strong>Total Records</strong> - {stats.total || 0}</li>
+                    <li className="py-2 border-b border-[#eee]"><strong>Duplicate Records</strong> - {stats.duplicates || 0}</li>
+                    <li className="py-2 border-b border-[#eee]"><strong>Missing Fields:</strong></li>
+                    <ul className="ml-4 sm:ml-5">
+                        <li className="py-2 border-b border-[#eee]">Name - {stats.missing.name || 0}</li>
+                        <li className="py-2 border-b border-[#eee]">Company - {stats.missing.company || 0}</li>
+                        <li className="py-2 border-b border-[#eee]">Location - {stats.missing.location || 0}</li>
+                        <li className="py-2 border-b border-[#eee]">Followers - {stats.missing.follower || 0}</li>
+                        <li className="py-2 border-b border-[#eee]">Connection - {stats.missing.connection || 0}</li>
+                        <li className="py-2 border-b border-[#eee]">Url - {stats.missing.url || 0}</li>
+                    </ul>
+                </ul>
+            </div>
+        </div>
+    );
+};
+
+export default BulkDataCleaning;
