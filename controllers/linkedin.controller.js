@@ -175,12 +175,12 @@ export const getDataStats = async (req, res) => {
         const [missingResult] = await db.query(`
             SELECT 
                 COUNT(*) AS total,
-                SUM(CASE WHEN name IS NULL OR name = '' OR name = 'N/A' OR name = '-' OR name = 'NULL' THEN 1 ELSE 0 END) AS name,
-                SUM(CASE WHEN company IS NULL OR company = '' OR company = 'N/A' OR company = '-' OR company = 'NULL' THEN 1 ELSE 0 END) AS company,
-                SUM(CASE WHEN location IS NULL OR location = '' OR location = 'N/A' OR location = '-' OR location = 'NULL' THEN 1 ELSE 0 END) AS location,
-                SUM(CASE WHEN follower IS NULL OR follower = '' OR follower = 'N/A' OR follower = '-' OR follower = 'NULL' THEN 1 ELSE 0 END) AS follower,
-                SUM(CASE WHEN connection IS NULL OR connection = '' OR connection = 'N/A' OR connection = '-' OR connection = 'NULL' THEN 1 ELSE 0 END) AS connection,
-                SUM(CASE WHEN url IS NULL OR url = '' OR url = 'N/A' OR url = '-' OR url = 'NULL' THEN 1 ELSE 0 END) AS url
+                SUM(CASE WHEN name IS NULL OR name = '' OR name = 'N/A' OR name = '-' OR name = 'NULL' OR name = 'Not Found' THEN 1 ELSE 0 END) AS name,
+                SUM(CASE WHEN company IS NULL OR company = '' OR company = 'N/A' OR company = '-' OR company = 'NULL' OR company = 'Not Found' THEN 1 ELSE 0 END) AS company,
+                SUM(CASE WHEN location IS NULL OR location = '' OR location = 'N/A' OR location = '-' OR location = 'NULL' OR location = 'Not Found' THEN 1 ELSE 0 END) AS location,
+                SUM(CASE WHEN follower IS NULL OR follower = '' OR follower = 'N/A' OR follower = '-' OR follower = 'NULL' OR follower = 'Not Found' THEN 1 ELSE 0 END) AS follower,
+                SUM(CASE WHEN connection IS NULL OR connection = '' OR connection = 'N/A' OR connection = '-' OR connection = 'NULL' OR connection = 'Not Found' THEN 1 ELSE 0 END) AS connection,
+                SUM(CASE WHEN url IS NULL OR url = '' OR url = 'N/A' OR url = '-' OR url = 'NULL' OR url = 'Not Found' THEN 1 ELSE 0 END) AS url
             FROM linkedin_profiles;
         `);
 
