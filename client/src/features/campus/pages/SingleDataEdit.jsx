@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
-import SingleEditForm from './Forms/SingleEditForm';
+import SingleEditForm from '../forms/SingleEditForm';
 import { Plus } from 'lucide-react';
-import Card from '../components/Card';
-import InserForm from './Forms/InsertForm';
+import Card from '../../../components/campus/Card';
+import InserForm from '../forms/InsertForm';
 
 const locationOptions = [
     { value: 'Mumbai', label: 'Mumbai' },

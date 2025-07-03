@@ -17,6 +17,11 @@ Chart.register(...registerables);
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
+
+const baseURL = import.meta.env.VITE_API_BASE_URL
+    ? `${import.meta.env.VITE_API_BASE_URL}/campus`
+    : 'http://localhost:3000/api/campus';
+
 const Reports = () => {
     const [activeTab, setActiveTab] = useState('college');
     const [year, setYear] = useState('');
@@ -28,14 +33,14 @@ const Reports = () => {
 
     const handleUpdateReport = async () => {
         const response = await fetch(
-            'http://localhost:5000/chart-data?' +
-                new URLSearchParams({
-                    year,
-                    month,
-                    state,
-                    district,
-                    course,
-                }),
+            `${baseURL}/chart-data?` +
+            new URLSearchParams({
+                year,
+                month,
+                state,
+                district,
+                course,
+            }),
             {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
@@ -73,11 +78,10 @@ const Reports = () => {
                 ].map(({ key, icon, label }) => (
                     <div
                         key={key}
-                        className={`py-2 sm:py-3 px-2 sm:px-4 md:px-6 rounded-xl text-sm sm:text-base md:text-lg flex gap-2 sm:gap-3 items-center justify-center cursor-pointer transition-all duration-300 ${
-                            activeTab === key
-                                ? 'bg-white text-black'
-                                : 'text-gray-700'
-                        }`}
+                        className={`py-2 sm:py-3 px-2 sm:px-4 md:px-6 rounded-xl text-sm sm:text-base md:text-lg flex gap-2 sm:gap-3 items-center justify-center cursor-pointer transition-all duration-300 ${activeTab === key
+                            ? 'bg-white text-black'
+                            : 'text-gray-700'
+                            }`}
                         onClick={() => handleTabChange(key)}
                     >
                         {icon} <span>{label}</span>

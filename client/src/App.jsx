@@ -8,6 +8,7 @@ import MeetingSchedule from './features/campus/pages/MeetingSchedule';
 import CampusReports from './features/campus/pages/Reports';
 import Settings from './features/campus/pages/Settings';
 import UserManagement from './features/campus/pages/UserManagement';
+import CampusSingleDataEdit from './features/campus/pages/SingleDataEdit';
 import BulkDataCleaning from './features/corporate/pages/BulkDataCleaning';
 import CorporateDashboard from './features/corporate/pages/Dashboard';
 import DataScraping from './features/corporate/pages/DataScraping';
@@ -82,8 +83,9 @@ const App = () => {
                         path="data-scraping"
                         element={<CampusDataScraping />}
                     />
+                    <Route path="data-scraping" element={<CampusDataScraping />} />
                     <Route path="bulk-editing" element={<BulkEditing />} />
-                    <Route path="single-editing" element={<SingleDataEdit />} />
+                    <Route path="single-editing" element={<CampusSingleDataEdit />} />
                     <Route path="marketing-data" element={<MarketingData />} />
                     <Route path="hrdata" element={<HRData />} />
                     <Route path="reports" element={<CampusReports />} />

@@ -111,7 +111,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             label: 'Campus',
             children: [
                 { to: '/dashboard/campus/dashboard', icon: Home, label: 'Dashboard' },
-                { to: '/dashboard/campus/data-catascraping', icon: Database, label: 'Data Scraping' },
+                { to: '/dashboard/campus/data-scraping', icon: Database, label: 'Data Scraping' },
                 { to: '/dashboard/campus/bulk-editing', icon: Wand, label: 'Bulk Editing' },
                 { to: '/dashboard/campus/single-editing', icon: Edit, label: 'Single Editing' },
                 { to: '/dashboard/campus/marketing-data', icon: Megaphone, label: 'Marketing Data' },

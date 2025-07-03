@@ -15,6 +15,10 @@ import { Bar, Line, Scatter } from 'react-chartjs-2';
 import { FaDownload, FaShareAlt, FaSyncAlt } from 'react-icons/fa';
 import Card from '../../../components/campus/Card';
 
+const baseURL = import.meta.env.VITE_API_BASE_URL
+    ? `${import.meta.env.VITE_API_BASE_URL}/campus`
+    : 'http://localhost:3000/api/campus';
+
 Chart.register(...registerables);
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
@@ -94,7 +98,7 @@ function College_chart() {
                 if (course) queryParams.append('course', course);
 
                 const response = await fetch(
-                    `http://localhost:5000/college-count?${queryParams.toString()}`
+                    `${baseURL}/college-count?${queryParams.toString()}`
                 );
                 const data = await response.json();
                 setTotalColleges(data.total);
@@ -147,7 +151,7 @@ function College_chart() {
                 if (course) queryParams.append('course', course);
 
                 const response = await fetch(
-                    `http://localhost:5000/total-candidates?${queryParams.toString()}`
+                    `${baseURL}/total-candidates?${queryParams.toString()}`
                 );
                 const data = await response.json();
                 setotalcandidates(data.total_candidates || 0); // Adjust this key if your backend formats it differently
@@ -171,7 +175,7 @@ function College_chart() {
                 if (course) queryParams.append('course', course);
 
                 const response = await fetch(
-                    `http://localhost:5000/placed-candidates?${queryParams.toString()}`
+                    `${baseURL}/placed-candidates?${queryParams.toString()}`
                 );
                 const data = await response.json();
                 setotalplacedcandidates(data.total_candidates || 0); // Adjust this key if your backend formats it differently
@@ -195,7 +199,7 @@ function College_chart() {
                 if (course) queryParams.append('course', course);
 
                 const response = await fetch(
-                    `http://localhost:5000/payment-received?${queryParams.toString()}`
+                    `${baseURL}/payment-received?${queryParams.toString()}`
                 );
                 const data = await response.json();
                 setotalpayment(data.total_payment || 0); // Use the correct key 'total_payment' here
@@ -210,14 +214,14 @@ function College_chart() {
     // Dummy fetchChartData implementation (replace with actual API logic)
     const handleUpdateReport = async () => {
         const response = await fetch(
-            'http://localhost:5000/chart-data?' +
-                new URLSearchParams({
-                    year,
-                    month,
-                    state,
-                    district,
-                    course,
-                }),
+            `${baseURL}/chart-data?` +
+            new URLSearchParams({
+                year,
+                month,
+                state,
+                district,
+                course,
+            }),
             {
                 method: 'GET', // Use GET for fetching data
                 headers: { 'Content-Type': 'application/json' },
@@ -230,7 +234,7 @@ function College_chart() {
     // total hiring college
 
     useEffect(() => {
-        fetch('http://localhost:5000/hiring-clg')
+        fetch(`${baseURL}/hiring-clg`)
             .then((response) => response.json())
             .then((data) => {
                 console.log('Hiring Colleges API Response:', data);
@@ -242,7 +246,7 @@ function College_chart() {
     // total hiring college from consultant
 
     useEffect(() => {
-        fetch('http://localhost:5000/hiring-clg-consultant')
+        fetch(`${baseURL}/hiring-clg-consultant`)
             .then((response) => response.json())
             .then((data) => {
                 console.log('Hiring Colleges API Response:', data);
@@ -466,7 +470,7 @@ function College_chart() {
                                                 callback: function (value) {
                                                     return chartData[value]
                                                         ? chartData[value]
-                                                              .course
+                                                            .course
                                                         : value;
                                                 },
                                             },
@@ -493,7 +497,7 @@ function College_chart() {
                                                     const courseName =
                                                         chartData[index]
                                                             ? chartData[index]
-                                                                  .course
+                                                                .course
                                                             : 'Unknown';
                                                     return `${courseName}: ${context.parsed.y}`;
                                                 },
