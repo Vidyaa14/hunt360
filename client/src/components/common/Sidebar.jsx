@@ -89,6 +89,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 { to: '/dashboard/corporate/bulk-data-cleaning', icon: Wand, label: 'Bulk Data Cleaning' },
                 { to: '/dashboard/corporate/single-data-edit', icon: Edit, label: 'Single Data Edit' },
                 { to: '/dashboard/corporate/marketing-data', icon: Megaphone, label: 'Marketing Data' },
+                { to: '/dashboard/corporate/reports', icon: BarChart, label: 'Reports' },
             ],
         },
         {

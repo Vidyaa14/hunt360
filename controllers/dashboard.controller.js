@@ -3,9 +3,9 @@ import db from '../config/database.js';
 export const getDashboard = async (req, res) => {
     const queries = {
         total: 'SELECT COUNT(*) AS count FROM scraped_data',
-        reviewed: `SELECT COUNT(*) AS count FROM scraped_data WHERE lead_status = "Closed" AND communication_status="Interested" AND updated="yes"`,
-        pending: `SELECT COUNT(*) AS count FROM scraped_data WHERE lead_status = "In Progress" AND communication_status="Pending Call" AND updated="yes"`,
-        marketing: `SELECT COUNT(*) AS count FROM scraped_data WHERE updated = "yes"`,
+        reviewed: `SELECT COUNT(*) AS count FROM scraped_data WHERE lead_status ='Closed' AND communication_status='Interested' AND updated='yes'`,
+        pending: `SELECT COUNT(*) AS count FROM scraped_data WHERE lead_status = 'In Progress' AND communication_status='Pending Call' AND updated='yes'`,
+        marketing: `SELECT COUNT(*) AS count FROM scraped_data WHERE updated = 'yes'`,
         growth: `
           SELECT ROUND(
               (COUNT(*) - (SELECT COUNT(*) FROM scraped_data WHERE MONTH(created_at) = MONTH(CURDATE()) - 1))
@@ -22,7 +22,7 @@ export const getDashboard = async (req, res) => {
         completion: `
           SELECT ROUND(COUNT(*) / (SELECT COUNT(*) FROM scraped_data) * 100, 0) AS completion_rate 
           FROM scraped_data 
-          WHERE lead_status = "Closed"
+          WHERE lead_status = 'Closed'
       `,
         members: `
           SELECT COUNT(DISTINCT bd_name) AS count 
@@ -45,6 +45,7 @@ export const getDashboard = async (req, res) => {
 };
 
 export const getUpcomingMeetings = async (req, res) => {
+    console.log('upcoming meetings routes hit !')
     try {
         const [results] = await db.query(`
           SELECT company_name, meeting_date 

@@ -41,19 +41,19 @@ const Dashboard = () => {
 
     useEffect(() => {
         axios
-            .get('http://localhost:3000/dashboard')
+            .get(`${baseURL}/dashboard`)
             .then((res) => setData(res.data));
         axios
-            .get('http://localhost:3000/analytics')
+            .get(`${baseURL}/analytics`)
             .then((res) => setAnalytics(res.data));
         axios
-            .get('http://localhost:3000/trends/yearly')
+            .get(`${baseURL}/trends/yearly`)
             .then((res) => setYearTrends(res.data));
         axios
-            .get('http://localhost:3000/trends/company-year')
+            .get(`${baseURL}/trends/company-year`)
             .then((res) => setCompanyTrends(res.data));
 
-        fetch('http://localhost:3000/api/upcoming-meetings')
+        fetch(`${baseURL}/upcoming-meetings`)
             .then((res) => res.json())
             .then((data) => {
                 console.log('Fetched Meetings:', data); // Debugging
@@ -451,10 +451,10 @@ const Dashboard = () => {
                                                     const percentage =
                                                         totalStatus
                                                             ? (
-                                                                  (count /
-                                                                      totalStatus) *
-                                                                  100
-                                                              ).toFixed(1)
+                                                                (count /
+                                                                    totalStatus) *
+                                                                100
+                                                            ).toFixed(1)
                                                             : 0;
                                                     return `${count}`;
                                                 },
