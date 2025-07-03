@@ -32,6 +32,7 @@ import SignUp from './pages/Signin';
 import Welcome from './pages/Welcome';
 import SettingsPage from './pages/Settings';
 import ResumeUpload from './features/resumehunt/pages/UploadResumes';
+import CampusMarketingData from './features/campus/pages/MarketingData';
 import ResumeSearch from './features/resumehunt/pages/SearchResumes';
 import EmailStatus from './components/email/EmailStatus';
 import EmailHistory from './components/email/EmailHistory';
@@ -86,7 +87,7 @@ const App = () => {
                     <Route path="data-scraping" element={<CampusDataScraping />} />
                     <Route path="bulk-editing" element={<BulkEditing />} />
                     <Route path="single-editing" element={<CampusSingleDataEdit />} />
-                    <Route path="marketing-data" element={<MarketingData />} />
+                    <Route path="marketing-data" element={<CampusMarketingData />} />
                     <Route path="hrdata" element={<HRData />} />
                     <Route path="reports" element={<CampusReports />} />
                     <Route path="settings" element={<Settings />} />

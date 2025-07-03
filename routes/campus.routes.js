@@ -31,7 +31,7 @@ import {
 import {
     getMarketingChart,
     getTotalColleges,
-    getTotalPayment,
+    getTotalPayment
 } from '../controllers/marketing.controller.js';
 
 const router = Router();
