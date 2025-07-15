@@ -1,5 +1,5 @@
-
 /* eslint-disable no-unused-vars */
+
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -208,12 +208,12 @@ const Reports = () => {
       `New Profiles This Month,${data?.newThisMonth?.count || 0}`,
       '',
       'Detailed Report',
-      'ID,Name,Location,Follower,Connection,URL,Status,Updated,Updated At',
+      'ID,Name,Location,Follower,Connection,URL,Status,Updated,Updated At,Date of Contact,LinkedIn Message Date,Position,Work From,Education,BD Name,Notes',
       ...reportData.map(row => {
         const updatedAt = row.updated_at
           ? new Date(row.updated_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })
           : 'N/A';
-        return `${row.id || ''},${row.name || ''},${row.location || ''},${row.follower || ''},${row.connection || ''},${row.url || ''},${row.status || ''},${row.updated || ''},${updatedAt}`;
+        return `${row.id || ''},${row.name || ''},${row.location || ''},${row.follower || ''},${row.connection || ''},${row.url || ''},${row.status || ''},${row.updated || ''},${updatedAt},${row.date_of_contact || ''},${row.linkedin_message_date || ''},${row.position || ''},${row.work_from || ''},${row.education || ''},${row.bd_name || ''},${row.notes ? row.notes.replace(/[\n\r]+/g, ' ') : ''}`;
       }),
     ].join('\n');
 
@@ -268,6 +268,7 @@ const Reports = () => {
               <option value="">All Locations</option>
               {analytics.locations.map(l => <option key={l.location} value={l.location.split(',')[0].trim()}>{l.location.split(',')[0].trim()}</option>)}
             </select>
+
           </div>
           <div className="flex justify-start">
             <button onClick={generateReport} className="px-4 py-2 bg-[#2f80ed] text-white rounded">Generate Report</button>
@@ -332,6 +333,13 @@ const Reports = () => {
                 <th className="border p-2">Status</th>
                 <th className="border p-2">Updated</th>
                 <th className="border p-2">Updated At</th>
+                <th className="border p-2">Date of Contact</th>
+                <th className="border p-2">LinkedIn Message Date</th>
+                <th className="border p-2">Position</th>
+                <th className="border p-2">Work From</th>
+                <th className="border p-2">Education</th>
+                <th className="border p-2">BD Name</th>
+                <th className="border p-2">Notes</th>
               </tr>
             </thead>
             <tbody>
@@ -347,13 +355,23 @@ const Reports = () => {
                     <td className="border p-2">{row.status || 'N/A'}</td>
                     <td className="border p-2">{row.updated || 'N/A'}</td>
                     <td className="border p-2">{row.updated_at || 'N/A'}</td>
+                    <td className="border p-2">{row.date_of_contact || 'N/A'}</td>
+                    <td className="border p-2">{row.linkedin_message_date || 'N/A'}</td>
+                    <td className="border p-2">{row.position || 'N/A'}</td>
+                    <td className="border p-2">{row.work_from || 'N/A'}</td>
+                    <td className="border p-2">{row.education || 'N/A'}</td>
+                    <td className="border p-2">{row.bd_name || 'N/A'}</td>
+                    <td className="border p-2">{row.notes || 'N/A'}</td>
                   </tr>
                 ))
               ) : (
-                <tr><td colSpan="9" className="border p-2 text-center">No data available</td></tr>
+                <tr>
+                  <td colSpan="17" className="border p-2 text-center">No data available</td>
+                </tr>
               )}
             </tbody>
           </table>
+
         </div>
 
         <div className="flex flex-col lg:flex-row gap-[16px] w-full">
@@ -466,5 +484,6 @@ const Reports = () => {
     </div>
   );
 };
+
 
 export default Reports;

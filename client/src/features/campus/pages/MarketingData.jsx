@@ -11,11 +11,89 @@ const baseURL = import.meta.env.VITE_API_BASE_URL
 
 const locationOptions = [
   { value: 'Mumbai', label: 'Mumbai' },
-  { value: 'Delhi', label: 'Delhi' },
   { value: 'Pune', label: 'Pune' },
+  { value: 'Nagpur', label: 'Nagpur' },
+  { value: 'Thane', label: 'Thane' },
+  { value: 'Nashik', label: 'Nashik' },
+  { value: 'Bengaluru', label: 'Bengaluru' },
+  { value: 'Mysuru', label: 'Mysuru' },
+  { value: 'Hubballi', label: 'Hubballi' },
+  { value: 'Mangaluru', label: 'Mangaluru' },
   { value: 'Chennai', label: 'Chennai' },
-  { value: 'Bangalore', label: 'Bangalore' },
+  { value: 'Coimbatore', label: 'Coimbatore' },
+  { value: 'Madurai', label: 'Madurai' },
+  { value: 'Tiruchirappalli', label: 'Tiruchirappalli' },
+  { value: 'Hyderabad', label: 'Hyderabad' },
+  { value: 'Warangal', label: 'Warangal' },
+  { value: 'Nizamabad', label: 'Nizamabad' },
+  { value: 'Kolkata', label: 'Kolkata' },
+  { value: 'Howrah', label: 'Howrah' },
+  { value: 'Durgapur', label: 'Durgapur' },
+  { value: 'Asansol', label: 'Asansol' },
+  { value: 'Delhi', label: 'Delhi' },
+  { value: 'New Delhi', label: 'New Delhi' },
+  { value: 'Dwarka', label: 'Dwarka' },
+  { value: 'Ahmedabad', label: 'Ahmedabad' },
+  { value: 'Surat', label: 'Surat' },
+  { value: 'Vadodara', label: 'Vadodara' },
+  { value: 'Rajkot', label: 'Rajkot' },
+  { value: 'Jaipur', label: 'Jaipur' },
+  { value: 'Udaipur', label: 'Udaipur' },
+  { value: 'Jodhpur', label: 'Jodhpur' },
+  { value: 'Kota', label: 'Kota' },
+  { value: 'Lucknow', label: 'Lucknow' },
+  { value: 'Kanpur', label: 'Kanpur' },
+  { value: 'Agra', label: 'Agra' },
+  { value: 'Varanasi', label: 'Varanasi' },
+  { value: 'Meerut', label: 'Meerut' },
+  { value: 'Bhopal', label: 'Bhopal' },
+  { value: 'Indore', label: 'Indore' },
+  { value: 'Gwalior', label: 'Gwalior' },
+  { value: 'Jabalpur', label: 'Jabalpur' },
+  { value: 'Patna', label: 'Patna' },
+  { value: 'Gaya', label: 'Gaya' },
+  { value: 'Muzaffarpur', label: 'Muzaffarpur' },
+  { value: 'Bhagalpur', label: 'Bhagalpur' },
+  { value: 'Bhubaneswar', label: 'Bhubaneswar' },
+  { value: 'Cuttack', label: 'Cuttack' },
+  { value: 'Rourkela', label: 'Rourkela' },
+  { value: 'Puri', label: 'Puri' },
+  { value: 'Chandigarh', label: 'Chandigarh' },
+  { value: 'Panchkula', label: 'Panchkula' },
+  { value: 'Mohali', label: 'Mohali' },
+  { value: 'Shimla', label: 'Shimla' },
+  { value: 'Dharamshala', label: 'Dharamshala' },
+  { value: 'Solan', label: 'Solan' },
+  { value: 'Ranchi', label: 'Ranchi' },
+  { value: 'Jamshedpur', label: 'Jamshedpur' },
+  { value: 'Dhanbad', label: 'Dhanbad' },
+  { value: 'Bokaro', label: 'Bokaro' },
+  { value: 'Thiruvananthapuram', label: 'Thiruvananthapuram' },
+  { value: 'Kochi', label: 'Kochi' },
+  { value: 'Kozhikode', label: 'Kozhikode' },
+  { value: 'Itanagar', label: 'Itanagar' },
+  { value: 'Tawang', label: 'Tawang' },
+  { value: 'Dispur', label: 'Dispur' },
+  { value: 'Guwahati', label: 'Guwahati' },
+  { value: 'Dibrugarh', label: 'Dibrugarh' },
+  { value: 'Aizawl', label: 'Aizawl' },
+  { value: 'Lunglei', label: 'Lunglei' },
+  { value: 'Shillong', label: 'Shillong' },
+  { value: 'Tura', label: 'Tura' },
+  { value: 'Imphal', label: 'Imphal' },
+  { value: 'Kohima', label: 'Kohima' },
+  { value: 'Dimapur', label: 'Dimapur' },
+  { value: 'Gangtok', label: 'Gangtok' },
+  { value: 'Port Blair', label: 'Port Blair' },
+  { value: 'South Andmans', label: 'South Andmans' },
+  { value: 'Puducherry', label: 'Puducherry' },
+  { value: 'Karaikal', label: 'Karaikal' },
+  { value: 'Leh', label: 'Leh' },
+  { value: 'Kargil', label: 'Kargil' },
+  { value: 'Srinagar', label: 'Srinagar' },
+  { value: 'Jammu', label: 'Jammu' },
 ];
+
 
 const courseOptions = [
   { value: 'BE/B.Tech', label: 'BE/B.Tech' },
@@ -25,7 +103,56 @@ const courseOptions = [
   { value: 'MCA', label: 'MCA' },
   { value: 'BSc IT', label: 'BSc IT' },
   { value: 'Pharmacy', label: 'Pharmacy' },
+
+  // Engineering & Technology
+  { value: 'Diploma in Engineering', label: 'Diploma in Engineering' },
+  { value: 'B.Arch', label: 'B.Arch (Bachelor of Architecture)' },
+  { value: 'M.Arch', label: 'M.Arch (Master of Architecture)' },
+
+  // Science
+  { value: 'BSc', label: 'BSc (Bachelor of Science)' },
+  { value: 'MSc', label: 'MSc (Master of Science)' },
+
+  // Arts & Humanities
+  { value: 'BA', label: 'BA (Bachelor of Arts)' },
+  { value: 'MA', label: 'MA (Master of Arts)' },
+
+  // Commerce & Business
+  { value: 'BCom', label: 'BCom (Bachelor of Commerce)' },
+  { value: 'MCom', label: 'MCom (Master of Commerce)' },
+
+  // Law
+  { value: 'LLB', label: 'LLB (Bachelor of Laws)' },
+  { value: 'LLM', label: 'LLM (Master of Laws)' },
+
+  // Medicine & Health
+  { value: 'MBBS', label: 'MBBS' },
+  { value: 'BDS', label: 'BDS (Dental Surgery)' },
+  { value: 'BPT', label: 'BPT (Physiotherapy)' },
+  { value: 'BAMS', label: 'BAMS (Ayurveda)' },
+  { value: 'BHMS', label: 'BHMS (Homeopathy)' },
+  { value: 'MD', label: 'MD (Doctor of Medicine)' },
+
+  // Education
+  { value: 'B.Ed', label: 'B.Ed (Bachelor of Education)' },
+  { value: 'M.Ed', label: 'M.Ed (Master of Education)' },
+
+  // Management & Professional
+  { value: 'PGDM', label: 'PGDM (Post Graduate Diploma in Management)' },
+  { value: 'CA', label: 'CA (Chartered Accountant)' },
+  { value: 'CS', label: 'CS (Company Secretary)' },
+  { value: 'CFA', label: 'CFA (Chartered Financial Analyst)' },
+
+  // Vocational & Others
+  { value: 'Diploma in Hotel Management', label: 'Diploma in Hotel Management' },
+  { value: 'BHM', label: 'BHM (Bachelor of Hotel Management)' },
+  { value: 'BFA', label: 'BFA (Fine Arts)' },
+  { value: 'BJMC', label: 'BJMC (Journalism & Mass Communication)' },
+  { value: 'B.Des', label: 'B.Des (Bachelor of Design)' },
+  { value: 'M.Des', label: 'M.Des (Master of Design)' },
+  { value: 'Diploma in Animation', label: 'Diploma in Animation' },
 ];
+
 
 const MarketingData = () => {
   const [college, setCollege] = useState('');
