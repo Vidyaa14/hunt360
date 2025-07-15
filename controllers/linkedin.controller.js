@@ -303,37 +303,78 @@ export const searchProfiles = async (req, res) => {
 
 export const saveSingleEdit = async (req, res) => {
     try {
-        const { id, name, company, location, follower, connection, url, updated } = req.body;
+        const {
+            id,
+            name,
+            company,
+            location,
+            follower,
+            connection,
+            url,
+            updated,
+            position,
+            work_from,
+            education,
+            bd_name,
+            date_of_contact,
+            notes,
+            linkedin_message_date,
+        } = req.body;
 
         if (!id) return res.status(400).json({ error: 'Missing ID' });
 
-        const updateQuery = `
-            UPDATE linkedin_profiles
-            SET
-                name = ?,
-                company = ?,
-                location = ?,
-                follower = ?,
-                connection = ?,
-                url = ?,
-                updated = ?,
-                updated_at = NOW()
-            WHERE id = ?
-        `;
-        const values = [name, company, location, follower, connection, url, updated, id];
 
-        const [result] = await db.query(updateQuery, values);
+
+        const updateQuery = `
+        UPDATE linkedin_profiles
+        SET
+          name = ?,
+          company = ?,
+          location = ?,
+          follower = ?,
+          connection = ?,
+          url = ?,
+          updated = ?,
+  
+          -- ✅ new fields
+          position = ?,
+          work_from = ?,
+          education = ?,
+          bd_name = ?,
+          date_of_contact = ?,
+          notes = ?,
+          linkedin_message_date = ?,
+  
+          updated_at = NOW()
+        WHERE id = ?
+      `;
+
+        const values = [
+            name, company, location, follower, connection, url, updated,
+            position, work_from, education,
+            bd_name,
+            date_of_contact,
+            notes,
+            linkedin_message_date,
+            id
+        ];
+
+        const [result] = await pool.promise().query(updateQuery, values);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'No matching record found to update' });
         }
 
-        const [updatedRows] = await db.query(
+        const [updatedRows] = await pool.promise().query(
             `SELECT 
-                id, name, company, location, follower, connection, url, updated,
-                DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at
-            FROM linkedin_profiles 
-            WHERE id = ?`,
+           id, name, company, location, follower, connection, url, updated,
+           position, work_from, education, bd_name, 
+            date_of_contact, 
+           notes, 
+            linkedin_message_date,
+           DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at
+         FROM linkedin_profiles 
+         WHERE id = ?`,
             [id]
         );
 
@@ -341,15 +382,32 @@ export const saveSingleEdit = async (req, res) => {
             message: 'Form data updated successfully!',
             updatedCompany: updatedRows[0],
         });
+
     } catch (error) {
         console.error('Update single edit form error:', error.message, error.sqlMessage);
-        res.status(500).json({ error: 'Failed to update form data' });
+        return res.status(500).json({ error: 'Failed to update form data' });
     }
-};
+}
 
 export const saveFinalProfile = async (req, res) => {
     try {
-        const { id, name, company, location, follower, connection, url, status } = req.body;
+        const {
+            id,
+            name,
+            company,
+            location,
+            follower,
+            connection,
+            url,
+            status,
+            position,
+            work_from,
+            education,
+            bd_name,
+            date_of_contact,
+            notes,
+            linkedin_message_date,
+        } = req.body;
 
         if (!id) {
             return res.status(400).json({ error: 'Missing ID' });
@@ -359,32 +417,66 @@ export const saveFinalProfile = async (req, res) => {
         }
 
         const updateQuery = `
-            UPDATE linkedin_profiles
-            SET
-                name = ?,
-                company = ?,
-                location = ?,
-                follower = ?,
-                connection = ?,
-                url = ?,
-                status = ?
-            WHERE id = ?
-        `;
+        UPDATE linkedin_profiles
+        SET
+          name = ?,
+          company = ?,
+          location = ?,
+          follower = ?,
+          connection = ?,
+          url = ?,
+          status = ?,
+          position = ?,
+          work_from = ?,
+          education = ?,
+          bd_name = ?,
+          date_of_contact = ?,
+          notes = ?,
+          linkedin_message_date = ?,
+  
+          updated_at = NOW()
+        WHERE id = ?
+      `;
 
-        const values = [name, company, location, follower, connection, url, status, id];
+        const values = [
+            name, company, location, follower, connection, url, status,
+            position, work_from, education,
+            bd_name,
+            date_of_contact,
+            notes,
+            linkedin_message_date,
+            id
+        ];
 
-        const [result] = await db.query(updateQuery, values);
+        const [result] = await pool.promise().query(updateQuery, values);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'No matching record found to update' });
         }
 
-        res.json({ message: 'Form data updated successfully!' });
+        const [updatedRows] = await pool.promise().query(
+            `SELECT 
+           id, name, company, location, follower, connection, url, status,
+           position, work_from, education, bd_name, 
+            date_of_contact, 
+           notes, 
+            linkedin_message_date,
+           DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at
+         FROM linkedin_profiles 
+         WHERE id = ?`,
+            [id]
+        );
+
+        res.json({
+            message: 'Form data updated successfully!',
+            updatedCompany: updatedRows[0],
+        });
+
     } catch (error) {
         console.error('Update final profile form error:', error.message, error.sqlMessage);
-        res.status(500).json({ error: 'Failed to update form data' });
+        return res.status(500).json({ error: 'Failed to update form data' });
     }
-};
+}
 
 export const deleteProfile = async (req, res) => {
     const { id } = req.params;

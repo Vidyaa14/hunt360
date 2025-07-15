@@ -1,1081 +1,486 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-//responsive tailwindcss
+
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import Chart from 'chart.js/auto';
-import html2pdf from 'html2pdf.js';
-import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Bar, Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
     ? `${import.meta.env.VITE_API_BASE_URL}/corporate`
     : 'http://localhost:3000/api/corporate';
 
-function NewReportForm({
-    onClose,
-    leadStatusData,
-    communicationStatusData,
-    cityLeadData,
-    stateBdData,
-}) {
-    const leadStatusChartRef = useRef(null);
-    const communicationStatusChartRef = useRef(null);
-    const cityLeadChartRef = useRef(null);
-    const stateBdChartRef = useRef(null);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
-    const leadStatusChartInstance = useRef(null);
-    const communicationStatusChartInstance = useRef(null);
-    const cityLeadChartInstance = useRef(null);
-    const stateBdChartInstance = useRef(null);
+const Reports = () => {
+    const [data, setData] = useState({});
+    const [analytics, setAnalytics] = useState({ status: [], locations: [], companies: [], followerRanges: [] });
+    const [filters, setFilters] = useState({ date: '', status: '', location: '' });
+    const [reportData, setReportData] = useState([]);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const tableRef = useRef(null);
 
     useEffect(() => {
-        if (leadStatusData && leadStatusData.length > 0) {
-            if (leadStatusChartInstance.current) {
-                leadStatusChartInstance.current.destroy();
-            }
-            leadStatusChartInstance.current = new Chart(
-                leadStatusChartRef.current.getContext('2d'),
-                {
-                    type: 'bar',
-                    data: {
-                        labels: leadStatusData.map(
-                            (item) => item.lead_status || 'Unknown'
-                        ),
-                        datasets: [
-                            {
-                                label: 'Lead Count',
-                                data: leadStatusData.map((item) => item.count),
-                                backgroundColor: 'rgba(75, 192, 192, 0.7)',
-                            },
-                        ],
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Lead Status Distribution',
-                            },
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: { display: true, text: 'Count' },
-                            },
-                            x: {
-                                title: { display: true, text: 'Lead Status' },
-                            },
-                        },
-                    },
-                }
-            );
-        }
-    }, [leadStatusData]);
-
-    useEffect(() => {
-        if (communicationStatusData && communicationStatusData.length > 0) {
-            if (communicationStatusChartInstance.current) {
-                communicationStatusChartInstance.current.destroy();
-            }
-            communicationStatusChartInstance.current = new Chart(
-                communicationStatusChartRef.current.getContext('2d'),
-                {
-                    type: 'pie',
-                    data: {
-                        labels: communicationStatusData.map(
-                            (item) => item.communication_status || 'Unknown'
-                        ),
-                        datasets: [
-                            {
-                                label: 'Communication Count',
-                                data: communicationStatusData.map(
-                                    (item) => item.count
-                                ),
-                                backgroundColor: [
-                                    '#f28b82',
-                                    '#81e6d9',
-                                    '#facc15',
-                                    '#60a5fa',
-                                    '#ff99ac',
-                                ],
-                            },
-                        ],
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'Communication Status Overview',
-                            },
-                            legend: { display: false },
-                        },
-                    },
-                }
-            );
-        }
-    }, [communicationStatusData]);
-
-    useEffect(() => {
-        if (cityLeadData && cityLeadData.length > 0) {
-            if (cityLeadChartInstance.current) {
-                cityLeadChartInstance.current.destroy();
-            }
-            cityLeadChartInstance.current = new Chart(
-                cityLeadChartRef.current.getContext('2d'),
-                {
-                    type: 'bar',
-                    data: {
-                        labels: cityLeadData.map(
-                            (item) => item.location || 'Unknown'
-                        ),
-                        datasets: [
-                            {
-                                label: 'Lead Count',
-                                data: cityLeadData.map((item) => item.count),
-                                backgroundColor: 'rgba(153, 102, 255, 0.7)',
-                            },
-                        ],
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'location-wise Lead Count',
-                            },
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: { display: true, text: 'Count' },
-                            },
-                            x: { title: { display: true, text: 'location' } },
-                        },
-                    },
-                }
-            );
-        }
-    }, [cityLeadData]);
-
-    useEffect(() => {
-        if (stateBdData && stateBdData.length > 0) {
-            if (stateBdChartInstance.current) {
-                stateBdChartInstance.current.destroy();
-            }
-            stateBdChartInstance.current = new Chart(
-                stateBdChartRef.current.getContext('2d'),
-                {
-                    type: 'bar',
-                    data: {
-                        labels: stateBdData.map(
-                            (item) => item.state || 'Unknown'
-                        ),
-                        datasets: [
-                            {
-                                label: 'Activity Count',
-                                data: stateBdData.map((item) => item.count),
-                                backgroundColor: 'rgba(255, 159, 64, 0.7)',
-                            },
-                        ],
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: 'State-wise BD Activities',
-                            },
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: { display: true, text: 'Count' },
-                            },
-                            x: { title: { display: true, text: 'State' } },
-                        },
-                    },
-                }
-            );
-        }
-    }, [stateBdData]);
-
-    const handleDownloadPdf = () => {
-        const element = document.getElementById('report-preview');
-
-        const convertCanvasToImage = async (canvasId) => {
-            const canvas = document.getElementById(canvasId);
-            if (canvas) {
-                return new Promise((resolve) => {
-                    const dataUrl = canvas.toDataURL('image/png');
-                    const img = new Image();
-                    img.src = dataUrl;
-                    img.onload = () => resolve(img);
-                });
-            }
-            return null;
-        };
-
-        Promise.all([
-            convertCanvasToImage('modal-leadStatusChart'),
-            convertCanvasToImage('modal-communicationStatusChart'),
-            convertCanvasToImage('modal-cityLeadChart'),
-            convertCanvasToImage('modal-stateBdChart'),
-        ]).then(([leadStatusImg, commStatusImg, cityLeadImg, stateBdImg]) => {
-            const opt = {
-                margin: 0.5,
-                filename: 'report_preview.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: {
-                    unit: 'in',
-                    format: 'letter',
-                    orientation: 'portrait',
-                },
-            };
-
-            const pdfStyles = `
-        <style>
-          .pdf-report-header { 
-            text-align: center; 
-            margin-bottom: 20px; 
-            border-bottom: 2px solid #6a0080; 
-            padding-bottom: 10px; 
-          }
-          .pdf-report-header h1 { 
-            font-size: 24px; 
-            color: #4c1d95; 
-            margin: 0; 
-          }
-          .pdf-report-header p { 
-            font-size: 14px; 
-            color: #666; 
-            margin: 5px 0 0; 
-          }
-          .pdf-chart-section { 
-            background: #fff; 
-            padding: 15px; 
-            border: 1px solid #e0e0e0; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); 
-            margin-bottom: 20px; 
-            page-break-inside: avoid; 
-            width: 100%; 
-            overflow: hidden; 
-          }
-          .pdf-chart-section img { 
-            max-width: 100%; 
-            height: 250px !important; 
-            margin: 0 auto; 
-            display: block; 
-          }
-          .pdf-pie-chart-container { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: space-between; 
-          }
-          .pdf-pie-chart-container img { 
-            width: 250px !important; 
-            height: 250px !important; 
-          }
-          .pdf-chart-legend { 
-            margin-top: 10px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 5px; 
-            padding-left: 10px; 
-          }
-          .pdf-legend-item { 
-            display: flex; 
-            align-items: center; 
-            font-size: 12px; 
-            color: #333; 
-            line-height: 1.5; 
-          }
-          .pdf-legend-item .pdf-legend-color { 
-            width: 12px; 
-            height: 12px; 
-            display: inline-block; 
-            margin-right: 8px; 
-            border-radius: 2px; 
-          }
-          .pdf-legend-item.pending-call .pdf-legend-color { background-color: #f28b82; }
-          .pdf-legend-item.unknown .pdf-legend-color { background-color: #81e6d9; }
-          .pdf-legend-item.follow-up-needed .pdf-legend-color { background-color: #facc15; }
-          .pdf-legend-item.not-interested .pdf-legend-color { background-color: #60a5fa; }
-          .pdf-legend-item.interested .pdf-legend-color { background-color: #ff99ac; }
-          .pdf-watermark { 
-            position: absolute; 
-            bottom: 10px; 
-            right: 10px; 
-            font-size: 16px; 
-            color: #6a0080; 
-            opacity: 0.3; 
-            transform: rotate(-45deg); 
-          }
-        </style>
-      `;
-
-            const pdfContent = document.createElement('div');
-            pdfContent.innerHTML = `
-        ${pdfStyles}
-        <div class="pdf-report-header">
-          <h1>Talent Corner Corporate Data Search Report</h1>
-          <p>Generated on ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-        </div>
-        <div class="pdf-chart-section">
-          ${leadStatusImg ? `<img src="${leadStatusImg.src}" alt="Lead Status Distribution" />` : '<p>Chart not available</p>'}
-        </div>
-        <div class="pdf-chart-section pdf-pie-chart-container">
-          ${commStatusImg ? `<img src="${commStatusImg.src}" alt="Communication Status Overview" />` : '<p>Chart not available</p>'}
-          <div class="pdf-chart-legend">
-            <div class="pdf-legend-item pending-call">
-              <span class="pdf-legend-color"></span>
-              Pending Call
-            </div>
-            <div class="pdf-legend-item unknown">
-              <span class="pdf-legend-color"></span>
-              Unknown
-            </div>
-            <div class="pdf-legend-item follow-up-needed">
-              <span class="pdf-legend-color"></span>
-              Follow-up needed
-            </div>
-            <div class="pdf-legend-item not-interested">
-              <span class="pdf-legend-color"></span>
-              Not Interested
-            </div>
-            <div class="pdf-legend-item interested">
-              <span class="pdf-legend-color"></span>
-              Interested
-            </div>
-          </div>
-        </div>
-        <div class="pdf-chart-section">
-          ${cityLeadImg ? `<img src="${cityLeadImg.src}" alt="location-wise Lead Count" />` : '<p>Chart not available</p>'}
-        </div>
-        <div class="pdf-chart-section">
-          ${stateBdImg ? `<img src="${stateBdImg.src}" alt="State-wise BD Activities" />` : '<p>Chart not available</p>'}
-        </div>
-        <div class="pdf-watermark">talent<br />corner</div>
-      `;
-
-            html2pdf()
-                .set(opt)
-                .from(pdfContent)
-                .save()
-                .then(() => {
-                    onClose();
-                });
-        });
-    };
-
-    return (
-        <div className="fixed inset-0 w-full bg-black/50 flex justify-center items-center z-[1000]">
-            <div className="bg-white p-3 sm:p-4 rounded-lg w-full max-w-[95%] sm:max-w-[900px] shadow-[0_6px_20px_rgba(0,0,0,0.15)] relative overflow-y-auto max-h-[90vh] font-arial">
-                <button
-                    className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-transparent border-none text-xl sm:text-2xl cursor-pointer text-[#666] hover:text-[#333] transition-colors duration-200"
-                    onClick={onClose}
-                >
-                    ×
-                </button>
-                <h3 className="text-lg sm:text-[1.75rem] text-[#4c1d95] mb-1 sm:mb-2 text-center bg-[#f3e8ff] p-1 sm:p-2 border-b-2 border-[#6a0080] rounded font-semibold">
-                    Report Preview
-                </h3>
-                <p className="text-xs sm:text-[0.9rem] text-[#666] text-center mb-4 sm:mb-8">
-                    Overview of Key Metrics and Trends
-                </p>
-                <div className="Rreport-preview-area" id="report-preview">
-                    <div className="Rgraph-container report-grid grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
-                        <div className="chart-section report-panel bg-white p-2 sm:p-[15px] rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] relative min-w-[280px] sm:min-w-[320px]">
-                            <h4 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-[#4c1d95]">
-                                Lead Status Distribution
-                            </h4>
-                            <canvas
-                                id="modal-leadStatusChart"
-                                ref={leadStatusChartRef}
-                                className="max-w-full h-[250px] sm:h-[300px]"
-                            ></canvas>
-                        </div>
-                        <div className="chart-section report-panel pie-chart-container bg-white p-2 sm:p-[15px] rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] relative min-w-[280px] sm:min-w-[320px] flex flex-col items-center justify-center h-[300px] sm:h-[350px]">
-                            <h4 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-[#4c1d95]">
-                                Communication Status Overview
-                            </h4>
-                            <canvas
-                                id="modal-communicationStatusChart"
-                                ref={communicationStatusChartRef}
-                                className="w-[250px] sm:w-[300px] h-[250px] sm:h-[300px]"
-                            ></canvas>
-                            <div className="chart-legend mt-2 sm:mt-0">
-                                <div className="legend-item pending-call flex items-center text-xs sm:text-sm">
-                                    <span className="legend-color w-3 h-3 sm:w-4 sm:h-4 inline-block mr-2 rounded-sm bg-[#f28b82]"></span>
-                                    Pending Call
-                                </div>
-                                <div className="legend-item unknown flex items-center text-xs sm:text-sm">
-                                    <span className="legend-color w-3 h-3 sm:w-4 sm:h-4 inline-block mr-2 rounded-sm bg-[#81e6d9]"></span>
-                                    Unknown
-                                </div>
-                                <div className="legend-item follow-up-needed flex items-center text-xs sm:text-sm">
-                                    <span className="legend-color w-3 h-3 sm:w-4 sm:h-4 inline-block mr-2 rounded-sm bg-[#facc15]"></span>
-                                    Follow-up needed
-                                </div>
-                                <div className="legend-item not-interested flex items-center text-xs sm:text-sm">
-                                    <span className="legend-color w-3 h-3 sm:w-4 sm:h-4 inline-block mr-2 rounded-sm bg-[#60a5fa]"></span>
-                                    Not Interested
-                                </div>
-                                <div className="legend-item interested flex items-center text-xs sm:text-sm">
-                                    <span className="legend-color w-3 h-3 sm:w-4 sm:h-4 inline-block mr-2 rounded-sm bg-[#ff99ac]"></span>
-                                    Interested
-                                </div>
-                            </div>
-                        </div>
-                        <div className="chart-section report-panel bg-white p-2 sm:p-[15px] rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] relative min-w-[280px] sm:min-w-[320px]">
-                            <h4 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-[#4c1d95]">
-                                Location-wise Lead Count
-                            </h4>
-                            <canvas
-                                id="modal-cityLeadChart"
-                                ref={cityLeadChartRef}
-                                className="max-w-full h-[250px] sm:h-[300px]"
-                            ></canvas>
-                        </div>
-                        <div className="chart-section report-panel bg-white p-2 sm:p-[15px] rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] relative min-w-[280px] sm:min-w-[320px]">
-                            <h4 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-[#4c1d95]">
-                                State-wise BD Activities
-                            </h4>
-                            <canvas
-                                id="modal-stateBdChart"
-                                ref={stateBdChartRef}
-                                className="max-w-full h-[250px] sm:h-[300px]"
-                            ></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div className="Rdownload-options mt-4 sm:mt-6">
-                    <h4 className="text-base sm:text-lg font-semibold text-[#4c1d95] mb-2">
-                        Download Options
-                    </h4>
-                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center">
-                        <button
-                            className="bg-[#6a0080] text-white py-2 sm:py-[0.6rem] px-4 sm:px-6 rounded-md font-medium text-sm sm:text-base hover:bg-[#4e005c] w-full sm:w-[180px]"
-                            onClick={handleDownloadPdf}
-                        >
-                            Download as PDF
-                        </button>
-                        <button
-                            className="bg-[#e53e3e] text-white py-2 sm:py-[0.6rem] px-4 sm:px-6 rounded-md font-medium text-sm sm:text-base hover:bg-[#c53030] w-full sm:w-[180px]"
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-                <div className="Rtips-section mt-4 sm:mt-6">
-                    <h4 className="text-base sm:text-lg font-semibold text-[#4c1d95] mb-2">
-                        Tips for Best Results
-                    </h4>
-                    <p className="text-xs sm:text-[0.9rem] text-[#666]">
-                        Ensure all data is up to date before downloading. For
-                        large reports, allow extra time for conversion.
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function Reports() {
-    const leadStatusChartRef = useRef(null);
-    const communicationStatusChartRef = useRef(null);
-    const cityLeadChartRef = useRef(null);
-    const stateBdChartRef = useRef(null);
-
-    const leadStatusChartInstance = useRef(null);
-    const communicationStatusChartInstance = useRef(null);
-    const cityLeadChartInstance = useRef(null);
-    const stateBdChartInstance = useRef(null);
-
-    const [leadStatusData, setLeadStatusData] = useState([]);
-    const [communicationStatusData, setCommunicationStatusData] = useState([]);
-    const [cityLeadData, setCityLeadData] = useState([]);
-    const [stateBdData, setStateBdData] = useState([]);
-
-    const [filters, setFilters] = useState({
-        name: '',
-        location: '',
-        communication_status: '',
-        lead_status: '',
-        bd_name: '',
-        state: '',
-    });
-
-    const [isReportFormVisible, setIsReportFormVisible] = useState(false);
-
-    const [summary, setSummary] = useState({
-        hrContacts: 0,
-        campaigns: 0,
-        recordsEdited: 0,
-    });
-    const [latestCommunication, setLatestCommunication] = useState([]);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFilters((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleSearch = () => {
-        fetchAllChartData();
-    };
-
-    const handleClear = () => {
-        setFilters({
-            name: '',
-            location: '',
-            communication_status: '',
-            lead_status: '',
-            bd_name: '',
-            state: '',
-        });
-        fetchAllChartData();
-    };
-
-    const fetchAllChartData = () => {
-        const params = new URLSearchParams(filters).toString();
-
-        axios
-            .get(`${baseURL}/lead-status-distribution?${params}`)
-            .then((res) => setLeadStatusData(res.data.chartData))
-            .catch((err) =>
-                console.error('Failed to fetch lead status data:', err)
-            );
-
-        axios
-            .get(`${baseURL}/communication-status-overview?${params}`)
-            .then((res) => setCommunicationStatusData(res.data.chartData))
-            .catch((err) =>
-                console.error('Failed to fetch communication status data:', err)
-            );
-
-        axios
-            .get(`${baseURL}/location-wise-lead-count?${params}`)
-            .then((res) => setCityLeadData(res.data.chartData))
-            .catch((err) =>
-                console.error('Failed to fetch location lead data:', err)
-            );
-
-        axios
-            .get(`${baseURL}/state-wise-bd-activities?${params}`)
-            .then((res) => setStateBdData(res.data.chartData))
-            .catch((err) =>
-                console.error('Failed to fetch state BD data:', err)
-            );
-    };
-
-    useEffect(() => {
-        axios
-            .get(`${baseURL}/report-summary`)
-            .then((res) => setSummary(res.data))
-            .catch((err) =>
-                console.error('Failed to load report summary:', err)
-            );
-
-        axios
-            .get(`${baseURL}/latest-communication`)
-            .then((res) => setLatestCommunication(res.data))
-            .catch((err) =>
-                console.error('Failed to fetch latest communication:', err)
-            );
-
-        fetchAllChartData();
+        fetchData();
     }, []);
 
-    useEffect(() => {
-        if (!leadStatusData || leadStatusData.length === 0) {
-            if (leadStatusChartInstance.current) {
-                leadStatusChartInstance.current.destroy();
-                leadStatusChartInstance.current = null;
-            }
-            return;
-        }
+    const fetchData = () => {
+        axios.get(`${baseURL}/dashboard`)
+            .then((res) => setData(res.data || {}))
+            .catch((err) => setError('Failed to load dashboard data'));
 
-        if (leadStatusChartInstance.current) {
-            leadStatusChartInstance.current.destroy();
-        }
-
-        leadStatusChartInstance.current = new Chart(
-            leadStatusChartRef.current.getContext('2d'),
-            {
-                type: 'bar',
-                data: {
-                    labels: leadStatusData.map(
-                        (item) => item.lead_status || 'Unknown'
-                    ),
-                    datasets: [
-                        {
-                            label: 'Lead Count',
-                            data: leadStatusData.map((item) => item.count),
-                            backgroundColor: 'rgba(75, 192, 192, 0.7)',
-                        },
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Lead Status Distribution',
-                        },
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Count' },
-                        },
-                        x: { title: { display: true, text: 'Lead Status' } },
-                    },
-                },
-            }
-        );
-    }, [leadStatusData]);
-
-    useEffect(() => {
-        if (!communicationStatusData || communicationStatusData.length === 0) {
-            if (communicationStatusChartInstance.current) {
-                communicationStatusChartInstance.current.destroy();
-                communicationStatusChartInstance.current = null;
-            }
-            return;
-        }
-
-        if (communicationStatusChartInstance.current) {
-            communicationStatusChartInstance.current.destroy();
-        }
-
-        communicationStatusChartInstance.current = new Chart(
-            communicationStatusChartRef.current.getContext('2d'),
-            {
-                type: 'pie',
-                data: {
-                    labels: communicationStatusData.map(
-                        (item) => item.communication_status || 'Unknown'
-                    ),
-                    datasets: [
-                        {
-                            label: 'Communication Count',
-                            data: communicationStatusData.map(
-                                (item) => item.count
-                            ),
-                            backgroundColor: [
-                                '#f28b82',
-                                '#81e6d9',
-                                '#facc15',
-                                '#60a5fa',
-                                '#ff99ac',
-                            ],
-                        },
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Communication Status Overview',
-                        },
-                        legend: { display: false },
-                    },
-                },
-            }
-        );
-    }, [communicationStatusData]);
-
-    useEffect(() => {
-        if (!cityLeadData || cityLeadData.length === 0) {
-            if (cityLeadChartInstance.current) {
-                cityLeadChartInstance.current.destroy();
-                cityLeadChartInstance.current = null;
-            }
-            return;
-        }
-
-        if (cityLeadChartInstance.current) {
-            cityLeadChartInstance.current.destroy();
-        }
-
-        cityLeadChartInstance.current = new Chart(
-            cityLeadChartRef.current.getContext('2d'),
-            {
-                type: 'bar',
-                data: {
-                    labels: cityLeadData.map(
-                        (item) => item.location || 'Unknown'
-                    ),
-                    datasets: [
-                        {
-                            label: 'Lead Count',
-                            data: cityLeadData.map((item) => item.count),
-                            backgroundColor: 'rgba(153, 102, 255, 0.7)',
-                        },
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'location-wise Lead Count',
-                        },
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Count' },
-                        },
-                        x: { title: { display: true, text: 'location' } },
-                    },
-                },
-            }
-        );
-    }, [cityLeadData]);
-
-    useEffect(() => {
-        if (!stateBdData || stateBdData.length === 0) {
-            if (stateBdChartInstance.current) {
-                stateBdChartInstance.current.destroy();
-                stateBdChartInstance.current = null;
-            }
-            return;
-        }
-
-        if (stateBdChartInstance.current) {
-            stateBdChartInstance.current.destroy();
-        }
-
-        stateBdChartInstance.current = new Chart(
-            stateBdChartRef.current.getContext('2d'),
-            {
-                type: 'bar',
-                data: {
-                    labels: stateBdData.map((item) => item.state || 'Unknown'),
-                    datasets: [
-                        {
-                            label: 'Activity Count',
-                            data: stateBdData.map((item) => item.count),
-                            backgroundColor: 'rgba(255, 159, 64, 0.7)',
-                        },
-                    ],
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'State-wise BD Activities',
-                        },
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Count' },
-                        },
-                        x: { title: { display: true, text: 'State' } },
-                    },
-                },
-            }
-        );
-    }, [stateBdData]);
-
-    const handleGenerateReportClick = () => {
-        setIsReportFormVisible(true);
+        axios.get(`${baseURL}/analytics`)
+            .then((res) => setAnalytics(res.data || { status: [], locations: [], companies: [], followerRanges: [] }))
+            .catch((err) => setError('Failed to load analytics data'));
     };
 
-    const handleCloseReportForm = () => {
-        setIsReportFormVisible(false);
+    const handleFilterChange = (e) => {
+        setFilters({ ...filters, [e.target.name]: e.target.value });
+    };
+
+    const generateReport = async () => {
+        try {
+            console.log('Sending filters:', filters);
+            const response = await axios.post(`${baseURL}/reports/csv`, filters);
+            console.log('Received data:', response.data);
+            if (response.data.length === 0) {
+                console.log('No data with filters, fetching all data...');
+                const allDataResponse = await axios.post(`${baseURL}/reports/csv`, {});
+                setReportData(allDataResponse.data.map(row => ({
+                    ...row,
+                    company: row.company ? row.company.split(',')[0].trim() : 'N/A',
+                    location: row.location ? row.location.split(',')[0].trim() : 'N/A'
+                })));
+            } else {
+                setReportData(response.data.map(row => ({
+                    ...row,
+                    company: row.company ? row.company.split(',')[0].trim() : 'N/A',
+                    location: row.location ? row.location.split(',')[0].trim() : 'N/A'
+                })));
+            }
+            setError(null); // Clear any previous errors
+        } catch (err) {
+            setError('Failed to generate report');
+            console.error('Generate report error:', err);
+        }
+    };
+
+    const exportPDF = async () => {
+        try {
+            const doc = new jsPDF();
+            const tableColumnHeaders = ['ID', 'Name', 'Location', 'Follower', 'Connection', 'URL', 'Status', 'Updated', 'Updated At'];
+
+            // Capture chart images using html2canvas
+            const getChartImage = async (chartId) => {
+                const chartElement = document.getElementById(chartId);
+                if (chartElement) {
+                    const canvas = await html2canvas(chartElement, { scale: 2 });
+                    return canvas.toDataURL('image/png');
+                }
+                return null;
+            };
+
+            const [statusChartImg, locationChartImg, followerChartImg] = await Promise.all([
+                getChartImage('status-chart'),
+                getChartImage('location-chart'),
+                getChartImage('follower-chart'),
+            ]);
+
+            // Add header text to the first page
+            doc.setFontSize(16);
+            doc.text('Talent Corner Corporate Data Search Report', 10, 10);
+            doc.setFontSize(10);
+            doc.text(`Generated on ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })}`, 10, 15);
+
+            // Prepare table rows
+            const tableRows = reportData.length > 0 ? reportData.map(row => {
+                const updatedAt = row.updated_at
+                    ? new Date(row.updated_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })
+                    : 'N/A';
+                return [
+                    row.id || 'N/A',
+                    row.name || 'N/A',
+                    row.location || 'N/A',
+                    row.follower || 'N/A',
+                    row.connection || 'N/A',
+                    row.url || 'N/A',
+                    row.status || 'N/A',
+                    row.updated || 'N/A',
+                    updatedAt
+                ];
+            }) : [];
+
+            // Generate the table
+            autoTable(doc, {
+                head: [tableColumnHeaders],
+                body: tableRows,
+                startY: 25,
+                theme: 'striped',
+                headStyles: { fillColor: [106, 27, 154], textColor: [255, 255, 255], fontSize: 12 },
+                bodyStyles: { fontSize: 10, cellPadding: 2 },
+                columnStyles: {
+                    0: { cellWidth: 10 }, // ID
+                    1: { cellWidth: 25 }, // Name
+                    2: { cellWidth: 21 }, // Location
+                    3: { cellWidth: 21 }, // Follower
+                    4: { cellWidth: 20 }, // Connection
+                    5: { cellWidth: 35 }, // URL
+                    6: { cellWidth: 20 }, // Status
+                    7: { cellWidth: 21 }, // Updated
+                    8: { cellWidth: 21 }, // Updated At
+                },
+                margin: { top: 25 },
+                didDrawPage: (data) => {
+                    // Add header to every page
+                    doc.setFontSize(16);
+                    doc.text('Talent Corner Corporate Data Search Report', 10, 10);
+                    doc.setFontSize(10);
+                    doc.text(`Generated on ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })}`, 10, 15);
+                },
+                didDrawCell: (data) => {
+                    if (data.section === 'body' && data.cell.raw === 'N/A') {
+                        data.cell.styles.fillColor = [200, 200, 200];
+                    }
+                },
+            });
+
+            // Add a new page for charts
+            doc.addPage();
+            const pageWidth = doc.internal.pageSize.width; // Approximately 595 points
+            const pageHeight = doc.internal.pageSize.height; // Approximately 842 points
+            let chartY = (pageHeight - 230) / 2; // Center vertically, accounting for two pie charts (70 each) and bar chart (70) + titles
+
+            // Add Status Breakdown pie chart with subtitle, left side of pair
+            if (statusChartImg) {
+                doc.setFontSize(14);
+                const titleWidth = doc.getTextWidth('Status Breakdown');
+                doc.text('Status Breakdown', (pageWidth / 2 - 105), chartY); // Left of center for first pie
+                chartY += 10;
+                doc.addImage(statusChartImg, 'PNG', (pageWidth / 2 - 100), chartY, 100, 70); // Left pie
+            }
+
+            // Add Location Distribution pie chart with subtitle, right side of pair
+            if (locationChartImg) {
+                doc.setFontSize(14);
+                const titleWidth = doc.getTextWidth('Location Distribution');
+                doc.text('Location Distribution', (pageWidth / 2 + 5), chartY - 10); // Align with Status title
+                doc.addImage(locationChartImg, 'PNG', (pageWidth / 2 + 10), chartY, 100, 70); // Right pie, 10-unit gap
+            }
+
+            chartY += 80; // Move down after pie charts
+
+            // Add Follower Ranges bar chart with subtitle, centered below
+            if (followerChartImg) {
+                doc.setFontSize(14);
+                const titleWidth = doc.getTextWidth('Follower Ranges');
+                doc.text('Follower Ranges', (pageWidth - titleWidth) / 2, chartY);
+                chartY += 10;
+                doc.addImage(followerChartImg, 'PNG', (pageWidth - 100) / 2, chartY, 100, 70); // Centered bar chart
+            }
+
+            if (reportData.length > 0) {
+                doc.save('report.pdf');
+            } else {
+                setError('No report data available to export. Please generate a report first.');
+            }
+        } catch (err) {
+            console.error('Error generating PDF:', err);
+            setError('Failed to generate PDF. Please try again.');
+        }
+    };
+
+    const exportCSV = () => {
+        const currentDate = new Date().toLocaleDateString('en-US', { timeZone: 'Asia/Kolkata' });
+        const csvContent = [
+            `Talent Corner Corporate Data Search Report`,
+            `Generated on ${currentDate}`,
+            '',
+            'Summary',
+            `Total Profiles Scraped,${data?.totalProfiles?.count || 0}`,
+            `Profiles Marked Updated,${data?.updatedProfiles?.count || 0}`,
+            `New Profiles This Week,${data?.newThisWeek?.count || 0}`,
+            `New Profiles This Month,${data?.newThisMonth?.count || 0}`,
+            '',
+            'Detailed Report',
+            'ID,Name,Location,Follower,Connection,URL,Status,Updated,Updated At,Date of Contact,LinkedIn Message Date,Position,Work From,Education,BD Name,Notes',
+            ...reportData.map(row => {
+                const updatedAt = row.updated_at
+                    ? new Date(row.updated_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' })
+                    : 'N/A';
+                return `${row.id || ''},${row.name || ''},${row.location || ''},${row.follower || ''},${row.connection || ''},${row.url || ''},${row.status || ''},${row.updated || ''},${updatedAt},${row.date_of_contact || ''},${row.linkedin_message_date || ''},${row.position || ''},${row.work_from || ''},${row.education || ''},${row.bd_name || ''},${row.notes ? row.notes.replace(/[\n\r]+/g, ' ') : ''}`;
+            }),
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'report.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+
+    const filteredStatus = analytics.status.filter(item => !filters.status || item.status === filters.status);
+    const filteredLocations = analytics.locations.filter(item => !filters.location || item.location.split(',')[0].trim() === filters.location);
+    const filteredFollowerRanges = analytics.followerRanges.filter(item => item.count > 0);
+
+    const statusData = {
+        labels: filteredStatus.map(item => item.status),
+        datasets: [{ label: 'Status Breakdown', data: filteredStatus.map(item => item.count), backgroundColor: ['#f72585', '#4361ee', '#fca311'] }],
+    };
+
+    const locationData = {
+        labels: filteredLocations.map(item => item.location.split(',')[0].trim()),
+        datasets: [{ label: 'Location Distribution', data: filteredLocations.map(item => item.count), backgroundColor: ['#f72585', '#4361ee', '#fca311', '#4cc9f0', '#9d4edd'] }],
+    };
+
+    const followerRangeData = {
+        labels: filteredFollowerRanges.map(item => item.rang),
+        datasets: [{ label: 'Follower Count', data: filteredFollowerRanges.map(item => item.count), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'] }],
     };
 
     return (
-        <div className="bg-[#f9f9fc] text-[#1a202c] pt-8 sm:pt-[50px] p-4 sm:p-8 overflow-x-hidden">
-            <main className="max-w-full sm:max-w-[1200px] mx-auto w-full flex flex-col">
-                <h1 className="text-2xl sm:text-[32px] font-bold pl-2 sm:pl-[12px] mb-2 sm:mb-4">
-                    Reports
-                </h1>
-                <h2 className="text-[#4c1d95] mb-3 sm:mb-4 text-xl sm:text-[24px] font-bold pl-2 sm:pl-[12px]">
-                    Reports Overview
+        <div className="bg-[#f9fafb] font-sans m-0 p-5  min-h-screen">
+            <div className="p-6 bg-[#f5efff] rounded-lg shadow-md min-h-[230px]">
+                <h2 className="text-xl pt-5 font-semibold mb-2.5 text-[#4b0082] pl-[16px] tracking-wide" style={{ wordSpacing: '0.2rem' }}>
+                    Reports Dashboard
                 </h2>
-                <div className="flex flex-col sm:flex-row justify-start gap-3 sm:gap-[10px] mb-6 sm:mb-8 flex-nowrap pl-2 sm:pl-[12px] overflow-x-auto mt-3 sm:mt-[16px]">
-                    <div className="bg-[#f3e8ff] mt-3 sm:mt-[16px] border-l-6 border-[#6a0080] rounded-[12px] p-4 sm:p-[20px] w-full max-w-[300px] min-w-[250px] shadow-[0_4px_10px_rgba(0,0,0,0.08)] text-left flex flex-col justify-between transition-transform duration-200 hover:-translate-y-[5px] gap-1 sm:gap-[6px]">
-                        <h4 className="m-0 text-xs sm:text-[0.95rem] text-[#6a0080] uppercase tracking-[0.5px] font-[700]">
-                            HR
-                        </h4>
-                        <h3 className="my-1 sm:my-[0.4rem] mt-0 mb-0 text-lg sm:text-[20px] font-[700] text-black">
-                            Contacts Added
-                        </h3>
-                        <p className="text-xs sm:text-[0.95rem] my-1 sm:my-[0.4rem] mb-2 sm:mb-4 text-[#555]">
-                            {summary.hrContacts} total HR contacts
-                        </p>
-                    </div>
-                    <div className="bg-[#f3e8ff] mt-3 sm:mt-[16px] border-l-6 border-[#6a0080] rounded-[12px] p-4 sm:p-[20px] w-full max-w-[300px] min-w-[250px] shadow-[0_4px_10px_rgba(0,0,0,0.08)] text-left flex flex-col justify-between transition-transform duration-200 hover:-translate-y-[5px] gap-1 sm:gap-[6px]">
-                        <h4 className="m-0 text-xs sm:text-[0.95rem] text-[#6a0080] uppercase tracking-[0.5px] font-[700]">
-                            Marketing
-                        </h4>
-                        <h3 className="my-1 sm:my-[0.4rem] mt-0 mb-0 text-lg sm:text-[20px] font-[700] text-black">
-                            Campaigns Sent
-                        </h3>
-                        <p className="text-xs sm:text-[0.95rem] my-1 sm:my-[0.4rem] mb-2 sm:mb-4 text-[#555]">
-                            {summary.campaigns} campaigns completed
-                        </p>
-                    </div>
-                    <div className="bg-[#f3e8ff] mt-3 sm:mt-[16px] border-l-6 border-[#6a0080] rounded-[12px] p-4 sm:p-[20px] w-full max-w-[300px] min-w-[250px] shadow-[0_4px_10px_rgba(0,0,0,0.08)] text-left flex flex-col justify-between transition-transform duration-200 hover:-translate-y-[5px] gap-1 sm:gap-[6px]">
-                        <h4 className="m-0 text-xs sm:text-[0.95rem] text-[#6a0080] uppercase tracking-[0.5px] font-[700]">
-                            Data Edits
-                        </h4>
-                        <h3 className="my-1 sm:my-[0.4rem] mt-0 mb-0 text-lg sm:text-[20px] font-[700] text-black">
-                            Records Updated
-                        </h3>
-                        <p className="text-xs sm:text-[0.95rem] my-1 sm:my-[0.4rem] mb-2 sm:mb-4 text-[#555]">
-                            {summary.recordsEdited} records edited
-                        </p>
-                    </div>
+
+                <div className="mt-[30px] mb-2.5 pl-[16px]">
+                    <h4 className="m-0 text-base font-semibold text-[#333] tracking-wide" style={{ wordSpacing: '0.2rem' }}>
+                        Filters
+                    </h4>
                 </div>
-                <div
-                    className="flex flex-wrap gap-x-4 sm:gap-x-5 gap-y-3 items-end mb-4 sm:mb-5 pl-2 sm:pl-[12px]"
-                    style={{ wordSpacing: '0.2rem' }}
-                >
-                    <div className="flex-1 basis-[150px] max-w-[200px] gap-1 sm:gap-[6px]">
-                        <label className="block mb-1 text-xs sm:text-[13px] font-medium text-[#333] mt-3 sm:mt-[16px] gap-1 sm:gap-[6px]">
-                            Industry
-                        </label>
-                        <input
-                            className="w-full py-1 sm:py-[6px] px-2 text-xs sm:text-sm border border-[#d3cce3] rounded-md box-border bg-white pl-2 sm:pl-[12px] gap-1 sm:gap-[6px]"
-                            type="text"
-                            name="name"
-                            value={filters.name}
-                            onChange={handleChange}
-                            placeholder="Enter Industry name"
-                        />
-                    </div>
-                    <div className="flex-1 basis-[150px] max-w-[200px] gap-1 sm:gap-[6px]">
-                        <label className="block mb-1 text-xs sm:text-[13px] font-medium text-[#333] mt-3 sm:mt-[16px] gap-1 sm:gap-[6px]">
-                            Location
-                        </label>
-                        <input
-                            className="w-full py-1 sm:py-[6px] px-2 text-xs sm:text-sm border border-[#d3cce3] rounded-md box-border bg-white gap-1 sm:gap-[6px]"
-                            type="text"
-                            name="location"
-                            value={filters.location}
-                            onChange={handleChange}
-                            placeholder="Enter city or location"
-                        />
-                    </div>
-                    <div className="flex-1 basis-[150px] max-w-[200px]">
-                        <label className="block mb-1 text-xs sm:text-[13px] font-medium text-[#333] mt-3 sm:mt-[16px] gap-1 sm:gap-[6px]">
-                            Communication Status
-                        </label>
-                        <select
-                            className="w-full py-1 sm:py-[6px] px-2 text-xs sm:text-sm border border-[#d3cce3] rounded-md box-border bg-white gap-1 sm:gap-[6px]"
-                            name="communication_status"
-                            value={filters.communication_status}
-                            onChange={handleChange}
-                        >
-                            <option value="">-- Select --</option>
-                            <option value="Interested">Interested</option>
-                            <option value="Not Interested">
-                                Not Interested
-                            </option>
-                            <option value="Follow-up needed">
-                                Follow-up needed
-                            </option>
-                            <option value="Pending call">Pending call</option>
+                <div className="pl-[16px]">
+                    <div className="flex gap-[10px] mb-4">
+                        <input type="date" name="date" onChange={handleFilterChange} className="p-2 border rounded" />
+                        <select name="status" onChange={handleFilterChange} className="p-2 border rounded">
+                            <option value="">All Statuses</option>
+                            {analytics.status.map(s => <option key={s.status} value={s.status}>{s.status}</option>)}
                         </select>
-                    </div>
-                    <div className="flex-1 basis-[150px] max-w-[200px]">
-                        <label className="block mb-1 text-xs sm:text-[13px] font-medium text-[#333] mt-3 sm:mt-[16px] gap-1 sm:gap-[6px]">
-                            Lead Status
-                        </label>
-                        <select
-                            className="w-full py-1 sm:py-[6px] px-2 text-xs sm:text-sm border border-[#d3cce3] rounded-md box-border bg-white gap-1 sm:gap-[6px]"
-                            name="lead_status"
-                            value={filters.lead_status}
-                            onChange={handleChange}
-                        >
-                            <option value="">-- Select --</option>
-                            <option value="New">New</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Dropped">Dropped</option>
-                            <option value="Closed">Closed</option>
+                        <select name="location" onChange={handleFilterChange} className="p-2 border rounded">
+                            <option value="">All Locations</option>
+                            {analytics.locations.map(l => <option key={l.location} value={l.location.split(',')[0].trim()}>{l.location.split(',')[0].trim()}</option>)}
                         </select>
+
                     </div>
-                    <div className="flex-1 basis-[150px] max-w-[200px]">
-                        <label className="block mb-1 text-xs sm:text-[13px] font-medium text-[#333] mt-3 sm:mt-[16px] gap-1 sm:gap-[6px]">
-                            BD Name
-                        </label>
-                        <input
-                            className="w-full py-1 sm:py-[6px] px-2 text-xs sm:text-sm border border-[#d3cce3] rounded-md box-border bg-white gap-1 sm:gap-[6px]"
-                            type="text"
-                            name="bd_name"
-                            value={filters.bd_name}
-                            onChange={handleChange}
-                            placeholder="Enter BD name"
-                        />
-                    </div>
-                    <div className="flex-1 basis-[150px] max-w-[200px]">
-                        <label className="block mb-1 text-xs sm:text-[13px] font-medium text-[#333] mt-3 sm:mt-[16px] gap-1 sm:gap-[6px]">
-                            State
-                        </label>
-                        <input
-                            className="w-full py-1 sm:py-[6px] px-2 text-xs sm:text-sm border border-[#d3cce3] rounded-md box-border bg-white gap-1 sm:gap-[6px]"
-                            type="text"
-                            name="state"
-                            value={filters.state}
-                            onChange={handleChange}
-                            placeholder="Enter state"
-                        />
+                    <div className="flex justify-start">
+                        <button onClick={generateReport} className="px-4 py-2 bg-[#2f80ed] text-white rounded">Generate Report</button>
                     </div>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-[10px] mt-2 sm:mt-[10px] items-center pl-2 sm:pl-[12px]">
-                    <button
-                        className="bg-[#6a1b9a] pl-2 sm:pl-[12px] text-white border-none rounded-lg py-1 sm:py-[2px] px-3 sm:px-[10px] cursor-pointer font-bold text-xs sm:text-sm w-full sm:w-[150px] h-8 sm:h-[35px] hover:bg-[#6a1b9a]"
-                        onClick={handleSearch}
-                    >
-                        Search
-                    </button>
-                    <button
-                        className="bg-[#f4f1fa] pl-2 sm:pl-[12px] text-black border border-[#d3cce3] rounded-lg py-1 sm:py-1 px-3 sm:px-[10px] cursor-pointer font-bold text-xs sm:text-sm w-full sm:w-[100px] h-8 sm:h-[35px] hover:bg-[#eae4f4]"
-                        onClick={handleClear}
-                    >
-                        Clear
-                    </button>
+
+                <div className="mt-[30px] mb-2.5">
+                    <h4 className="m-0 text-base font-semibold text-[#333] tracking-wide pl-[12px]" style={{ wordSpacing: '0.2rem' }}>
+                        Summary
+                    </h4>
                 </div>
-                <div className="Ractivity-trends-container mt-4 sm:mt-6">
-                    <h3 className="text-[#4c1d95] mb-3 sm:mb-4 pl-2 sm:pl-[12px] text-lg sm:text-[20px] font-[700] mt-3 sm:mt-[12px]">
-                        Activity Trends
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5 bg-white rounded-xl p-3 sm:p-5 shadow-[0_4px_12px_rgba(0,0,0,0.1)] overflow-x-hidden">
-                        <div className="bg-white p-2 sm:p-[15px] rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] relative min-w-[280px] sm:min-w-[320px]">
-                            <h4 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-[#4c1d95]">
-                                Lead Status Distribution
-                            </h4>
-                            <canvas
-                                className="max-w-full h-[250px] sm:h-[300px]"
-                                id="leadStatusChart"
-                                ref={leadStatusChartRef}
-                            ></canvas>
-                        </div>
-                        <div className="bg-white p-2 sm:p-[15px] rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] relative min-w-[280px] sm:min-w-[320px] flex flex-col items-center justify-center h-[300px] sm:h-[350px]">
-                            <h4 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-[#4c1d95]">
-                                Communication Status Overview
-                            </h4>
-                            <canvas
-                                className="w-[250px] sm:w-[300px] h-[250px] sm:h-[300px]"
-                                id="communicationStatusChart"
-                                ref={communicationStatusChartRef}
-                            ></canvas>
-                        </div>
-                        <div className="bg-white p-2 sm:p-[15px] rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] relative min-w-[280px] sm:min-w-[320px]">
-                            <h4 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-[#4c1d95]">
-                                Location-wise Lead Count
-                            </h4>
-                            <canvas
-                                className="max-w-full h-[250px] sm:h-[300px]"
-                                id="cityLeadChart"
-                                ref={cityLeadChartRef}
-                            ></canvas>
-                        </div>
-                        <div className="bg-white p-2 sm:p-[15px] rounded-[10px] shadow-[0_2px_8px_rgba(0,0,0,0.08)] relative min-w-[280px] sm:min-w-[320px]">
-                            <h4 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2 text-[#4c1d95]">
-                                State-wise BD Activities
-                            </h4>
-                            <canvas
-                                className="max-w-full h-[250px] sm:h-[300px]"
-                                id="stateBdChart"
-                                ref={stateBdChartRef}
-                            ></canvas>
-                        </div>
+                <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-[6px] mb-8">
+                    <div className="bg-[rgba(230,222,222,0.3)] backdrop-blur-md rounded-[12px] p-[20px] text-center shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
+                        <p className="text-2xl font-bold text-black tracking-wide" style={{ wordSpacing: '0.2rem', color: '#2f80ed', fontSize: '21px', fontWeight: 'bold' }}>
+                            {data?.totalProfiles?.count || 0}
+                        </p>
+                        <h3 className="text-sm font-semibold text-black tracking-wide" style={{ wordSpacing: '0.2rem' }}>
+                            Total Profiles Scraped
+                        </h3>
+                    </div>
+                    <div className="bg-[rgba(230,222,222,0.3)] backdrop-blur-md rounded-[12px] p-[20px] text-center shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
+                        <p className="text-2xl font-bold text-black tracking-wide" style={{ wordSpacing: '0.2rem', color: '#27ae60', fontSize: '21px', fontWeight: 'bold' }}>
+                            {data?.updatedProfiles?.count || 0}
+                        </p>
+                        <h3 className="text-sm font-semibold text-black tracking-wide" style={{ wordSpacing: '0.2rem' }}>
+                            Profiles Marked Updated
+                        </h3>
+                    </div>
+                    <div className="bg-[rgba(230,222,222,0.3)] backdrop-blur-md rounded-[12px] p-[20px] text-center shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
+                        <p className="text-2xl font-bold text-black tracking-wide" style={{ wordSpacing: '0.2rem', color: '#f2994a', fontSize: '21px', fontWeight: 'bold' }}>
+                            {data?.newThisWeek?.count || 0}
+                        </p>
+                        <h3 className="text-sm font-semibold text-black tracking-wide" style={{ wordSpacing: '0.2rem' }}>
+                            New Profiles This Week
+                        </h3>
+                    </div>
+                    <div className="bg-[rgba(230,222,222,0.3)] backdrop-blur-md rounded-[12px] p-[20px] text-center shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
+                        <p className="text-2xl font-bold text-black tracking-wide" style={{ wordSpacing: '0.2rem', color: '#a259ff', fontSize: '21px', fontWeight: 'bold' }}>
+                            {data?.newThisMonth?.count || 0}
+                        </p>
+                        <h3 className="text-sm font-semibold text-black tracking-wide" style={{ wordSpacing: '0.2rem' }}>
+                            New Profiles This Month
+                        </h3>
                     </div>
                 </div>
-                <div>
-                    <h3
-                        className="text-[#4c1d95] mb-3 sm:mb-4 pl-2 sm:pl-[12px] font-[700] mt-4 sm:mt-[16px] text-lg sm:text-[20px]"
-                        style={{ wordSpacing: '0.2rem' }}
-                    >
-                        Latest Communication
-                    </h3>
-                    <div className="overflow-x-auto">
-                        <table
-                            className="w-full mt-3 sm:mt-[16px] border-collapse mb-8 sm:mb-16 bg-white rounded-lg overflow-hidden shadow-[0_2px_6px_rgba(0,0,0,0.05)] min-w-[600px]"
-                            style={{ wordSpacing: '0.2rem' }}
-                        >
-                            <thead className="pl-2 sm:pl-[12px]">
-                                <tr>
-                                    <th className="py-2 sm:py-3 px-3 sm:px-4 text-left border-b border-[#e2e8f0] bg-[#f1e4ff] text-[#4c1d95] font-semibold pl-2 sm:pl-[12px] text-xs sm:text-sm">
-                                        BD Name
-                                    </th>
-                                    <th className="py-2 sm:py-3 px-3 sm:px-4 text-left border-b border-[#e2e8f0] bg-[#f1e4ff] text-[#4c1d95] font-semibold pl-2 sm:pl-[12px] text-xs sm:text-sm">
-                                        Company Name
-                                    </th>
-                                    <th className="py-2 sm:py-3 px-3 sm:px-4 text-left border-b border-[#e2e8f0] bg-[#f1e4ff] text-[#4c1d95] font-semibold pl-2 sm:pl-[12px] text-xs sm:text-sm">
-                                        Date
-                                    </th>
-                                    <th className="py-2 sm:py-3 px-3 sm:px-4 text-left border-b border-[#e2e8f0] bg-[#f1e4ff] text-[#4c1d95] font-semibold pl-2 sm:pl-[12px] text-xs sm:text-sm">
-                                        Status
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {latestCommunication.slice(0, 3).map((item) => (
-                                    <tr key={item.id}>
-                                        <td className="py-2 sm:py-3 px-3 sm:px-4 text-left border-b border-[#e2e8f0] text-xs sm:text-sm">
-                                            {item.bd_name}
-                                        </td>
-                                        <td className="py-2 sm:py-3 px-3 sm:px-4 text-left border-b border-[#e2e8f0] text-xs sm:text-sm">
-                                            {item.company_name}
-                                        </td>
-                                        <td className="py-2 sm:py-3 px-3 sm:px-4 text-left border-b border-[#e2e8f0] text-xs sm:text-sm">
-                                            {new Date(
-                                                item.date
-                                            ).toLocaleDateString('en-US', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric',
-                                            })}
-                                        </td>
-                                        <td className="py-2 sm:py-3 px-3 sm:px-4 text-left border-b border-[#e2e8f0] text-xs sm:text-sm">
-                                            {item.communication_status}
-                                        </td>
+
+                <div className="mt-[30px] mb-2.5">
+                    <h4 className="m-0 text-base font-semibold text-[#333] tracking-wide pl-[12px]" style={{ wordSpacing: '0.2rem' }}>
+                        Detailed Report
+                    </h4>
+                </div>
+                <div className="overflow-x-auto pl-[16px] mb-10">
+                    <table id="report-table" ref={tableRef} className="min-w-full bg-white border border-gray-300">
+                        <thead>
+                            <tr className="bg-[#6a1b9a] text-white">
+                                <th className="border p-2">ID</th>
+                                <th className="border p-2">Name</th>
+                                <th className="border p-2">Location</th>
+                                <th className="border p-2">Follower</th>
+                                <th className="border p-2">Connection</th>
+                                <th className="border p-2">URL</th>
+                                <th className="border p-2">Status</th>
+                                <th className="border p-2">Updated</th>
+                                <th className="border p-2">Updated At</th>
+                                <th className="border p-2">Date of Contact</th>
+                                <th className="border p-2">LinkedIn Message Date</th>
+                                <th className="border p-2">Position</th>
+                                <th className="border p-2">Work From</th>
+                                <th className="border p-2">Education</th>
+                                <th className="border p-2">BD Name</th>
+                                <th className="border p-2">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {reportData.length > 0 ? (
+                                reportData.map((row, index) => (
+                                    <tr key={index} className="border">
+                                        <td className="border p-2">{row.id || 'N/A'}</td>
+                                        <td className="border p-2">{row.name || 'N/A'}</td>
+                                        <td className="border p-2">{row.location || 'N/A'}</td>
+                                        <td className="border p-2">{row.follower || 'N/A'}</td>
+                                        <td className="border p-2">{row.connection || 'N/A'}</td>
+                                        <td className="border p-2">{row.url || 'N/A'}</td>
+                                        <td className="border p-2">{row.status || 'N/A'}</td>
+                                        <td className="border p-2">{row.updated || 'N/A'}</td>
+                                        <td className="border p-2">{row.updated_at || 'N/A'}</td>
+                                        <td className="border p-2">{row.date_of_contact || 'N/A'}</td>
+                                        <td className="border p-2">{row.linkedin_message_date || 'N/A'}</td>
+                                        <td className="border p-2">{row.position || 'N/A'}</td>
+                                        <td className="border p-2">{row.work_from || 'N/A'}</td>
+                                        <td className="border p-2">{row.education || 'N/A'}</td>
+                                        <td className="border p-2">{row.bd_name || 'N/A'}</td>
+                                        <td className="border p-2">{row.notes || 'N/A'}</td>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="17" className="border p-2 text-center">No data available</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <div className="flex flex-col lg:flex-row gap-[16px] w-full">
+                    <div className="flex-1 min-w-0 bg-white p-[15px] rounded-[12px] shadow-[0_4px_10px_rgba(0,0,0,0.05)] flex flex-col sm:flex-row gap-[12px]">
+                        <div className="w-full sm:w-[160px] bg-[#f3dffb] p-[10px_12px] rounded-[12px] shadow-[0_0_8px_rgba(0,0,0,0.05)] font-semibold text-[16px]">
+                            <h4 className="m-0 mb-[10px] font-semibold text-[16px] text-[#4b0082]">Status Breakdown</h4>
+                            {filteredStatus.map(s => (
+                                <p key={s.status} className="my-[5px] text-[14px] text-[#444]">
+                                    {s.status}: {s.count}
+                                </p>
+                            ))}
+                        </div>
+                        <div className="flex-1 min-h-[200px] flex items-center justify-center" id="status-chart">
+                            <Pie
+                                data={statusData}
+                                options={{
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'bottom',
+                                            labels: {
+                                                boxWidth: 10,
+                                                padding: 10,
+                                            },
+                                        },
+                                    },
+                                }}
+                                className="w-full h-full"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex-1 min-w-0 bg-white p-[15px] rounded-[12px] shadow-[0_4px_10px_rgba(0,0,0,0.05)] flex flex-col sm:flex-row gap-[12px]">
+                        <div className="w-full sm:w-[160px] bg-[#f3dffb] p-[10px_12px] rounded-[12px] shadow-[0_0_8px_rgba(0,0,0,0.05)] font-semibold text-[16px]">
+                            <h4 className="m-0 mb-[10px] font-semibold text-[16px] text-[#4b0082]">Location Distribution</h4>
+                            {filteredLocations.map(s => (
+                                <p key={s.location} className="my-[5px] text-[14px] text-[#444]">
+                                    {s.location.split(',')[0].trim()}: {s.count}
+                                </p>
+                            ))}
+                        </div>
+                        <div className="flex-1 min-h-[200px] flex items-center justify-center" id="location-chart">
+                            <Pie
+                                data={locationData}
+                                options={{
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            display: true,
+                                            position: 'bottom',
+                                            labels: {
+                                                boxWidth: 10,
+                                                padding: 10,
+                                            },
+                                        },
+                                    },
+                                }}
+                                className="w-full h-full"
+                            />
+                        </div>
                     </div>
                 </div>
-                <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-[16px] mt-4 sm:mt-[16px]">
-                    <button
-                        className="py-2 sm:py-[0.6rem] px-4 sm:px-6 text-sm sm:text-base font-medium border-none rounded-md cursor-pointer w-full sm:w-[180px] text-center text-white bg-[#6a0080] hover:bg-[#4e005c]"
-                        onClick={handleGenerateReportClick}
-                    >
-                        Generate Report
-                    </button>
-                    <button
-                        className="py-2 sm:py-[0.6rem] px-4 sm:px-6 text-sm sm:text-base font-medium border-none rounded-md cursor-pointer w-full sm:w-[180px] text-center text-white bg-[#e53e3e] hover:bg-[#c53030]"
-                        onClick={handleClear}
-                    >
-                        Reset Filters
-                    </button>
+
+                <div className="w-full bg-white p-[15px] rounded-[12px] shadow-[0_4px_10px_rgba(0,0,0,0.05)] min-w-[320px] max-w-full flex flex-col sm:flex-row gap-[12px]">
+                    <div className="w-full sm:w-[160px] bg-[#f3dffb] p-[10px_12px] rounded-[12px] shadow-[0_0_8px_rgba(0,0,0,0.05)] font-semibold text-[16px]">
+                        <h4 className="m-0 mb-[10px] font-semibold text-[16px] text-[#4b0082]">Follower Ranges</h4>
+                        {filteredFollowerRanges.map(s => (
+                            <p key={s.rang} className="my-[5px] text-[14px] text-[#444]">{s.rang}: {s.count}</p>
+                        ))}
+                    </div>
+                    <div className="flex-1 min-h-[240px] flex items-center justify-center" id="follower-chart">
+                        <Bar
+                            data={followerRangeData}
+                            options={{
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'bottom',
+                                        labels: {
+                                            boxWidth: 10,
+                                            padding: 10,
+                                        },
+                                    },
+                                },
+                                scales: {
+                                    y: { beginAtZero: true, title: { display: true, text: 'Count' } },
+                                    x: { title: { display: true, text: 'Follower Range' } }
+                                }
+                            }}
+                            className="w-full h-full"
+                        />
+                    </div>
                 </div>
-                {isReportFormVisible && (
-                    <NewReportForm
-                        onClose={handleCloseReportForm}
-                        leadStatusData={leadStatusData}
-                        communicationStatusData={communicationStatusData}
-                        cityLeadData={cityLeadData}
-                        stateBdData={stateBdData}
-                    />
-                )}
-            </main>
+
+                <div className="mt-4 pl-[16px]">
+                    <button onClick={exportPDF} className="px-4 py-2 bg-[#2f80ed] text-white rounded mr-2">Export PDF</button>
+                    <button onClick={exportCSV} className="px-4 py-2 bg-[#27ae60] text-white rounded">Export CSV</button>
+                </div>
+
+                <div className="mt-4 pl-[16px] text-gray-600">
+                    Last updated: {new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                </div>
+                {error && <div className="text-red-500 mt-4 pl-[16px]">{error}</div>}
+            </div>
         </div>
     );
-}
+};
 
 export default Reports;

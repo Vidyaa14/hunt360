@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaEye, FaTrash } from 'react-icons/fa'; // Added FaTrash
+import { FaEdit, FaEye, FaTrash } from 'react-icons/fa';
 import axios from 'axios';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
@@ -104,7 +104,7 @@ const FinalProfile = () => {
     const confirmDelete = window.confirm('Are you sure you want to delete this record?');
     if (confirmDelete) {
       try {
-        await axios.delete(`${baseURL}/delete/${item.id}`);
+        await axios.delete(`http://localhost:3000/api/delete/${item.id}`);
         const updatedResults = results.filter((record) => record.id !== item.id);
         setResults(updatedResults);
         sessionStorage.setItem('finalProfile_savedResults', JSON.stringify(updatedResults));
@@ -125,38 +125,33 @@ const FinalProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const companyToSubmit = {
-      id: selectedCompany.id,
-      name: selectedCompany.name,
-      company: selectedCompany.company,
-      location: selectedCompany.location,
-      follower: selectedCompany.follower,
-      connection: selectedCompany.connection,
-      url: selectedCompany.url,
-      status: selectedCompany.status,
-    };
+    const companyToSubmit = { ...selectedCompany };
+
     try {
-      const res = await fetch(`${baseURL}/save-final-profile`, {
+      const res = await fetch('http://localhost:3000/save-final-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(companyToSubmit),
       });
+
       const data = await res.json();
       if (res.ok) {
         alert('Form data saved successfully!');
-        const updatedCompany = { ...selectedCompany, ...companyToSubmit };
+        const updatedCompany = data.updatedCompany;
+
         setResults((prev) =>
           prev.map((company) =>
-            company.id === selectedCompany.id ? updatedCompany : company
+            company.id === updatedCompany.id ? updatedCompany : company
           )
         );
         setSelectedCompany(updatedCompany);
         setShowForm(false);
+
         sessionStorage.setItem(
           'finalProfile_savedResults',
           JSON.stringify(
             results.map((company) =>
-              company.id === selectedCompany.id ? updatedCompany : company
+              company.id === updatedCompany.id ? updatedCompany : company
             )
           )
         );
@@ -168,6 +163,7 @@ const FinalProfile = () => {
       console.error('Submit error:', err);
     }
   };
+
 
   useEffect(() => {
     // Load saved state from sessionStorage
@@ -377,17 +373,7 @@ const FinalProfile = () => {
                   className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
                 />
               </div>
-              {/* <div>
-                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Updated</label>
-                <select
-                  value={selectedCompany?.updated || ''}
-                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, updated: e.target.value }))}
-                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
-                >
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </div> */}
+
               <div>
                 <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Status</label>
                 <select
@@ -401,6 +387,82 @@ const FinalProfile = () => {
                   <option value="pending">Pending</option>
                 </select>
               </div>
+
+              {/* Position */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Position</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.position || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, position: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                />
+              </div>
+
+              {/* Work From */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Work From</label>
+                <select
+                  value={selectedCompany?.work_from || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, work_from: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                >
+                  <option value="">Select</option>
+                  <option value="Onsite">Onsite</option>
+                  <option value="Remote">Remote</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
+              </div>
+
+              {/* Education */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Education</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.education || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, education: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                />
+              </div>
+
+              {/* BD Name */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">BD Name</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.bd_name || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, bd_name: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                />
+              </div>
+
+
+              {/* Date of Contact */}
+
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Date of contact</label>
+                <input
+                  type="text"
+                  placeholder="YYYY-MM-DD"
+                  value={selectedCompany?.date_of_contact || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, date_of_contact: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                />
+              </div>
+              {/* LinkedIn Message Date */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">LinkedIn Message Date</label>
+                <input
+                  type="text"
+                  placeholder="YYYY-MM-DD"
+                  value={selectedCompany?.linkedin_message_date || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, linkedin_message_date: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                />
+              </div>
+
+
+
               <button
                 type="submit"
                 className="w-full sm:w-[150px] p-2 sm:p-[12px] bg-[#7019d2] text-white rounded-[8px] text-sm sm:text-[16px] font-bold hover:bg-[#5b13aa]"
@@ -411,6 +473,8 @@ const FinalProfile = () => {
           </div>
         </div>
       )}
+
+
       {showView && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000]">
           <div className="bg-[#f4eaff] p-4 sm:p-[30px_40px] rounded-[15px] w-full sm:w-[500px] max-w-[95%] sm:max-w-[90%] max-h-[90vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden shadow-[0_10px_25px_rgba(0,0,0,0.2)]">
@@ -478,6 +542,84 @@ const FinalProfile = () => {
                   className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px]"
                 />
               </div>
+
+              {/* Position */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Position</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.position || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
+              {/* Work From */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Work From</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.work_from || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
+              {/* Education */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Education</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.education || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
+              {/* BD Name */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">BD Name</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.bd_name || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
+              {/* Date of Contact */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Date of Contact</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.date_of_contact || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Notes</label>
+                <textarea
+                  value={selectedCompany?.notes || ''}
+                  readOnly
+                  rows={3}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                ></textarea>
+              </div>
+
+              {/* LinkedIn Message Date */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">LinkedIn Message Date</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.linkedin_message_date || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
               <button
                 className="w-full sm:w-[150px] p-2 sm:p-[12px] bg-[#7019d2] text-white rounded-[8px] text-sm sm:text-[16px] font-bold hover:bg-[#5b13aa]"
                 onClick={() => setShowView(false)}

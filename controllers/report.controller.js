@@ -2,8 +2,8 @@ import db from '../config/database.js';
 import { buildFilterConditions } from '../utils/filterUtils.js';
 
 export const getLatestCommunication = async (req, res) => {
-    try {
-        const query = `
+  try {
+    const query = `
       SELECT
         bd_name,
         company_name,
@@ -16,17 +16,17 @@ export const getLatestCommunication = async (req, res) => {
       ORDER BY updated_at DESC
       LIMIT 3
     `;
-        const [results] = await db.query(query);
-        res.json(results);
-    } catch (err) {
-        console.error('Error fetching latest communication:', err);
-        res.status(500).json({ error: 'Failed to fetch latest communication' });
-    }
+    const [results] = await db.query(query);
+    res.json(results);
+  } catch (err) {
+    console.error('Error fetching latest communication:', err);
+    res.status(500).json({ error: 'Failed to fetch latest communication' });
+  }
 };
 
 export const getReportSummary = async (req, res) => {
-    try {
-        const hrQuery = `
+  try {
+    const hrQuery = `
       SELECT COUNT(*) AS count 
       FROM scraped_data
       WHERE updated = 'yes' 
@@ -34,7 +34,7 @@ export const getReportSummary = async (req, res) => {
         AND phone_number != 'N/A'
     `;
 
-        const marketingQuery = `
+    const marketingQuery = `
       SELECT COUNT(*) AS count 
       FROM scraped_data 
       WHERE lead_status = 'Closed' 
@@ -42,36 +42,36 @@ export const getReportSummary = async (req, res) => {
         AND updated = 'yes'
     `;
 
-        const editsQuery = `
+    const editsQuery = `
       SELECT COUNT(*) AS count 
       FROM scraped_data
       WHERE updated = 'yes'
     `;
 
-        const [[hrResult], [marketingResult], [editsResult]] =
-            await Promise.all([
-                db.query(hrQuery),
-                db.query(marketingQuery),
-                db.query(editsQuery),
-            ]);
+    const [[hrResult], [marketingResult], [editsResult]] =
+      await Promise.all([
+        db.query(hrQuery),
+        db.query(marketingQuery),
+        db.query(editsQuery),
+      ]);
 
-        const result = {
-            hrContacts: hrResult.count,
-            campaigns: marketingResult.count,
-            recordsEdited: editsResult.count,
-        };
+    const result = {
+      hrContacts: hrResult.count,
+      campaigns: marketingResult.count,
+      recordsEdited: editsResult.count,
+    };
 
-        res.json(result);
-    } catch (err) {
-        console.error('Error fetching report summary:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+    res.json(result);
+  } catch (err) {
+    console.error('Error fetching report summary:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 };
 
 export const getBdComparison = async (req, res) => {
-    try {
-        const { bdName } = req.query;
-        let query = `
+  try {
+    const { bdName } = req.query;
+    let query = `
       SELECT
         bd_name,
         COUNT(*) AS total_work,
@@ -82,39 +82,39 @@ export const getBdComparison = async (req, res) => {
       FROM scraped_data
       WHERE bd_name IS NOT NULL AND bd_name != ''
     `;
-        const queryParams = [];
-        if (bdName) {
-            query += ` AND bd_name = ?`;
-            queryParams.push(bdName);
-        }
-        query += `
+    const queryParams = [];
+    if (bdName) {
+      query += ` AND bd_name = ?`;
+      queryParams.push(bdName);
+    }
+    query += `
       GROUP BY bd_name
       ORDER BY total_work DESC
     `;
-        const [rows] = await db.query(query, queryParams);
+    const [rows] = await db.query(query, queryParams);
 
-        const allBdQuery = `
+    const allBdQuery = `
       SELECT DISTINCT bd_name
       FROM scraped_data
       WHERE bd_name IS NOT NULL AND bd_name != ''
       ORDER BY bd_name
     `;
-        const [allBdNamesResult] = await db.query(allBdQuery);
-        const allBdNames = allBdNamesResult.map((row) => row.bd_name);
+    const [allBdNamesResult] = await db.query(allBdQuery);
+    const allBdNames = allBdNamesResult.map((row) => row.bd_name);
 
-        res.json({ chartData: rows, allBdNames });
-    } catch (err) {
-        console.error('Error fetching BD comparison:', err);
-        res.status(500).json({ error: 'Failed to fetch BD comparison' });
-    }
+    res.json({ chartData: rows, allBdNames });
+  } catch (err) {
+    console.error('Error fetching BD comparison:', err);
+    res.status(500).json({ error: 'Failed to fetch BD comparison' });
+  }
 };
 
 export const getLeadStatusDistribution = async (req, res) => {
-    try {
-        const filters = req.query;
-        const { whereClause, params } = buildFilterConditions(filters);
+  try {
+    const filters = req.query;
+    const { whereClause, params } = buildFilterConditions(filters);
 
-        const query = `
+    const query = `
       SELECT
         lead_status,
         COUNT(*) AS count
@@ -123,22 +123,22 @@ export const getLeadStatusDistribution = async (req, res) => {
       GROUP BY lead_status
       ORDER BY count DESC
     `;
-        const [rows] = await db.query(query, params);
-        res.json({ chartData: rows });
-    } catch (err) {
-        console.error('Error fetching lead status distribution:', err);
-        res.status(500).json({
-            error: 'Failed to fetch lead status distribution',
-        });
-    }
+    const [rows] = await db.query(query, params);
+    res.json({ chartData: rows });
+  } catch (err) {
+    console.error('Error fetching lead status distribution:', err);
+    res.status(500).json({
+      error: 'Failed to fetch lead status distribution',
+    });
+  }
 };
 
 export const getCommunicationStatusOverview = async (req, res) => {
-    try {
-        const filters = req.query;
-        const { whereClause, params } = buildFilterConditions(filters);
+  try {
+    const filters = req.query;
+    const { whereClause, params } = buildFilterConditions(filters);
 
-        const query = `
+    const query = `
       SELECT
         communication_status,
         COUNT(*) AS count
@@ -147,22 +147,22 @@ export const getCommunicationStatusOverview = async (req, res) => {
       GROUP BY communication_status
       ORDER BY count DESC
     `;
-        const [rows] = await db.query(query, params);
-        res.json({ chartData: rows });
-    } catch (err) {
-        console.error('Error fetching communication status overview:', err);
-        res.status(500).json({
-            error: 'Failed to fetch communication status overview',
-        });
-    }
+    const [rows] = await db.query(query, params);
+    res.json({ chartData: rows });
+  } catch (err) {
+    console.error('Error fetching communication status overview:', err);
+    res.status(500).json({
+      error: 'Failed to fetch communication status overview',
+    });
+  }
 };
 
 export const getLocationWiseLeadCount = async (req, res) => {
-    try {
-        const filters = req.query;
-        const { whereClause, params } = buildFilterConditions(filters);
+  try {
+    const filters = req.query;
+    const { whereClause, params } = buildFilterConditions(filters);
 
-        const query = `
+    const query = `
       SELECT
         location,
         COUNT(*) AS count
@@ -172,22 +172,22 @@ export const getLocationWiseLeadCount = async (req, res) => {
       ORDER BY count DESC
       LIMIT 5
     `;
-        const [rows] = await db.query(query, params);
-        res.json({ chartData: rows });
-    } catch (err) {
-        console.error('Error fetching location-wise lead count:', err);
-        res.status(500).json({
-            error: 'Failed to fetch location-wise lead count',
-        });
-    }
+    const [rows] = await db.query(query, params);
+    res.json({ chartData: rows });
+  } catch (err) {
+    console.error('Error fetching location-wise lead count:', err);
+    res.status(500).json({
+      error: 'Failed to fetch location-wise lead count',
+    });
+  }
 };
 
 export const getStateWiseBdActivities = async (req, res) => {
-    try {
-        const filters = req.query;
-        const { whereClause, params } = buildFilterConditions(filters);
+  try {
+    const filters = req.query;
+    const { whereClause, params } = buildFilterConditions(filters);
 
-        const query = `
+    const query = `
       SELECT
         state,
         COUNT(*) AS count
@@ -197,12 +197,76 @@ export const getStateWiseBdActivities = async (req, res) => {
       ORDER BY count DESC
       LIMIT 5
     `;
-        const [rows] = await db.query(query, params);
-        res.json({ chartData: rows });
-    } catch (err) {
-        console.error('Error fetching state-wise BD activities:', err);
-        res.status(500).json({
-            error: 'Failed to fetch state-wise BD activities',
-        });
+    const [rows] = await db.query(query, params);
+    res.json({ chartData: rows });
+  } catch (err) {
+    console.error('Error fetching state-wise BD activities:', err);
+    res.status(500).json({
+      error: 'Failed to fetch state-wise BD activities',
+    });
+  }
+};
+
+export const reportsCSV = (req, res) => {
+  const filters = req.body;
+  const { whereClause, params } = buildFilterConditions(filters);
+
+  // Ensure 'updated = ?' is always included in the WHERE clause
+  const updatedCondition = 'updated = ?';
+  const updatedParam = 'yes';
+
+  // Combine the existing whereClause with the updated condition
+  const finalWhereClause = whereClause
+    ? `${whereClause} AND ${updatedCondition}`
+    : `WHERE ${updatedCondition}`;
+
+  const query = `
+    SELECT
+      id,
+      company_name,
+      industry AS name,
+      location,
+      job_title,
+      address,
+      phone_number,
+      website_link AS url,
+      contact_person_name,
+      email,
+      state,
+      country,
+      pincode,
+      gst_number,
+      bd_name,
+      industry,
+      sub_industry,
+      communication_status,
+      notes,
+      meeting_date,
+      lead_status,
+      created_at,
+      updated_at,
+      mobile
+    FROM scraped_data
+    ${whereClause}
+    
+  `;
+
+  // Add the 'yes' parameter to the params array
+  const finalParams = whereClause ? [...params, updatedParam] : [updatedParam];
+
+  db.query(query, finalParams, (err, rows) => {
+    if (err) {
+      console.error('[/reports] Query Error:', err);
+      return res.status(500).json({ error: 'Failed to generate report' });
     }
+
+    // Format the data to match frontend expectations (e.g., trimming location and name)
+    const formattedRows = rows.map(row => ({
+      ...row,
+      location: row.location ? row.location.split(',')[0].trim() : 'N/A',
+      name: row.name ? row.name.split(',')[0].trim() : 'N/A',
+    }));
+
+    res.json(formattedRows);
+  });
 };

@@ -90,7 +90,7 @@ const TopNavbar = ({ toggleSidebar, isSidebarOpen }) => {
                 </div>
                 <div className="flex items-center gap-1.5 cursor-pointer hover:text-purple-700 transition-colors">
                     <User size={18} className="text-purple-600" />
-                    <span className="text-sm font-medium text-purple-600 hidden sm:block">Jason Ranti</span>
+                    <span className="text-sm font-medium text-purple-600 hidden sm:block">Bankim Doshi</span>
                 </div>
                 <button
                     className="text-gray-600 hover:text-red-600 transition-colors p-1"

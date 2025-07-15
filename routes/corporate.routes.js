@@ -26,6 +26,7 @@ import {
     getLocationWiseLeadCount,
     getReportSummary,
     getStateWiseBdActivities,
+    reportsCSV,
 } from '../controllers/report.controller.js';
 import { scrape } from '../controllers/scrape.controller.js';
 
@@ -61,5 +62,6 @@ router.get('/lead-status-distribution', getLeadStatusDistribution);
 router.get('/communication-status-overview', getCommunicationStatusOverview);
 router.get('/location-wise-lead-count', getLocationWiseLeadCount);
 router.get('/state-wise-bd-activities', getStateWiseBdActivities);
+router.post('/reports/csv', reportsCSV)
 
 export default router;
