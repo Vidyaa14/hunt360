@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
 
-import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { Bar, Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import { ArcElement, BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Tooltip } from 'chart.js';
+import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import html2canvas from 'html2canvas';
+import { useEffect, useRef, useState } from 'react';
+import { Bar, Pie } from 'react-chartjs-2';
+import { useNavigate } from 'react-router-dom';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
@@ -46,25 +46,23 @@ const Reports = () => {
 
   const generateReport = async () => {
     try {
-      console.log('Sending filters:', filters);
-      const response = await axios.post(`${baseURL}/reports`, filters);
-      console.log('Received data:', response.data);
-      if (response.data.length === 0) {
-        console.log('No data with filters, fetching all data...');
-        const allDataResponse = await axios.post(`${baseURL}/reports`, {});
-        setReportData(allDataResponse.data.map(row => ({
-          ...row,
-          company: row.company ? row.company.split(',')[0].trim() : 'N/A',
-          location: row.location ? row.location.split(',')[0].trim() : 'N/A'
-        })));
-      } else {
-        setReportData(response.data.map(row => ({
-          ...row,
-          company: row.company ? row.company.split(',')[0].trim() : 'N/A',
-          location: row.location ? row.location.split(',')[0].trim() : 'N/A'
-        })));
-      }
-      setError(null); // Clear any previous errors
+      const filtersWithUpdated = {
+        ...filters,
+        updated: 'Yes' // Always enforce updated = 'Yes'
+      };
+
+      console.log('Sending filters:', filtersWithUpdated);
+
+      const response = await axios.post(`${baseURL}/reports`, filtersWithUpdated);
+
+      const processedData = response.data.map(row => ({
+        ...row,
+        company: row.company ? row.company.split(',')[0].trim() : 'N/A',
+        location: row.location ? row.location.split(',')[0].trim() : 'N/A'
+      }));
+
+      setReportData(processedData);
+      setError(null);
     } catch (err) {
       setError('Failed to generate report');
       console.error('Generate report error:', err);
@@ -485,5 +483,5 @@ const Reports = () => {
   );
 };
 
-
 export default Reports;
+

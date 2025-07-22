@@ -11,7 +11,6 @@ const baseURL = import.meta.env.VITE_API_BASE_URL
     ? `${import.meta.env.VITE_API_BASE_URL}/corporate`
     : 'http://localhost:3000/api/corporate';
 
-
 function Reports() {
     const leadStatusChartRef = useRef(null);
     const communicationStatusChartRef = useRef(null);
@@ -507,7 +506,7 @@ function Reports() {
     return (
         <div className="bg-[#f9f9fc] text-[#1a202c] pt-[50px] p-8 overflow-x-hidden">
             <main className="max-w-[1200px] mx-auto w-full flex flex-col">
-                <h1 className="text-[32px] font-bold pl-[12px]">Reports</h1>
+                {/* <h1 className="text-[32px] font-bold pl-[12px]">Reports</h1> */}
                 <h2 className="text-[#4c1d95] mb-4 text-[24px] font-bold pl-[12px]">Reports Overview</h2>
                 <div className="flex justify-start gap-[10px] mb-8 flex-nowrap pl-[12px] overflow-x-auto mt-[16px]">
                     <div className="bg-[#f3e8ff] mt-[16px] border-l-6 border-[#6a0080] rounded-[12px] p-[20px] w-full max-w-[300px] min-w-[250px] shadow-[0_4px_10px_rgba(0,0,0,0.08)] text-left flex flex-col justify-between transition-transform duration-200 hover:-translate-y-[5px] gap-[6px]">
@@ -793,6 +792,5 @@ function Reports() {
         </div>
     );
 }
-
 
 export default Reports;

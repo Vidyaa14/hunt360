@@ -115,8 +115,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 { to: '/dashboard/campus/marketing-data', icon: Megaphone, label: 'Marketing Data' },
                 { to: '/dashboard/campus/hrdata', icon: Users, label: 'HR Data' },
                 { to: '/dashboard/campus/reports', icon: BarChart, label: 'Reports' },
-                { to: '/dashboard/campus/settings', icon: Settings, label: 'Settings' },
-                { to: '/dashboard/campus/user-management', icon: Users, label: 'User Management' },
             ],
         },
         {

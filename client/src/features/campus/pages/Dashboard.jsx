@@ -1,21 +1,20 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
-    Calendar,
-    Building,
-    TrendingUp,
     BarChart2,
-    Users,
-    Search,
+    Building,
+    Calendar,
     Plus,
     RefreshCw,
+    Search,
+    TrendingUp,
+    Users,
 } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import { useNavigate } from 'react-router-dom';
-import Card from '../../../components/campus/Card';
-import MeetingSection from '../../../components/campus/MeetingSection';
-import InsertForm from '../forms/InsertForm.jsx';
 import * as apiService from '../../../api/campus.js';
+import Card from '../../../components/campus/Card';
+import InsertForm from '../forms/InsertForm.jsx';
 
 const initialData = [
     { name: 'Colleges', value: 2000 },
@@ -410,11 +409,10 @@ function Dashboard() {
                                             (key, i, arr) => (
                                                 <th
                                                     key={key}
-                                                    className={`px-2 py-1 text-left text-gray-600 ${
-                                                        i !== arr.length - 1
+                                                    className={`px-2 py-1 text-left text-gray-600 ${i !== arr.length - 1
                                                             ? 'border-r border-gray-300'
                                                             : ''
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {key}
                                                 </th>
@@ -432,12 +430,11 @@ function Dashboard() {
                                                 (value, colIndex, arr) => (
                                                     <td
                                                         key={colIndex}
-                                                        className={`px-2 py-1 text-gray-700 whitespace-nowrap ${
-                                                            colIndex !==
-                                                            arr.length - 1
+                                                        className={`px-2 py-1 text-gray-700 whitespace-nowrap ${colIndex !==
+                                                                arr.length - 1
                                                                 ? 'border-r border-gray-200'
                                                                 : ''
-                                                        }`}
+                                                            }`}
                                                     >
                                                         {value}
                                                     </td>
@@ -573,13 +570,6 @@ function Dashboard() {
                 )}
             </div>
 
-            {/* Meeting Section */}
-            <div className="mt-5 px-4 sm:px-6 lg:px-8">
-                <p className="text-2xl font-bold text-gray-800 mb-5">
-                    Meeting Schedules
-                </p>
-                <MeetingSection />
-            </div>
         </div>
     );
 }

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { FaEdit, FaEye } from 'react-icons/fa';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { FaEdit, FaEye } from 'react-icons/fa';
 
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
@@ -17,6 +17,7 @@ const SingleDataEdit = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [showView, setShowView] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
 
 
   const handleEdit = (company) => {
@@ -149,6 +150,9 @@ const SingleDataEdit = () => {
     }
   };
 
+
+
+
   useEffect(() => {
     // Load saved state from sessionStorage
     const savedFilters = JSON.parse(sessionStorage.getItem('singleEdit_savedFilters') || '{}');
@@ -167,6 +171,65 @@ const SingleDataEdit = () => {
       handleSearch(savedPage);
     }
   }, []);
+
+  //console.log("Date of Contact value:", selectedCompany?.date_of_contact);
+
+
+
+
+  // Function to handle adding new company
+  const handleAddCompany = async () => {
+    try {
+      const res = await fetch(`${baseURL}/add-profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(selectedCompany), // selectedCompany holds form data
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Profile added successfully!");
+
+        // Update the table to show new data instantly
+        const newCompany = {
+          ...selectedCompany,
+          id: data.insertId, // if your backend returns insertId
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        setResults((prevResults) => [newCompany, ...prevResults]);
+        setShowAddForm(false);
+        setSelectedCompany(null);
+      } else {
+        alert("Error: " + data.error);
+      }
+    } catch (err) {
+      alert("Network error. Try again later.");
+      console.error("Add company error:", err);
+    }
+  };
+
+  // Function to open empty form for adding
+  const handleAddNewProfileClick = () => {
+    setSelectedCompany({
+      name: "",
+      company: "",
+      location: "",
+      follower: "",
+      connection: "",
+      url: "",
+
+    });
+    setShowAddForm(true);
+  };
+
+
+
+
 
 
   return (
@@ -226,6 +289,16 @@ const SingleDataEdit = () => {
         </div>
       </div>
 
+      <div className="mt-4">
+        <button
+          className="bg-[#6A1B9A] text-white py-2 px-4 rounded-md text-sm font-medium hover:opacity-90 flex items-center gap-2"
+          onClick={handleAddNewProfileClick}
+        >
+          <span className="text-lg">+</span>
+          Add New Profile
+        </button>
+      </div>
+
       <div className="bg-white p-4 sm:p-[20px] rounded-[8px] shadow-[0_2px_5px_rgba(0,0,0,0.1)] mt-4 sm:mt-[20px] overflow-x-auto">
         <h3 className="text-[#17151b] text-base sm:text-lg font-bold mb-3 sm:mb-4">Search Results</h3>
         <table className="w-full min-w-[800px] border border-gray-300">
@@ -258,7 +331,9 @@ const SingleDataEdit = () => {
                 <td className="px-4 py-2 text-sm border border-gray-300">{item.connection}</td>
                 <td className="px-4 py-2 text-sm border border-gray-300">{item.url}</td>
                 <td className="px-4 py-2 text-sm border border-gray-300">{item.updated}</td>
-                <td className="px-4 py-2 text-sm border border-gray-300">{item.updated_at}</td>
+                <td className="px-4 py-2 text-sm border border-gray-300">
+                  {item.updated_at ? item.updated_at.slice(0, 10) : ""}
+                </td>
 
                 <td className="px-3 sm:px-4 py-1 sm:py-2 border border-gray-300">
                   <div className="flex items-center justify-center gap-2 sm:gap-3">
@@ -360,6 +435,91 @@ const SingleDataEdit = () => {
                   className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
                 />
               </div>
+
+              {/* Position */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Position</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.position || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, position: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                />
+              </div>
+
+              {/* Work From */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Work From</label>
+                <select
+                  value={selectedCompany?.work_from || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, work_from: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                >
+                  <option value="">Select</option>
+                  <option value="Onsite">Onsite</option>
+                  <option value="Remote">Remote</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
+              </div>
+
+              {/* Education */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Education</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.education || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, education: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                />
+              </div>
+
+              {/* BD Name */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">BD Name</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.bd_name || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, bd_name: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                />
+              </div>
+
+              {/* Date of Contact */}
+
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Date of contact</label>
+                <input
+                  type="text"
+                  placeholder="YYYY-MM-DD"
+                  value={selectedCompany?.date_of_contact || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, date_of_contact: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                />
+              </div>
+              {/* LinkedIn Message Date */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">LinkedIn Message Date</label>
+                <input
+                  type="text"
+                  placeholder="YYYY-MM-DD"
+                  value={selectedCompany?.linkedin_message_date || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, linkedin_message_date: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                />
+              </div>
+
+
+              {/* Notes */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Notes</label>
+                <textarea
+                  value={selectedCompany?.notes || ''}
+                  onChange={(e) => setSelectedCompany((prev) => ({ ...prev, notes: e.target.value }))}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] focus:outline-none focus:border-[#7b3fe4]"
+                ></textarea>
+              </div>
+
+
               <div>
                 <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Updated</label>
                 <select
@@ -451,6 +611,84 @@ const SingleDataEdit = () => {
                   className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px]"
                 />
               </div>
+
+              {/* Position */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Position</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.position || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
+              {/* Work From */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Work From</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.work_from || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
+              {/* Education */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Education</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.education || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
+              {/* BD Name */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">BD Name</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.bd_name || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
+              {/* Date of Contact */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Date of Contact</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.date_of_contact || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
+              {/* Notes */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">Notes</label>
+                <textarea
+                  value={selectedCompany?.notes || ''}
+                  readOnly
+                  rows={3}
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                ></textarea>
+              </div>
+
+              {/* LinkedIn Message Date */}
+              <div>
+                <label className="font-bold mb-1 sm:mb-[5px] block text-[#333] text-sm sm:text-base">LinkedIn Message Date</label>
+                <input
+                  type="text"
+                  value={selectedCompany?.linkedin_message_date || ''}
+                  readOnly
+                  className="w-full p-2 sm:p-[12px] border border-[#ccc] rounded-[8px] text-sm sm:text-[14px] "
+                />
+              </div>
+
               <button
                 className="w-full sm:w-[150px] p-2 sm:p-[12px] bg-[#7019d2] text-white rounded-[8px] text-sm sm:text-[16px] font-bold hover:bg-[#5b13aa]"
                 onClick={() => setShowView(false)}
@@ -461,6 +699,124 @@ const SingleDataEdit = () => {
           </div>
         </div>
       )}
+
+
+
+
+      {showAddForm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000]">
+          <div className="bg-[#f4eaff] p-4 rounded-[15px] w-full sm:w-[500px] max-w-[95%] max-h-[90vh] overflow-y-auto shadow-lg">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-[#5e2ca5] text-xl font-bold">
+                {selectedCompany?.id ? "Edit Profile" : "Add New Profile"}
+              </h2>
+              <span
+                className="text-xl font-bold cursor-pointer"
+                onClick={() => setShowAddForm(false)}
+              >
+                ×
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <div>
+                <label>Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={selectedCompany?.name || ''}
+                  onChange={(e) =>
+                    setSelectedCompany((prev) => ({ ...prev, name: e.target.value }))
+                  }
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+
+              <div>
+                <label>Company</label>
+                <input
+                  type="text"
+                  name="company"
+                  value={selectedCompany?.company || ''}
+                  onChange={(e) =>
+                    setSelectedCompany((prev) => ({ ...prev, company: e.target.value }))
+                  }
+                  className="border p-2 rounded w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label>Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={selectedCompany?.location || ''}
+                  onChange={(e) =>
+                    setSelectedCompany((prev) => ({ ...prev, location: e.target.value }))
+                  }
+                  className="border p-2 rounded w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label>Follower</label>
+                <input
+                  type="text"
+                  name="follower"
+                  value={selectedCompany?.follower || ''}
+                  onChange={(e) =>
+                    setSelectedCompany((prev) => ({ ...prev, follower: e.target.value }))
+                  }
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+
+              <div>
+                <label>Connection</label>
+                <input
+                  type="text"
+                  name="connection"
+                  value={selectedCompany?.connection || ''}
+                  onChange={(e) =>
+                    setSelectedCompany((prev) => ({ ...prev, connection: e.target.value }))
+                  }
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+
+              <div>
+                <label>URL</label>
+                <input
+                  type="text"
+                  name="url"
+                  value={selectedCompany?.url || ''}
+                  onChange={(e) =>
+                    setSelectedCompany((prev) => ({ ...prev, url: e.target.value }))
+                  }
+                  className="border p-2 rounded w-full"
+                />
+              </div>
+
+              {/* Save Button */}
+              <button
+                onClick={handleAddCompany}
+                className="bg-[#7019d2] text-white p-2 rounded font-bold hover:bg-[#5b13aa]"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
+
+
+
 
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000]">
