@@ -85,7 +85,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             label: 'Corporate Hunt',
             children: [
                 { to: '/dashboard/corporate/dashboard', icon: Home, label: 'Dashboard' },
-                { to: '/dashboard/corporate/data-scraping', icon: Database, label: 'Data Scraping' },
                 { to: '/dashboard/corporate/bulk-data-cleaning', icon: Wand, label: 'Bulk Data Cleaning' },
                 { to: '/dashboard/corporate/single-data-edit', icon: Edit, label: 'Single Data Edit' },
                 { to: '/dashboard/corporate/marketing-data', icon: Megaphone, label: 'Marketing Data' },
@@ -101,7 +100,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 { to: '/dashboard/senior-management/report', icon: FileText, label: 'Report' },
                 { to: '/dashboard/senior-management/single-data-edit', icon: Edit, label: 'Single Data Edit' },
                 { to: '/dashboard/senior-management/final-report', icon: ClipboardList, label: 'Final Report' },
-                { to: '/dashboard/senior-management/data-scraping', icon: Database, label: 'Data Scraping' },
                 { to: '/dashboard/senior-management/bulk-data', icon: Layers, label: 'Bulk Data' },
             ]
         },
@@ -112,14 +110,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             label: 'Campus',
             children: [
                 { to: '/dashboard/campus/dashboard', icon: Home, label: 'Dashboard' },
-                { to: '/dashboard/campus/data-scraping', icon: Database, label: 'Data Scraping' },
                 { to: '/dashboard/campus/bulk-editing', icon: Wand, label: 'Bulk Editing' },
                 { to: '/dashboard/campus/single-editing', icon: Edit, label: 'Single Editing' },
                 { to: '/dashboard/campus/marketing-data', icon: Megaphone, label: 'Marketing Data' },
                 { to: '/dashboard/campus/hrdata', icon: Users, label: 'HR Data' },
                 { to: '/dashboard/campus/reports', icon: BarChart, label: 'Reports' },
                 { to: '/dashboard/campus/settings', icon: Settings, label: 'Settings' },
-                { to: '/dashboard/campus/meeting-schedule', icon: Calendar, label: 'Meeting Schedule' },
                 { to: '/dashboard/campus/user-management', icon: Users, label: 'User Management' },
             ],
         },
@@ -149,11 +145,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 { to: '/dashboard/email-service/users-list', icon: Users2, label: 'Users List' },
 
             ],
-        },
-        {
-            to: '/dashboard/campus', icon: Building, label: 'Campus',
-            children: [
-            ]
         },
         { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
     ];

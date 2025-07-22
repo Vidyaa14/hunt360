@@ -4,6 +4,11 @@ import Card from '../../../components/campus/Card';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const baseURL = import.meta.env.VITE_API_BASE_URL
+    ? `${import.meta.env.VITE_API_BASE_URL}/campus`
+    : 'http://localhost:3000/api/campus';
+
+
 const BulkEditing = () => {
     const [recentDataset, setRecentDataset] = useState([]);
     const [missingValues, setMissingValues] = useState({});
@@ -132,7 +137,7 @@ const BulkEditing = () => {
         formData.append('file', file);
 
         try {
-            const response = await fetch('http://localhost:5000/upload', {
+            const response = await fetch(`${baseURL}/upload`, {
                 method: 'POST',
                 body: formData,
             });
