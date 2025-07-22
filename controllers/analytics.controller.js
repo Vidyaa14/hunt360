@@ -1,5 +1,4 @@
 import db from '../config/database.js';
-
 export const getAnalytics = async (req, res) => {
     try {
         const [sectorRows] = await db.query(`
