@@ -1,16 +1,17 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
-import { FaEdit, FaEye, FaTrash } from 'react-icons/fa';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { FaEdit, FaEye, FaTrash } from 'react-icons/fa';
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
   ? `${import.meta.env.VITE_API_BASE_URL}/linkedin`
   : 'http://localhost:3000/api/linkedin';
 
+
 const FinalProfile = () => {
   const [showForm, setShowForm] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [filters, setFilters] = useState({ company: '', location: '', updated: '' });
+  const [filters, setFilters] = useState({ company: '', location: '', updated: '', bd_name: '' });
   const [results, setResults] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -51,6 +52,7 @@ const FinalProfile = () => {
       const params = new URLSearchParams({
         company: filters.company || '',
         location: filters.location || '',
+        bd_name: filters.bd_name || '',
         page,
         limit: 10,
       }).toString();
@@ -78,7 +80,7 @@ const FinalProfile = () => {
   };
 
   const clearFilters = () => {
-    const newFilters = { company: '', location: '', updated: '' };
+    const newFilters = { company: '', location: '', updated: '', bd_name: '' };
     setFilters(newFilters);
     setResults([]);
     setCurrentPage(1);
@@ -104,7 +106,7 @@ const FinalProfile = () => {
     const confirmDelete = window.confirm('Are you sure you want to delete this record?');
     if (confirmDelete) {
       try {
-        await axios.delete(`http://localhost:3000/api/delete/${item.id}`);
+        await axios.delete(`${baseURL}/delete/${item.id}`);
         const updatedResults = results.filter((record) => record.id !== item.id);
         setResults(updatedResults);
         sessionStorage.setItem('finalProfile_savedResults', JSON.stringify(updatedResults));
@@ -128,7 +130,7 @@ const FinalProfile = () => {
     const companyToSubmit = { ...selectedCompany };
 
     try {
-      const res = await fetch('http://localhost:3000/save-final-profile', {
+      const res = await fetch(`${baseURL}/save-final-profile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(companyToSubmit),
@@ -210,19 +212,30 @@ const FinalProfile = () => {
             className="w-full sm:w-[200px] md:w-[250px] p-2 sm:p-[10px] border-1 border-black rounded-[6px] text-sm sm:text-base"
           />
         </div>
-        {/* <div className="flex flex-col gap-1 sm:gap-[5px] mr-2 sm:mr-[10px] w-full sm:w-auto">
-          <label className="block mb-1 sm:mb-[5px] font-bold text-[#17151b] text-sm sm:text-base">Updated</label>
-          <select
-            name="updated"
-            value={filters.updated}
+        <div className="flex flex-col gap-1 sm:gap-[5px] mr-2 sm:mr-[10px] w-full sm:w-auto">
+          <label className="block mb-1 sm:mb-[5px] font-bold text-[#17151b] text-sm sm:text-base">BD Name</label>
+          <input
+            type="text"
+            name="bd_name"
+            value={filters.bd_name}
             onChange={handleChange}
+            placeholder="Enter BD Name..."
             className="w-full sm:w-[200px] md:w-[250px] p-2 sm:p-[10px] border-1 border-black rounded-[6px] text-sm sm:text-base"
-          >
-            <option value="">Yes</option>
-            <option value="no">No</option>
-            <option value="all">All</option>
-          </select>
-        </div> */}
+          />
+        </div>
+        {/* <div className="flex flex-col gap-1 sm:gap-[5px] mr-2 sm:mr-[10px] w-full sm:w-auto">
+            <label className="block mb-1 sm:mb-[5px] font-bold text-[#17151b] text-sm sm:text-base">Updated</label>
+            <select
+              name="updated"
+              value={filters.updated}
+              onChange={handleChange}
+              className="w-full sm:w-[200px] md:w-[250px] p-2 sm:p-[10px] border-1 border-black rounded-[6px] text-sm sm:text-base"
+            >
+              <option value="">Yes</option>
+              <option value="no">No</option>
+              <option value="all">All</option>
+            </select>
+          </div> */}
         <div className="flex gap-2 sm:gap-[10px] items-center mt-2 sm:mt-[2.5px] w-full sm:w-auto">
           <button
             onClick={() => handleSearch(1)}
