@@ -151,6 +151,10 @@ const courseOptions = [
     { value: 'Diploma in Animation', label: 'Diploma in Animation' },
 ];
 
+const baseURL = import.meta.env.VITE_API_BASE_URL
+    ? `${import.meta.env.VITE_API_BASE_URL}/campus`
+    : 'http://localhost:3000/api/campus';
+
 
 const SingleDataEdit = () => {
     const [college, setCollege] = useState('');
@@ -190,7 +194,7 @@ const SingleDataEdit = () => {
         }
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:5000/search', {
+            const response = await axios.get(`${baseURL}/search`, {
                 params: {
                     college,
                     location: location.map((l) => l.value).join(','),
@@ -227,7 +231,7 @@ const SingleDataEdit = () => {
 
         try {
             await axios.put(
-                `http://localhost:5000/update/${editingCollege.Clg_ID}`,
+                `${baseURL}/update/${editingCollege.Clg_ID}`,
                 updatedCollege
             );
             setColleges((prev) =>
@@ -251,7 +255,7 @@ const SingleDataEdit = () => {
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://localhost:5000/delete/${collegeId}`);
+            await axios.delete(`${baseURL}/delete/${collegeId}`);
             setColleges(colleges.filter((col) => col.Clg_ID !== collegeId));
         } catch (error) {
             console.error('Error deleting data:', error);
