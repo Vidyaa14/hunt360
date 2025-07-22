@@ -329,7 +329,16 @@ const SingleDataEdit = () => {
                 <td className="px-4 py-2 text-sm border border-gray-300">{item.location}</td>
                 <td className="px-4 py-2 text-sm border border-gray-300">{item.follower}</td>
                 <td className="px-4 py-2 text-sm border border-gray-300">{item.connection}</td>
-                <td className="px-4 py-2 text-sm border border-gray-300">{item.url}</td>
+                <td className="px-4 py-2 text-sm border border-gray-300">
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Link
+                  </a>
+                </td>
                 <td className="px-4 py-2 text-sm border border-gray-300">{item.updated}</td>
                 <td className="px-4 py-2 text-sm border border-gray-300">
                   {item.updated_at ? item.updated_at.slice(0, 10) : ""}
