@@ -1,7 +1,6 @@
 import db from '../config/database.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
 const SECRET = process.env.JWT_SECRET || 'secretkey';
 
 const generateToken = (user) => {
