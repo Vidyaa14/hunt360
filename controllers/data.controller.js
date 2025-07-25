@@ -8,42 +8,36 @@ const upload = multer({ storage: storage });
 export const uploadFile = [
     upload.single('file'),
     async (req, res) => {
-        if (!req.file)
-            return res.status(400).json({ error: 'No file uploaded' });
+        if (!req.file) {
+            return res.status(400).json({ error: "No file uploaded" });
+        }
 
         try {
             const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
-            const sheet = workbook.SheetNames[0];
-            const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheet]);
+            const sheetName = workbook.SheetNames[0];
+            const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
-            if (data.length === 0)
-                return res.status(400).json({ error: 'Empty file uploaded' });
+            if (sheetData.length === 0) {
+                return res.status(400).json({ error: "Empty file uploaded" });
+            }
 
-            const insertQuery = `
-        INSERT INTO scraped_data 
-        (company_name, location, address, phone_number, website_link, job_title, gst_number)
-        VALUES ?
-      `;
-
-            const values = data.map((row) => [
-                row['Company_Name'] || '',
-                row.Location ? row.Location.split(',')[0].trim() : '',
-                row['Address'] || '',
-                row['Phone'] || '',
-                row['Website'] || '',
-                row['Job_Title'] || '',
-                row['GST Number(s)']
-                    ? row['GST Number(s)'].split(',')[0].trim()
-                    : '',
+            const insertQuery = "INSERT INTO scraped_data (company_name, location, address, phone_number, website_link, job_title, gst_number, post_date) VALUES ?";
+            const values = sheetData.map((row) => [
+                row["Company_Name"] || "",
+                row.Location ? row.Location.split(",")[0].trim() : "",
+                row["Address"] || "",
+                row["Phone"] || "",
+                row["Website"] || "",
+                row["Job_Title"] || "",
+                row["GST Number(s)"] ? row["GST Number(s)"].split(",")[0].trim() : "",
+                row["Post Date"] || "",
             ]);
 
             const [result] = await db.query(insertQuery, [values]);
-            res.json({
-                message: `Uploaded ${result.affectedRows} records successfully`,
-            });
+            res.json({ message: `Uploaded ${result.affectedRows} records successfully` });
         } catch (error) {
-            console.error('Upload error:', error);
-            res.status(500).json({ error: 'Failed to process uploaded file' });
+            console.error("Error processing file:", error);
+            return res.status(500).json({ error: "Failed to process the uploaded file" });
         }
     },
 ];
@@ -182,138 +176,107 @@ export const searchCompanies = async (req, res) => {
 };
 
 export const searchMarketingData = async (req, res) => {
-    const {
-        name = '',
-        city = '',
-        communication_status = '',
-        lead_status = '',
-        page = 1,
-        limit = 10,
-    } = req.query;
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-
-    let baseQuery = "FROM scraped_data WHERE updated = 'yes'";
-    const values = [];
-
-    if (name) {
-        baseQuery += ' AND LOWER(company_name) LIKE ?';
-        values.push(`%${name.toLowerCase()}%`);
-    }
-
-    if (city) {
-        baseQuery += ' AND LOWER(location) LIKE ?';
-        values.push(`%${city.toLowerCase()}%`);
-    }
-
-    if (communication_status) {
-        baseQuery += ' AND communication_status = ?';
-        values.push(communication_status);
-    }
-
-    if (lead_status) {
-        baseQuery += ' AND lead_status = ?';
-        values.push(lead_status);
-    }
-
     try {
-        const [data] = await db.query(
-            `SELECT * ${baseQuery} LIMIT ? OFFSET ?`,
-            [...values, parseInt(limit), offset]
-        );
-        const [count] = await db.query(
-            `SELECT COUNT(*) AS total ${baseQuery}`,
-            values
-        );
-        const total = count[0].total;
+        const { name = "", city = "", communication_status = "", lead_status = "", bd_name = "", page = 1, limit = 10 } = req.query;
+        const offset = (parseInt(page) - 1) * parseInt(limit);
+
+        let baseQuery = "FROM scraped_data WHERE updated = 'yes'";
+        const values = [];
+
+        if (name) {
+            baseQuery += " AND LOWER(company_name) LIKE ?";
+            values.push(`%${name.toLowerCase()}%`);
+        }
+
+        if (city) {
+            baseQuery += " AND LOWER(location) LIKE ?";
+            values.push(`%${city.toLowerCase()}%`);
+        }
+
+        if (communication_status) {
+            baseQuery += " AND communication_status = ?";
+            values.push(communication_status);
+        }
+
+        if (lead_status) {
+            baseQuery += " AND lead_status = ?";
+            values.push(lead_status);
+        }
+
+        if (bd_name) {
+            baseQuery += " AND LOWER(bd_name) LIKE ?";
+            values.push(`%${bd_name.toLowerCase()}%`);
+        }
+
+        const dataQuery = `SELECT * ${baseQuery} LIMIT ? OFFSET ?`;
+        const countQuery = `SELECT COUNT(*) AS total ${baseQuery}`;
+        const dataParams = [...values, parseInt(limit), offset];
+
+        const [results] = await db.query(dataQuery, dataParams);
+        const [countResult] = await db.query(countQuery, values);
+
+        const total = countResult[0].total;
+        const totalPages = Math.ceil(total / parseInt(limit));
 
         res.json({
-            data,
+            data: results,
             total,
-            totalPages: Math.ceil(total / limit),
+            totalPages,
             currentPage: parseInt(page),
             limit: parseInt(limit),
         });
-    } catch (err) {
-        console.error('Marketing search error:', err);
-        res.status(500).json({ error: 'Search failed' });
+    } catch (error) {
+        console.error("Search marketing data error:", error);
+        res.status(500).json({ error: "Search failed" });
     }
 };
 
 export const saveForm = async (req, res) => {
-    const {
-        id,
-        company_name,
-        contact_person_name,
-        mobile,
-        email,
-        location,
-        state,
-        country,
-        pincode,
-        gst_number,
-        bd_name,
-        phone_number,
-        industry,
-        sub_industry,
-        website_link,
-        updated,
-        communication_status,
-        notes,
-        meeting_date,
-        lead_status,
-        address,
-    } = req.body;
-
-    if (!id) return res.status(400).json({ error: 'Missing company ID' });
-
-    const formattedMeetingDate = meeting_date
-        ? new Date(meeting_date).toISOString().split('T')[0]
-        : null;
-
-    const updateQuery = `
-    UPDATE scraped_data SET
-      company_name = ?, contact_person_name = ?, mobile = ?, email = ?, location = ?,
-      state = ?, country = ?, pincode = ?, gst_number = ?, bd_name = ?, phone_number = ?,
-      industry = ?, sub_industry = ?, website_link = ?, updated = ?, communication_status = ?,
-      notes = ?, meeting_date = ?, lead_status = ?, address = ?, updated_at = NOW()
-    WHERE id = ?
-  `;
-
-    const values = [
-        company_name,
-        contact_person_name,
-        mobile,
-        email,
-        location,
-        state,
-        country,
-        pincode,
-        gst_number,
-        bd_name,
-        phone_number,
-        industry,
-        sub_industry,
-        website_link,
-        updated,
-        communication_status,
-        notes,
-        formattedMeetingDate,
-        lead_status,
-        address,
-        id,
-    ];
-
     try {
-        const [result] = await db.query(updateQuery, values);
-        if (result.affectedRows === 0)
-            return res.status(404).json({ error: 'No matching record found' });
+        const {
+            id, company_name, contact_person_name, mobile, email, location, state, country,
+            pincode, gst_number, bd_name, phone_number, industry, sub_industry, website_link,
+            updated, communication_status, notes, meeting_date, lead_status, post_date, address
+        } = req.body;
 
-        res.json({ message: 'Form data updated successfully!' });
-    } catch (err) {
-        console.error('Update form error:', err);
-        res.status(500).json({ error: 'Failed to update form data' });
+        if (!id) {
+            return res.status(400).json({ error: "Missing company ID" });
+        }
+
+        let formattedMeetingDate = meeting_date;
+        if (meeting_date) {
+            formattedMeetingDate = new Date(meeting_date).toISOString().split("T")[0];
+        }
+
+        const updateQuery = `
+        UPDATE scraped_data SET
+          company_name = ?, contact_person_name = ?, mobile = ?, email = ?, location = ?,
+          state = ?, country = ?, pincode = ?, gst_number = ?, bd_name = ?, phone_number = ?,
+          industry = ?, sub_industry = ?, website_link = ?, updated = ?, communication_status = ?,
+          notes = ?, meeting_date = ?, lead_status = ?, post_date = ?, address = ?,
+          updated_at = NOW()
+        WHERE id = ?
+      `;
+
+        const values = [
+            company_name, contact_person_name, mobile, email, location, state, country,
+            pincode, gst_number, bd_name, phone_number, industry, sub_industry, website_link,
+            updated, communication_status, notes, formattedMeetingDate, lead_status, post_date, address, id
+        ];
+
+        const [result] = await db.query(updateQuery, values);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "No matching record found to update" });
+        }
+
+        res.json({ message: "Form data updated successfully!" });
+    } catch (error) {
+        console.error("Update form error:", error);
+        return res.status(500).json({ error: "Failed to update form data" });
     }
 };
+
 
 export const deleteRecord = async (req, res) => {
     const { id } = req.params;
@@ -327,5 +290,29 @@ export const deleteRecord = async (req, res) => {
     } catch (err) {
         console.error('Delete error:', err);
         res.status(500).json({ error: 'Failed to delete the record' });
+    }
+};
+
+export const addCompany = async (req, res) => {
+    const { company_name, location, address, phone_number, website_link, job_title, gst_number, post_date } = req.body;
+
+    if (!company_name || !location) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const insertQuery = `
+      INSERT INTO scraped_data
+      (company_name, location, address, phone_number, website_link, job_title, gst_number, updated, created_at, updated_at, post_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 'no', NOW(), NOW(), ?)
+    `;
+
+    const values = [company_name, location, address, phone_number, website_link, job_title, gst_number, post_date];
+
+    try {
+        const [result] = await db.query(insertQuery, values);
+        res.json({ message: "Company added successfully!", insertId: result.insertId });
+    } catch (error) {
+        console.error("Add company error:", error);
+        return res.status(500).json({ error: "Failed to add company" });
     }
 };

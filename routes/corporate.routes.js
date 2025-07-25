@@ -9,6 +9,7 @@ import {
     getUpcomingMeetings,
 } from '../controllers/dashboard.controller.js';
 import {
+    addCompany,
     cleanDuplicates,
     deleteRecord,
     getDataStats,
@@ -50,6 +51,7 @@ router.get('/search-companies', searchCompanies);
 router.get('/search-marketing-data', searchMarketingData);
 router.post('/save-form', saveForm);
 router.delete('/delete/:id', deleteRecord);
+router.post('/add-company', addCompany);
 
 /* scrape routes */
 router.post('/scrape', scrape);

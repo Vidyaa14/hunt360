@@ -207,60 +207,32 @@ export const getStateWiseBdActivities = async (req, res) => {
   }
 };
 
-export const reportsCSV = (req, res) => {
+export const reportsCSV = async (req, res) => {
   const filters = req.body;
   const { whereClause, params } = buildFilterConditions(filters);
 
-  // Ensure 'updated = ?' is always included in the WHERE clause
   const updatedCondition = 'updated = ?';
   const updatedParam = 'yes';
 
-  // Combine the existing whereClause with the updated condition
   const finalWhereClause = whereClause
     ? `${whereClause} AND ${updatedCondition}`
     : `WHERE ${updatedCondition}`;
 
   const query = `
     SELECT
-      id,
-      company_name,
-      industry AS name,
-      location,
-      job_title,
-      address,
-      phone_number,
-      website_link AS url,
-      contact_person_name,
-      email,
-      state,
-      country,
-      pincode,
-      gst_number,
-      bd_name,
-      industry,
-      sub_industry,
-      communication_status,
-      notes,
-      meeting_date,
-      lead_status,
-      created_at,
-      updated_at,
-      mobile
-    FROM scraped_data
-    ${whereClause}
-    
+      id, company_name, industry AS name, location, job_title, address, phone_number,
+      website_link AS url, contact_person_name, email, state, country, pincode,
+      gst_number, bd_name, industry, sub_industry, communication_status, notes,
+      meeting_date, lead_status, created_at, updated_at, mobile
+    FROM scraped ungdom_data
+    ${finalWhereClause}
   `;
 
-  // Add the 'yes' parameter to the params array
   const finalParams = whereClause ? [...params, updatedParam] : [updatedParam];
 
-  db.query(query, finalParams, (err, rows) => {
-    if (err) {
-      console.error('[/reports] Query Error:', err);
-      return res.status(500).json({ error: 'Failed to generate report' });
-    }
+  try {
+    const [rows] = await db.query(query, finalParams);
 
-    // Format the data to match frontend expectations (e.g., trimming location and name)
     const formattedRows = rows.map(row => ({
       ...row,
       location: row.location ? row.location.split(',')[0].trim() : 'N/A',
@@ -268,5 +240,8 @@ export const reportsCSV = (req, res) => {
     }));
 
     res.json(formattedRows);
-  });
+  } catch (error) {
+    console.error('[/reports] Query Error:', error);
+    return res.status(500).json({ error: 'Failed to generate report' });
+  }
 };

@@ -8,7 +8,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const uploadFile = async (req, res) => {
-    const upload = req.app.get('upload');
 
     try {
         if (!req.file) {
@@ -16,7 +15,7 @@ export const uploadFile = async (req, res) => {
         }
 
         const filePath = req.file.path;
-        const workbook = xlsx.readFile(filePath);
+        const workbook = xlsx.readFile(filePath, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
         const sheetData = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
 
@@ -27,16 +26,16 @@ export const uploadFile = async (req, res) => {
         const insertQuery =
             'INSERT INTO new_table (File, College_Name, State, District, Course, Anual_fees, Placement_fees, Ranking, Address, Phone) VALUES ?';
         const values = sheetData.map((row) => [
-            row['File'],
-            row['College Name'],
-            row['State'],
-            row['District'],
-            row['Course'],
-            row['Anual_fees'],
-            row['Placement_fees'],
-            row['Ranking'],
-            row['Address'],
-            row['Phone'],
+            row['File'] || req.file.originalname,
+            row['College Name'] || '',
+            row['State'] || '',
+            row['District'] || '',
+            row['Course'] || '',
+            row['Anual_fees'] || null,
+            row['Placement_fees'] || null,
+            row['Ranking'] || null,
+            row['Address'] || '',
+            row['Phone'] || '',
         ]);
 
         const [result] = await db.query(insertQuery, [values]);
@@ -44,9 +43,9 @@ export const uploadFile = async (req, res) => {
             message: `Uploaded ${result.affectedRows} records successfully`,
         });
     } catch (error) {
-        console.error('MySQL Insert Error:', error);
+        console.error('Error processing file or inserting into database:', error.message, error.sqlMessage || '');
         res.status(500).json({
-            error: 'Database insert failed',
+            error: 'Failed to process the uploaded file or insert data',
             details: error.message,
         });
     }
