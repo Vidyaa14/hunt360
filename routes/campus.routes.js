@@ -33,11 +33,20 @@ import {
     getTotalColleges,
     getTotalPayment
 } from '../controllers/marketing.controller.js';
+import multer from 'multer';
 
 const router = Router();
 
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 5 * 1024 * 1024,
+        files: 1
+    }
+})
+
 /* College Routes */
-router.post('/upload', uploadFile);
+router.post('/upload', upload.single('file'), uploadFile);
 router.post('/scrape', scrapeData);
 router.get('/open-file', openFile);
 router.get('/search', searchColleges);
