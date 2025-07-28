@@ -4,11 +4,15 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 import db from '../config/database.js';
+import ExcelJS from 'exceljs';
+import puppeteer from 'puppeteer';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const uploadFile = async (req, res) => {
+// --- FILE & DATABASE OPERATIONS ---
 
+export const uploadFile = async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
@@ -51,60 +55,6 @@ export const uploadFile = async (req, res) => {
     }
 };
 
-export const scrapeData = (req, res) => {
-    const { state, city, stream } = req.body;
-
-    if (!state || !city) {
-        return res.status(400).json({ error: 'State and City are required.' });
-    }
-
-    const isFullSearch = state && city && stream;
-    const scriptToRun = isFullSearch
-        ? '../scripts/clgd_scrap.js'
-        : '../scripts/scrape.js';
-    const scriptArgs = isFullSearch ? [state, city, stream] : [state, city];
-    const scriptPath = path.resolve(__dirname, scriptToRun);
-
-    console.log(
-        `Running script: ${scriptPath} with args: ${scriptArgs.join(', ')}`
-    );
-
-    const jsProcess = spawn('node', [scriptPath, ...scriptArgs]);
-
-    let dataBuffer = '';
-    let generatedFileName = null;
-
-    jsProcess.stdout.on('data', (data) => {
-        const output = data.toString();
-        console.log(`Output: ${output}`);
-        dataBuffer += output;
-
-        const match = output.match(/Saving data to:\s*(.*\.xlsx)/);
-        if (match && match[1]) {
-            generatedFileName = match[1].trim();
-            console.log(`File detected: ${generatedFileName}`);
-        }
-    });
-
-    jsProcess.stderr.on('data', (data) => {
-        console.error(`Error: ${data.toString()}`);
-    });
-
-    jsProcess.on('close', (code) => {
-        console.log(`Script exited with code ${code}`);
-        res.status(200).json({
-            message: 'Scraping completed',
-            data: dataBuffer.trim(),
-            fileName: generatedFileName,
-        });
-    });
-
-    jsProcess.on('error', (err) => {
-        console.error(`Failed to run script: ${err.message}`);
-        res.status(500).json({ error: 'Failed to execute script' });
-    });
-};
-
 export const openFile = async (req, res) => {
     const { fileName } = req.query;
 
@@ -145,7 +95,7 @@ export const searchColleges = async (req, res) => {
         }
 
         if (location) {
-            const locations = location.split(',');
+            const locations = location.split(',').map(loc => loc.trim());
             const placeholders = locations
                 .map(() => '(State LIKE ? OR District LIKE ?)')
                 .join(' OR ');
@@ -156,7 +106,7 @@ export const searchColleges = async (req, res) => {
         }
 
         if (course) {
-            const courses = course.split(',');
+            const courses = course.split(',').map(c => c.trim());
             const placeholders = courses
                 .map(() => '(Course LIKE ?)')
                 .join(' OR ');
@@ -177,6 +127,40 @@ export const searchColleges = async (req, res) => {
     }
 };
 
+export const addCollege = async (req, res) => {
+    const data = req.body;
+
+    const insertQuery = `
+        INSERT INTO new_table (
+            College_Name, State, District, Course,
+            Anual_fees, Placement_fees, Ranking,
+            Address, Phone
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+    `;
+
+    const selectQuery = `SELECT * FROM new_table WHERE Clg_ID = LAST_INSERT_ID();`;
+
+    try {
+        await db.query(insertQuery, [
+            data.College_Name,
+            data.State,
+            data.District,
+            data.Course,
+            data.Anual_fees,
+            data.Placement_fees,
+            data.Ranking,
+            data.Address,
+            data.Phone,
+        ]);
+
+        const [result] = await db.query(selectQuery);
+        res.status(200).json(result[0]);
+    } catch (err) {
+        console.error('Insert Error:', err);
+        res.status(500).json({ error: 'Insert failed' });
+    }
+};
+
 export const updateCollege = async (req, res) => {
     const collegeId = Number(req.params.id);
 
@@ -185,9 +169,11 @@ export const updateCollege = async (req, res) => {
             .status(400)
             .json({ error: 'Invalid college ID. It must be a number.' });
     }
-
+    
+    console.log('Received data for update:', req.body);
     const updatedData = req.body;
 
+    // CORRECTED: The order of columns in SET now matches the values array.
     const updateQuery = `
         UPDATE new_table
         SET
@@ -197,9 +183,10 @@ export const updateCollege = async (req, res) => {
             Course = ?, 
             Anual_fees = ?, 
             Placement_fees = ?, 
+            Ranking = ?, 
             Address = ?, 
             Phone = ?, 
-            update_timestamp = ?, 
+            Update_timestamp = ?, 
             Director_name = ?, 
             Director_number = ?, 
             Director_email = ?, 
@@ -224,7 +211,6 @@ export const updateCollege = async (req, res) => {
             Payment_received = ?, 
             Replacement_period = ?, 
             Term = ?, 
-            Ranking = ?, 
             Date_of_Contact = ?, 
             Date_of_Next_Contact = ?, 
             Placed_on_Year = ?, 
@@ -232,6 +218,7 @@ export const updateCollege = async (req, res) => {
         WHERE Clg_ID = ?`;
 
     try {
+        // CORRECTED: The order of values now matches the updated query string.
         const values = [
             updatedData.College_Name,
             updatedData.State,
@@ -239,6 +226,7 @@ export const updateCollege = async (req, res) => {
             updatedData.Course,
             updatedData.Anual_fees,
             updatedData.Placement_fees,
+            updatedData.Ranking,
             updatedData.Address,
             updatedData.Phone,
             new Date().toISOString().slice(0, 19).replace('T', ' '),
@@ -266,7 +254,6 @@ export const updateCollege = async (req, res) => {
             updatedData.Payment_received,
             updatedData.Replacement_period,
             updatedData.Term,
-            updatedData.Ranking,
             updatedData.Date_of_Contact,
             updatedData.Date_of_Next_Contact,
             updatedData.Placed_on_Year,
@@ -278,13 +265,13 @@ export const updateCollege = async (req, res) => {
         if (result.affectedRows > 0) {
             res.json({ message: 'Data updated successfully' });
         } else {
-            res.status(400).json({
-                message: 'No changes made or record not found',
+            res.status(404).json({
+                message: 'No record found with that ID to update.',
             });
         }
     } catch (err) {
         console.error('MySQL Update Error:', err);
-        res.status(500).json({ error: 'Database update failed' });
+        res.status(500).json({ error: 'Database update failed', details: err.message });
     }
 };
 
@@ -297,7 +284,7 @@ export const deleteCollege = async (req, res) => {
         if (result.affectedRows > 0) {
             res.json({ message: 'Data deleted successfully' });
         } else {
-            res.status(400).json({
+            res.status(404).json({
                 message: 'College not found or already deleted',
             });
         }
@@ -306,6 +293,8 @@ export const deleteCollege = async (req, res) => {
         res.status(500).json({ error: 'Database delete failed' });
     }
 };
+
+// --- DASHBOARD & ANALYTICS ---
 
 export const getCollegeCount = async (req, res) => {
     const { year, month, state, district, course } = req.query;
@@ -499,36 +488,58 @@ export const getChartData = async (req, res) => {
     }
 };
 
-export const addCollege = async (req, res) => {
-    const data = req.body;
+// --- SCRAPING OPERATIONS ---
 
-    const insertQuery = `
-        INSERT INTO new_table (
-            College_Name, State, District, Course,
-            Anual_fees, Placement_fees, Ranking,
-            Address, Phone
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-    `;
+export const scrapeData = (req, res) => {
+    const { state, city, stream } = req.body;
 
-    const selectQuery = `SELECT * FROM new_table WHERE Clg_ID = LAST_INSERT_ID();`;
-
-    try {
-        await db.query(insertQuery, [
-            data.College_Name,
-            data.State,
-            data.District,
-            data.Course,
-            data.Anual_fees,
-            data.Placement_fees,
-            data.Ranking,
-            data.Address,
-            data.Phone,
-        ]);
-
-        const [result] = await db.query(selectQuery);
-        res.status(200).json(result[0]);
-    } catch (err) {
-        console.error('Insert Error:', err);
-        res.status(500).json({ error: 'Insert failed' });
+    if (!state || !city) {
+        return res.status(400).json({ error: 'State and City are required.' });
     }
+
+    const isFullSearch = state && city && stream;
+    const scriptToRun = isFullSearch
+        ? '../scripts/clgd_scrap.js'
+        : '../scripts/scrape.js';
+    const scriptArgs = isFullSearch ? [state, city, stream] : [state, city];
+    const scriptPath = path.resolve(__dirname, scriptToRun);
+
+    console.log(
+        `Running script: ${scriptPath} with args: ${scriptArgs.join(', ')}`
+    );
+
+    const jsProcess = spawn('node', [scriptPath, ...scriptArgs]);
+
+    let dataBuffer = '';
+    let generatedFileName = null;
+
+    jsProcess.stdout.on('data', (data) => {
+        const output = data.toString();
+        console.log(`Output: ${output}`);
+        dataBuffer += output;
+
+        const match = output.match(/Saving data to:\s*(.*\.xlsx)/);
+        if (match && match[1]) {
+            generatedFileName = match[1].trim();
+            console.log(`File detected: ${generatedFileName}`);
+        }
+    });
+
+    jsProcess.stderr.on('data', (data) => {
+        console.error(`Error: ${data.toString()}`);
+    });
+
+    jsProcess.on('close', (code) => {
+        console.log(`Script exited with code ${code}`);
+        res.status(200).json({
+            message: 'Scraping completed',
+            data: dataBuffer.trim(),
+            fileName: generatedFileName,
+        });
+    });
+
+    jsProcess.on('error', (err) => {
+        console.error(`Failed to run script: ${err.message}`);
+        res.status(500).json({ error: 'Failed to execute script' });
+    });
 };
