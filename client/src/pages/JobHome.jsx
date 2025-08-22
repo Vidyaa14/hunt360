@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';

@@ -12,8 +12,14 @@ export const AuthProvider = ({ children }) => {
         const storedUser = localStorage.getItem('user');
 
         if (token && storedUser) {
-            setUser(JSON.parse(storedUser));
-            setIsAuthenticated(true);
+            try {
+                setUser(JSON.parse(storedUser));
+                setIsAuthenticated(true);
+            } catch (error) {
+                console.error('Error parsing stored user:', error);
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+            }
         }
 
         setLoading(false);
@@ -21,6 +27,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (credentials) => {
         try {
+            console.log('Attempting login with:', credentials.identifier);
             const res = await api.post('/login', credentials);
 
             if (res.data.success) {
@@ -37,9 +44,20 @@ export const AuthProvider = ({ children }) => {
 
             return { success: false, error: res.data.error || 'Login failed' };
         } catch (err) {
+            console.error('Login error:', err);
+            let errorMessage = 'Network error. Please check your connection.';
+            
+            if (err.code === 'ECONNREFUSED') {
+                errorMessage = 'Cannot connect to server. Please ensure the backend is running on port 8080.';
+            } else if (err.response?.data?.error) {
+                errorMessage = err.response.data.error;
+            } else if (err.message) {
+                errorMessage = err.message;
+            }
+            
             return {
                 success: false,
-                error: err.response?.data?.error || 'Network error',
+                error: errorMessage,
             };
         }
     };
@@ -60,7 +78,9 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (newUser) => {
         try {
+            console.log('Attempting signup with:', newUser.email);
             const res = await api.post('/signup', newUser);
+            
             if (res.data.success) {
                 const { user, token } = res.data;
                 localStorage.setItem('user', JSON.stringify(user));
@@ -69,11 +89,23 @@ export const AuthProvider = ({ children }) => {
                 setIsAuthenticated(true);
                 return { success: true };
             }
+            
             return { success: false, error: res.data.error || 'Signup failed' };
         } catch (err) {
+            console.error('Signup error:', err);
+            let errorMessage = 'Network error. Please check your connection.';
+            
+            if (err.code === 'ECONNREFUSED') {
+                errorMessage = 'Cannot connect to server. Please ensure the backend is running on port 8080.';
+            } else if (err.response?.data?.error) {
+                errorMessage = err.response.data.error;
+            } else if (err.message) {
+                errorMessage = err.message;
+            }
+            
             return {
                 success: false,
-                error: err.response?.data?.error || 'Network error',
+                error: errorMessage,
             };
         }
     };

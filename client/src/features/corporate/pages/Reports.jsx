@@ -16,7 +16,6 @@ function Reports() {
     const communicationStatusChartRef = useRef(null);
     const cityLeadChartRef = useRef(null);
     const stateBdChartRef = useRef(null);
-
     const leadStatusChartInstance = useRef(null);
     const communicationStatusChartInstance = useRef(null);
     const cityLeadChartInstance = useRef(null);

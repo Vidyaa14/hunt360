@@ -149,10 +149,6 @@ const SingleDataEdit = () => {
       console.error('Submit error:', err);
     }
   };
-
-
-
-
   useEffect(() => {
     // Load saved state from sessionStorage
     const savedFilters = JSON.parse(sessionStorage.getItem('singleEdit_savedFilters') || '{}');
@@ -173,9 +169,6 @@ const SingleDataEdit = () => {
   }, []);
 
   //console.log("Date of Contact value:", selectedCompany?.date_of_contact);
-
-
-
 
   // Function to handle adding new company
   const handleAddCompany = async () => {
@@ -226,11 +219,6 @@ const SingleDataEdit = () => {
     });
     setShowAddForm(true);
   };
-
-
-
-
-
 
   return (
     <div className="mt-5">

@@ -113,22 +113,30 @@ const Dashboard = () => {
           </div>
           <div className="flex flex-nowrap overflow-x-auto justify-center items-center mt-2.5 gap-[6px] mx-4 mb-6">
             <button
-              className="px-4 py-2 border-none rounded-md text-white cursor-pointer text-sm whitespace-nowrap flex-shrink-0 m-0 w-auto min-w-0 bg-[#2f80ed] hover:bg-[#2563eb] tracking-wide"
-              style={{ wordSpacing: '0.2rem' }}
-              onClick={() => navigate("/single-data-edit")}>Edit Profile</button>
-            <button
+      className="px-4 py-2 border-none rounded-md text-white cursor-pointer text-sm whitespace-nowrap flex-shrink-0 m-0 w-auto min-w-0 bg-[#2f80ed] hover:bg-[#2563eb] tracking-wide"
+      style={{ wordSpacing: "0.2rem" }}
+      onClick={() => navigate("/dashboard/senior-management/single-data-edit")}
+    >
+      Edit Profile
+    </button>            <button
               className="px-4 py-2 border-none rounded-md text-white cursor-pointer text-sm whitespace-nowrap flex-shrink-0 m-0 w-auto min-w-0 bg-[#27ae60] hover:bg-[#219653] tracking-wide"
               style={{ wordSpacing: '0.2rem' }}
-              onClick={() => navigate("/data-scraping")}>Import from LinkedIn</button>
-            <button
-              className="px-4 py-2 border-none rounded-md text-white cursor-pointer text-sm whitespace-nowrap flex-shrink-0 m-0 w-auto min-w-0 bg-[#a259ff] hover:bg-[#8b4ee6] tracking-wide"
-              style={{ wordSpacing: '0.2rem' }}
-              onClick={() => navigate("/bulk-data-cleaning")}>Bulk Upload CSV</button>
-            <button
-              className="px-4 py-2 border-none rounded-md text-white cursor-pointer text-sm whitespace-nowrap flex-shrink-0 m-0 w-auto min-w-0 bg-[#faa033] hover:bg-[#faa033] tracking-wide"
-              style={{ wordSpacing: '0.2rem' }}
-              onClick={() => navigate("/final-profiles")}>Final Profile</button>
-          </div>
+              onClick={() => navigate("/dashboard/senior-management/data-scraping")}>Import from LinkedIn</button>
+           <button
+        className="px-4 py-2 border-none rounded-md text-white cursor-pointer text-sm whitespace-nowrap flex-shrink-0 m-0 w-auto min-w-0 bg-[#a259ff] hover:bg-[#8b4ee6] tracking-wide"
+        style={{ wordSpacing: "0.2rem" }}
+        onClick={() => navigate("/dashboard/senior-management/bulk-data-cleaning")}
+      >
+        Bulk Upload CSV
+      </button>
+
+      <button
+        className="px-4 py-2 border-none rounded-md text-white cursor-pointer text-sm whitespace-nowrap flex-shrink-0 m-0 w-auto min-w-0 bg-[#faa033] hover:bg-[#faa033] tracking-wide"
+        style={{ wordSpacing: "0.2rem" }}
+        onClick={() => navigate("/dashboard/senior-management/final-profiles")}
+      >
+        Final Profile
+      </button>          </div>
         </div>
 
         <div className="mt-[30px] mb-2.5">

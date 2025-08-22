@@ -524,7 +524,7 @@ function Dashboard() {
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <button
-                        onClick={() => navigate('/single-editing')}
+                        onClick={() => navigate('/dashboard/campus/single-editing')}
                         className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-950 text-white font-medium py-2 px-3 rounded-lg transition shadow-md text-sm sm:text-base"
                     >
                         <Search size={18} />
@@ -538,14 +538,14 @@ function Dashboard() {
                         Add Manual Entry
                     </button>
                     <button
-                        onClick={() => navigate('/data-scraping')}
+                        onClick={() => navigate('/dashboard/campus/data-scraping')}
                         className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-950 text-white font-medium py-2 px-3 rounded-lg transition shadow-md text-sm sm:text-base"
                     >
                         <RefreshCw size={18} />
                         Start New Scraping
                     </button>
                     <button
-                        onClick={() => navigate('/reports')}
+                        onClick={() => navigate('/dashboard/campus/reports')}
                         className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-950 text-white font-medium py-2 px-3 rounded-lg transition shadow-md text-sm sm:text-base"
                     >
                         <BarChart2 size={18} />

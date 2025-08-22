@@ -65,7 +65,7 @@ const App = () => {
                 <Route path="savedjobs" element={<SavedJobsPage />} />
                 <Route path="hrhunt" element={<div>HR Hunt Content</div>} />
                 <Route path="corporate">
-                    <Route path="dashboard" element={<CorporateDashboard />} />
+                    <Route path="/dashboard/corporate" element={<CorporateDashboard />} />
                     <Route path="data-scraping" element={<DataScraping />} />
                     <Route
                         path="bulk-data-cleaning"
@@ -79,7 +79,7 @@ const App = () => {
                     <Route path="reports" element={<Reports />} />
                 </Route>
                 <Route path="campus">
-                    <Route path="dashboard" element={<CampusDashboard />} />
+                    <Route path="/dashboard/campus" element={<CampusDashboard />} />
                     <Route
                         path="data-scraping"
                         element={<CampusDataScraping />}
@@ -133,9 +133,9 @@ const App = () => {
                     <Route path="dashboard" element={<SeniorDashboard />} />
                     <Route path="report" element={<SeniorReport />} />
                     <Route path="single-data-edit" element={<SeniorSingleDataEdit />} />
-                    <Route path="final-report" element={<SeniorFinalReport />} />
+                    <Route path="final-profiles" element={<SeniorFinalReport />} />
                     <Route path="data-scraping" element={<SeniorDataScraping />} />
-                    <Route path="bulk-data" element={<SeniorBulkData />} />
+                    <Route path="bulk-data-cleaning" element={<SeniorBulkData />} />
                 </Route>
             </Route>
         </Routes>

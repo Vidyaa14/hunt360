@@ -84,7 +84,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             icon: User,
             label: 'Corporate Hunt',
             children: [
-                { to: '/dashboard/corporate/dashboard', icon: Home, label: 'Dashboard' },
+                { to: '/dashboard/corporate', icon: Home, label: 'Dashboard' },
                 { to: '/dashboard/corporate/bulk-data-cleaning', icon: Wand, label: 'Bulk Data Cleaning' },
                 { to: '/dashboard/corporate/single-data-edit', icon: Edit, label: 'Single Data Edit' },
                 { to: '/dashboard/corporate/marketing-data', icon: Megaphone, label: 'Marketing Data' },
@@ -99,8 +99,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 { to: '/dashboard/senior-management/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
                 { to: '/dashboard/senior-management/report', icon: FileText, label: 'Report' },
                 { to: '/dashboard/senior-management/single-data-edit', icon: Edit, label: 'Single Data Edit' },
-                { to: '/dashboard/senior-management/final-report', icon: ClipboardList, label: 'Final Report' },
-                { to: '/dashboard/senior-management/bulk-data', icon: Layers, label: 'Bulk Data' },
+                { to: '/dashboard/senior-management/final-profiles', icon: ClipboardList, label: 'Final Report' },
+                { to: '/dashboard/senior-management/bulk-data-cleaning', icon: Layers, label: 'Bulk Data' },
             ]
         },
 
@@ -109,7 +109,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             icon: BookOpen,
             label: 'Campus',
             children: [
-                { to: '/dashboard/campus/dashboard', icon: Home, label: 'Dashboard' },
+                { to: '/dashboard/campus', icon: Home, label: 'Dashboard' },
                 { to: '/dashboard/campus/bulk-editing', icon: Wand, label: 'Bulk Editing' },
                 { to: '/dashboard/campus/single-editing', icon: Edit, label: 'Single Editing' },
                 { to: '/dashboard/campus/marketing-data', icon: Megaphone, label: 'Marketing Data' },

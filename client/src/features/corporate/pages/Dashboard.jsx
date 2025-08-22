@@ -14,11 +14,13 @@ import {
 import { useEffect, useState } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import { useNavigate } from 'react-router-dom';
+import { Card } from '@mui/material';
+
 const COLORS = ['#0088FE', '#FF8042'];
 
 const baseURL = import.meta.env.VITE_API_BASE_URL
     ? `${import.meta.env.VITE_API_BASE_URL}/corporate`
-    : 'http://localhost:3000/api/corporate';
+    : 'http://localhost:8080/api/corporate';
 
 ChartJS.register(
     ArcElement,
@@ -34,33 +36,63 @@ ChartJS.register(
 const Dashboard = () => {
     const [data, setData] = useState({});
     const [analytics, setAnalytics] = useState({ sectors: [], status: [] });
-    const navigate = useNavigate();
     const [yearTrends, setYearTrends] = useState([]);
     const [companyTrends, setCompanyTrends] = useState([]);
     const [meetingNotifications, setMeetingNotifications] = useState([]);
+    const [rows, setRows] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
+        // Fetch dashboard data
         axios
             .get(`${baseURL}/dashboard`)
-            .then((res) => setData(res.data));
+            .then((res) => setData(res.data))
+            .catch((err) => console.error('Error fetching dashboard:', err));
+
+        // Fetch analytics data
         axios
             .get(`${baseURL}/analytics`)
-            .then((res) => setAnalytics(res.data));
+            .then((res) => setAnalytics(res.data))
+            .catch((err) => console.error('Error fetching analytics:', err));
+
+        // Fetch yearly trends
         axios
             .get(`${baseURL}/trends/yearly`)
-            .then((res) => setYearTrends(res.data));
+            .then((res) => setYearTrends(res.data))
+            .catch((err) => console.error('Error fetching yearly trends:', err));
+
+        // Fetch company-year trends
         axios
             .get(`${baseURL}/trends/company-year`)
-            .then((res) => setCompanyTrends(res.data));
+            .then((res) => setCompanyTrends(res.data))
+            .catch((err) => console.error('Error fetching company trends:', err));
 
+        // Fetch upcoming meetings
         fetch(`${baseURL}/upcoming-meetings`)
             .then((res) => res.json())
             .then((data) => {
-                console.log('Fetched Meetings:', data); // Debugging
-                setMeetingNotifications(data); // Works if backend returns plain array
+                console.log('Fetched Meetings:', data);
+                setMeetingNotifications(data);
             })
             .catch((err) => {
                 console.error('Error fetching meetings:', err);
+            });
+
+        // Fetch recent scraped data
+        setLoading(true);
+        axios
+            .get(`${baseURL}/previous-scrapes`)
+            .then((res) => {
+                setRows(res.data || []);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error('Error fetching previous scrapes:', err);
+                setError('Failed to load recent scraped data.');
+                setLoading(false);
             });
     }, []);
 
@@ -103,6 +135,7 @@ const Dashboard = () => {
 
     const formatPercentage = (count, total) =>
         total ? `${Math.round((count / total) * 100)}%` : '0%';
+
     const hiringTrendData = {
         labels: yearTrends.map((item) => item.year),
         datasets: [
@@ -158,15 +191,16 @@ const Dashboard = () => {
                     text: 'Year',
                 },
                 ticks: {
-                    padding: 20, // adds space between Y-axis and first point
+                    padding: 20,
                 },
                 grid: {
-                    drawOnChartArea: false, // Optional: cleaner look
+                    drawOnChartArea: false,
                 },
-                offset: true, // THIS pushes points away from edge!
+                offset: true,
             },
         },
     };
+
     const companyLabels = companyTrends.map((item) => item.year);
     const companyKeys =
         companyTrends.length > 0
@@ -203,12 +237,12 @@ const Dashboard = () => {
             x: {
                 title: { display: true, text: 'Year' },
                 ticks: {
-                    padding: 20, // adds space between Y-axis and first point
+                    padding: 20,
                 },
                 grid: {
-                    drawOnChartArea: false, // Optional: cleaner look
+                    drawOnChartArea: false,
                 },
-                offset: true, // THIS pushes points away from edge!
+                offset: true,
             },
         },
     };
@@ -265,26 +299,27 @@ const Dashboard = () => {
                     </div>
                     <div className="flex flex-wrap justify-center items-center mt-2.5 gap-2 mx-4 mb-6">
                         <button
-                            className="px-3 py-1.5 sm:px-4 sm:py-2 border-none rounded-md text-white cursor-pointer text-xs sm:text-sm bg-[#2f80ed] hover:bg-[#2563eb] tracking-wide"
-                            onClick={() => navigate('/single-data-edit')}
+                            className="px-4 py-2 border-none rounded-md text-white cursor-pointer text-sm whitespace-nowrap flex-shrink-0 m-0 w-auto min-w-0 bg-[#2f80ed] hover:bg-[#2563eb] tracking-wide"
+                            style={{ wordSpacing: "0.2rem" }}
+                            onClick={() => navigate("/dashboard/corporate/single-data-edit")}
                         >
-                            Edit data
+                            Edit Profile
                         </button>
                         <button
                             className="px-3 py-1.5 sm:px-4 sm:py-2 border-none rounded-md text-white cursor-pointer text-xs sm:text-sm bg-[#27ae60] hover:bg-[#219653] tracking-wide"
-                            onClick={() => navigate('/data-scraping')}
+                            onClick={() => navigate('/dashboard/corporate/data-scraping')}
                         >
                             Import from Website
                         </button>
                         <button
                             className="px-3 py-1.5 sm:px-4 sm:py-2 border-none rounded-md text-white cursor-pointer text-xs sm:text-sm bg-[#a259ff] hover:bg-[#8b4ee6] tracking-wide"
-                            onClick={() => navigate('/bulk-data-cleaning')}
+                            onClick={() => navigate('/dashboard/corporate/bulk-data-cleaning')}
                         >
                             Bulk Upload CSV
                         </button>
                         <button
                             className="px-3 py-1.5 sm:px-4 sm:py-2 border-none rounded-md text-white cursor-pointer text-xs sm:text-sm bg-[#eb3b7d] hover:bg-[#d4336f] tracking-wide"
-                            onClick={() => navigate('/marketing-data')}
+                            onClick={() => navigate('/dashboard/corporate/marketing-data')}
                         >
                             Send to Marketing
                         </button>
@@ -370,7 +405,75 @@ const Dashboard = () => {
                         </h3>
                     </div>
                 </div>
-
+                        {/* Recent Activities Section */}
+                <div className="mt-5">
+                    <p className="text-2xl font-bold text-gray-800 mb-5">
+                        Recent Activities
+                    </p>
+                    <Card className="max-h-[300px] overflow-y-auto shadow-md rounded-2xl p-4">
+                        <p className="text-lg font-semibold text-gray-700 mb-4">
+                            Latest Data Scraped
+                        </p>
+                        {error ? (
+                            <p className="text-red-600">{error}</p>
+                        ) : loading ? (
+                            <p className="text-gray-500 text-center">
+                                Loading data...
+                            </p>
+                        ) : rows.length > 0 ? (
+                            <div className="w-full overflow-x-auto">
+                                <table className="min-w-full border border-gray-300 text-sm">
+                                    <thead className="bg-gray-100 sticky top-0 z-10">
+                                        <tr>
+                                            {Object.keys(rows[0]).map(
+                                                (key, i, arr) => (
+                                                    <th
+                                                        key={key}
+                                                        className={`px-2 py-1 text-left text-gray-600 ${
+                                                            i !== arr.length - 1
+                                                                ? 'border-r border-gray-300'
+                                                                : ''
+                                                        }`}
+                                                    >
+                                                        {key}
+                                                    </th>
+                                                )
+                                            )}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {rows.map((row, rowIndex) => (
+                                            <tr
+                                                key={rowIndex}
+                                                className="hover:bg-gray-50"
+                                            >
+                                                {Object.values(row).map(
+                                                    (value, colIndex, arr) => (
+                                                        <td
+                                                            key={colIndex}
+                                                            className={`px-2 py-1 text-gray-700 whitespace-nowrap ${
+                                                                colIndex !==
+                                                                arr.length - 1
+                                                                    ? 'border-r border-gray-200'
+                                                                    : ''
+                                                            }`}
+                                                        >
+                                                            {value}
+                                                        </td>
+                                                    )
+                                                )}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <p className="text-gray-500 text-center">
+                                No data found.
+                            </p>
+                        )}
+                    </Card>
+                </div>
                 <div className="mt-6 mb-2.5">
                     <h4 className="m-0 text-sm sm:text-base font-semibold text-[#333] tracking-wide pl-3">
                         Analytics

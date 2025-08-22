@@ -24,21 +24,20 @@ export const JobProvider = ({ children }) => {
 
     const SAVED_JOBS_KEY = 'jobsearch_saved_jobs';
 
+    // Load saved jobs from localStorage
     useEffect(() => {
         const storedSavedJobs = localStorage.getItem(SAVED_JOBS_KEY);
         if (storedSavedJobs) {
             try {
                 setSavedJobs(JSON.parse(storedSavedJobs));
             } catch (err) {
-                console.error(
-                    'Error parsing saved jobs from localStorage:',
-                    err
-                );
+                console.error('Error parsing saved jobs from localStorage:', err);
             }
         }
     }, []);
 
-    const handleSearch = async (query, newFilters) => {
+    // 🔍 Main search handler
+    const handleSearch = async (query, newFilters = {}) => {
         if (!query) {
             setError('Please enter a search term');
             return;
@@ -49,13 +48,14 @@ export const JobProvider = ({ children }) => {
 
         try {
             const processedQuery = processQueryWithBooleanLogic(query);
-            const updatedFilters = { ...filters, ...newFilters };
+            const updatedFilters = { ...filters, ...newFilters, page: newFilters.page || 1 };
+
             setFilters(updatedFilters);
             setSearchQuery(query);
 
             const params = {
                 query: processedQuery,
-                page: updatedFilters.page || 1,
+                page: updatedFilters.page,
                 date_posted: updatedFilters.datePosted,
                 remote_jobs_only: updatedFilters.remoteJobsOnly,
                 employment_types: updatedFilters.employmentType,
@@ -63,8 +63,10 @@ export const JobProvider = ({ children }) => {
             };
 
             const data = await searchJobs(params);
+
             if (data && data.data) {
-                setJobs(data.data);
+                // Append jobs if loading more, otherwise reset
+                setJobs(updatedFilters.page > 1 ? [...jobs, ...data.data] : data.data);
                 setTotalJobs(data.total_jobs || data.data.length);
             } else {
                 setJobs([]);
@@ -72,18 +74,20 @@ export const JobProvider = ({ children }) => {
                 setError('No jobs found matching your criteria');
             }
         } catch (err) {
-            setError('Failed to fetch jobs. Please try again.');
             console.error('Search error:', err);
+            setError('Failed to fetch jobs. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
+    // 📄 Load more jobs (pagination)
     const loadMoreJobs = () => {
         const newPage = filters.page + 1;
         handleSearch(searchQuery, { ...filters, page: newPage });
     };
 
+    // 🎯 Select job
     const selectJob = (job) => {
         setSelectedJob(job);
     };
@@ -92,10 +96,12 @@ export const JobProvider = ({ children }) => {
         setSelectedJob(null);
     };
 
+    // 🔧 Update filters and reset pagination
     const updateFilters = (newFilters) => {
         handleSearch(searchQuery, { ...newFilters, page: 1 });
     };
 
+    // 💾 Save jobs locally
     const isJobSaved = (jobId) => {
         return savedJobs.some((job) => job.job_id === jobId);
     };
@@ -105,9 +111,7 @@ export const JobProvider = ({ children }) => {
         let updatedSavedJobs;
 
         if (alreadySaved) {
-            updatedSavedJobs = savedJobs.filter(
-                (savedJob) => savedJob.job_id !== job.job_id
-            );
+            updatedSavedJobs = savedJobs.filter((savedJob) => savedJob.job_id !== job.job_id);
         } else {
             updatedSavedJobs = [...savedJobs, job];
         }

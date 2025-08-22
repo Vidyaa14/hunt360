@@ -164,7 +164,7 @@ const DataScraping = () => {
                     </button>
                     <button
                         className="bg-[#6A1B9A] text-white py-2 sm:py-[12px] px-4 sm:px-[20px] rounded-md text-sm sm:text-[16px] hover:opacity-90 cursor-pointer w-full sm:w-auto"
-                        onClick={goToDashboard}
+                        onClick={() => navigate('/dashboard/corporate/')}
                     >
                         Dashboard
                     </button>
