@@ -6,7 +6,10 @@ import multer from 'multer';
 import swaggerUI from 'swagger-ui-express';
 import YAML from 'yamljs';
 import fs from 'fs';
+import path from "path";
+import { fileURLToPath } from "url";
 
+// Import route files
 import authRoutes from './routes/auth.routes.js';
 import campusRoutes from './routes/campus.routes.js';
 import corporateRoutes from './routes/corporate.routes.js';
@@ -16,6 +19,10 @@ import linkedinRoutes from './routes/linkedin.routes.js';
 import './utils/warmup.js';
 
 dotenv.config();
+
+// Fix __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -56,7 +63,7 @@ app.use(
 );
 
 // ✅ Swagger Docs (only if file exists)
-const swaggerPath = './docs/endpoints.yaml';
+const swaggerPath = path.join(__dirname, "docs", "endpoints.yaml");
 if (fs.existsSync(swaggerPath)) {
   const swaggerDocument = YAML.load(swaggerPath);
   app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
